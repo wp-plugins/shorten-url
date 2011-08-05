@@ -1,0 +1,14 @@
+.parameters h4 {
+	font-size:105% ; 
+	padding:0px;
+	margin:0px;
+}
+
+.parameters tr, .parameters td {
+	padding:0px;
+	margin:0px;
+}
+
+.parameters .comments {
+	color:#AAAAAA ; 
+}

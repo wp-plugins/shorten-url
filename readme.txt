@@ -38,6 +38,9 @@ You can configure:
 
 == Changelog ==
 
+= 1.0.2 =
+* Upgrade of the framework (version 3.0)
+
 = 1.0.1 =
 * First release in the wild web (enjoy)
 

@@ -1,12 +1,10 @@
 <?php
 /*
 Core SedLex Plugin
-VersionInclude : 2.1
+VersionInclude : 3.0
 */ 
-/** ====================================================================================================================================================
-* Configuration panel - Parameters Class
-* 
-* @return void
+/** =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+* This PHP class enables the creation of a box in the admin backend
 */
 if (!class_exists("boxAdmin")) {
 	class boxAdmin {
@@ -15,10 +13,13 @@ if (!class_exists("boxAdmin")) {
 		var $content ; 
 		
 		/** ====================================================================================================================================================
-		* Constructor
+		* Constructor of the class
 		* 
-		* @return void
+		* @param string $title the title of the box
+		* @param string $content the HTML code of the content of the box
+		* @return boxAdmin the box object
 		*/
+		
 		function boxAdmin($title, $content) {
 			$this->title = $title ; 
 			$this->content = $content ; 
@@ -26,7 +27,7 @@ if (!class_exists("boxAdmin")) {
 		
 		
 		/** ====================================================================================================================================================
-		* print the output
+		* Print the box HTML code. 
 		* 
 		* @return void
 		*/

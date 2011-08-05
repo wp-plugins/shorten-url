@@ -2,7 +2,7 @@
 /*
 Plugin Name: Short URL
 Description: <p>Replacing the internal function of wordpress <code>get_short_link()</code> by a bit.ly like url. </p><p>Instead of having a short link like http://www.yourdomain.com/?p=3564, your short link will be http://www.yourdomain.com/NgH5z (for instance). </p><p>You can configure: <ul><li>the length of the short link, </li><li>if the link is prefixed with a static word, </li><li>the characters used for the short link.</li></ul></p><p>This plugin is under GPL licence. </p>
-Version: 1.0.1
+Version: 1.0.2
 Author: SedLex
 Author URI: http://www.sedlex.fr/
 Plugin URI: http://wordpress.org/extend/plugins/shorten-url/

@@ -1,41 +1,51 @@
 <?php
 /*
 Core SedLex Plugin
-VersionInclude : 2.1
+VersionInclude : 3.0
 */ 
 
-/** ====================================================================================================================================================
-* Admin table class 
-* 
-* @return void
+/** =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+* This PHP class enables the creation of tables in the admin backend
 */
 if (!class_exists("adminTable")) {
 	class adminTable  {
 		var $nbCol ; 
-		var $nbLigneAffich ; 
 		var $nbLigneTotal ; 
 		var $title ; 
 		var $hasFooter ; 
 		var $content ; 
 		
-		function adminTable($nbLigneTotal = 0) {	
+		/** ====================================================================================================================================================
+		* Constructor of the class
+		* 
+		* @param integer $nb_all_Items the number of all items. If the number of submitted lines are less than this number, a navigation bar will be added at the top of the table
+		* @return adminTable the table
+		*/
+		
+		function adminTable($nb_all_Items= 0) {	
 			$this->title = array() ; 
-			$this->nbLigneAffich = $nbLigneAffich ; 
-			$this->nbLigneTotal = $nbLigneTotal ; 
+			$this->nbLigneTotal = $nb_all_Items ; 
 			$this->hasFooter = true ; 
 			$this->content = array() ; 
 		}
 		
-		//-------------------------------------------------
-		// Add the title
-		//-------------------------------------------------
+		/** ====================================================================================================================================================
+		* Set the titles of the columns
+		* 
+		* @param array $array it is an array of string which is of the size of the number of columns. Each string is the title for a different column
+		* @return void
+		*/
+
 		function title($array) {
 			$this->title = $array ; 
 		}
 		
-		//-------------------------------------------------
-		// Add the current num of the page
-		//-------------------------------------------------
+		/** ====================================================================================================================================================
+		* Get the current page of the table.
+		* This is relevant if the number of your items is greater than the number of lines
+		* 
+		* @return integer the page number
+		*/
 		function current_page() {
 			if (isset($_GET['paged'])) {
 				$page_cur = $_GET['paged'] ; 
@@ -45,16 +55,28 @@ if (!class_exists("adminTable")) {
 			return $page_cur ; 
 		}
 		
-		//-------------------------------------------------
-		// remove the footer
-		//-------------------------------------------------
+		/** ====================================================================================================================================================
+		* Remove the showed title at the footer of the table
+		* By default, titles of the columns are displayed at the top of the table and at its footer.
+		* 
+		* @return void
+		*/
 		function removeFooter() {
 			$this->hasFooter = false ; 
 		}
 		
-		//-------------------------------------------------
-		// Add a line in the table
-		//-------------------------------------------------
+		/** ====================================================================================================================================================
+		* Add a line in your table
+		* For instance
+		* <code>$table = new adminTable() ; <br/> $table->title(array("Col1", "Col2", "Col3") ) ; <br/> $cel1 = new adminCell("Cel1-1") ; <br/> $cel1 = new adminCell("Cel1-2") ; <br/> $cel1 = new adminCell("Cel1-3") ; <br/> $table->add_line(array($cel1, $cel2, $cel3), '1') ; <br/> echo $table->flush() ; </code>
+		* This code will display a table with a unique line
+		* 
+		* @param array $array it is an array of adminCell object. The length of this array is the same size of the number of your columns
+		* @param id $id it is the id of this line. It is useful when you add an action on a cell
+		* @see adminCell::adminCell
+		* @see adminCell:add_action
+		* @return void
+		*/
 		function add_line($array, $id) {
 			$n = 1 ; 
 			foreach ($array as $a) {
@@ -65,9 +87,11 @@ if (!class_exists("adminTable")) {
 			$this->content[] = $array ; 
 		}
 		
-		//-------------------------------------------------
-		// Print the designed table
-		//-------------------------------------------------
+		/** ====================================================================================================================================================
+		* Return the table HTML code. You just have to echo it
+		* 
+		* @return string the HTML code of the table
+		*/
 		function flush() {
 			ob_start() ; 
 			//
@@ -165,10 +189,8 @@ if (!class_exists("adminTable")) {
 	} 
 }
 
-/** ====================================================================================================================================================
-* Admin cell class 
-* 
-* @return void
+/** =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+* This PHP class create cells to be used with the adminTable::add_line method
 */
 if (!class_exists("adminCell")) {
 	class adminCell  {
@@ -177,15 +199,42 @@ if (!class_exists("adminCell")) {
 		var $idLigne ;
 		var $idCol ;
 		
+		/** ====================================================================================================================================================
+		* Create the cells object
+		* 
+		* @param string $content the HTML code to be displayed in the cell
+		* @return adminCell the object
+		*/
 		function adminCell($content) {
 			$this->content = $content ; 
 			$this->action = array() ;
 		}
 		
+		/** ====================================================================================================================================================
+		* To add a javascript action on this cell.
+		* An action a small link at the bottom of the cell which call a javascript action when it is clicked
+		* For instance :  
+		* <code>$cel1 = new adminCell("content cell") ; <br/ > $cel1->add_action("Delete", "deleteFunction") ; </code>
+		*with the following javascript code in the js/js_admin.js file to call a PHP function (deletePHP) in AJAX
+		*<code>function deleteFunction (element) { <br/>&nbsp; &nbsp; &nbsp;// Get the id of the line <br/>&nbsp; &nbsp; &nbsp;var idLine = element.getAttribute("id"); <br/>&nbsp; &nbsp; &nbsp;// Prepare the argument for the AJAX call <br/>&nbsp; &nbsp; &nbsp;var arguments = { <br/>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;action: 'deletePHP',  <br/>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;id : idLine <br/>&nbsp; &nbsp; &nbsp;}  <br/>&nbsp; &nbsp; &nbsp;//POST the data  <br/>&nbsp; &nbsp; &nbsp;jQuery.post(ajaxurl, arguments, function(response) { <br/>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;// The call is finished <br/>&nbsp; &nbsp; &nbsp;});  <br/>}</code>
+		* and do not forget to add a <code>add_action('wp_ajax_deletePHP', array($this,'deletePHP'));</code> in the <code>_init</code> function of your plugin
+		*
+		* @param string $name the text of the link to be displayed
+		* @param string $javascript_function the name of the function to be called when the link is clicked
+		* @return adminCell the cell object
+		*/
+
 		function add_action($name, $javascript_function) {
 			$this->action[] = array($name, $javascript_function) ;
 		}
 		
+		/** ====================================================================================================================================================
+		* Print the cell HTML code. 
+		* This function is not to be called from the plugin. It is called in the table class
+		* 
+		* @access private
+		* @return void
+		*/
 		function flush() {
 		
 ?>								<td class="column-columnname">
