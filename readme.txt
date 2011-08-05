@@ -33,7 +33,7 @@ You can configure:
 
 == Screenshots ==
 
-1. The synthesis of the chortling (and administration)
+1. The synthesis of the short link generated for your post and page
 2. The configuration page of the plugin
 
 == Changelog ==
