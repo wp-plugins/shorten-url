@@ -55,7 +55,7 @@ if (!class_exists("phpDoc")) {
 			}
 			
 			$c = array() ; 
-
+			
 			foreach($matches as $id => $cl){
 				
 				$methods = get_class_methods($cl) ;  

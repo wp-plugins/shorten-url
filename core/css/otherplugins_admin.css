@@ -1,0 +1,19 @@
+div.screenshot_wordpress {
+	border: 1px solid #999999;
+	margin: 3px 3px;
+	padding:10px 10px 10px 10px;
+	position:relative;
+	float:left ; 
+}
+
+div.screenshot_wordpress .screenshot {
+  /* Code standard */ 
+  max-width: 200px; 
+  max-height: 200px; 
+ 
+  /* Code spécial IE */ 
+  _width: expression((this.offsetWidth>=this.offsetHeight) ? 
+      Math.min(parseInt(this.offsetWidth), 200 ) : true); 
+  _height: expression((this.offsetHeight>this.offsetWidth) ? 
+      Math.min(parseInt(this.offsetHeight), 200 ) : true);
+}

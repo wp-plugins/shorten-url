@@ -9,11 +9,11 @@ Requires at least: 3.0
 Tested up to: 3.2
 Stable tag: trunk
 
-Shorten url for internal articles, posts and pages
+Shorten url for internal posts/pages, and for external link too.
 
 == Description ==
 
-Create a short link which looks like the bit.ly (TM) link.
+Create short links which are like the bit.ly (TM) link.
 
 Instead of having a short link like http://www.yourdomain.com/?p=3564, your short link will be http://www.yourdomain.com/NgH5z (for instance).
 
@@ -22,6 +22,8 @@ You can configure:
 * the length of the short link,
 * if the link is prefixed with a static word,
 * the characters used for the short link.
+
+Moreover, you can add external links. These links will be automatiocally replace by the short link in your posts.
 
 == Installation ==
 
@@ -38,12 +40,15 @@ You can configure:
 
 == Changelog ==
 
+= 1.1.0 =
+* You can add any shortlink you want (i.e. with external links)
+* Add translation for French
+
 = 1.0.2 =
 * Upgrade of the framework (version 3.0)
 
 = 1.0.1 =
 * First release in the wild web (enjoy)
-
 
 == Frequently Asked Questions ==
 
@@ -51,5 +56,5 @@ You can configure:
 
 Visit http://www.sedlex.fr/cote_geek/
 
-
-
+ 
+InfoVersion:5f4814f0c77b8dc9de02da44b8563971

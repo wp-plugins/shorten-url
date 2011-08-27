@@ -120,14 +120,14 @@ if (!class_exists("Utils")) {
 			$size = $bytes / 1024;
 			if($size < 1024) {
 				$size = number_format($size, 2);
-				$size .= ' KB';
+				$size .= ' '.__('KB', 'SL_framework');
 			} else {
 				if($size / 1024 < 1024)  {
 					$size = number_format($size / 1024, 2);
-					$size .= ' MB';
+					$size .= ' '.__('MB', 'SL_framework');
 				} else if ($size / 1024 / 1024 < 1024)  {
 					$size = number_format($size / 1024 / 1024, 2);
-					$size .= ' GB';
+					$size .= ' '.__('GB', 'SL_framework');
 				} 
 			}
 			return $size;
@@ -156,7 +156,6 @@ if (!class_exists("Utils")) {
 
 				}
 				$col_uniq[] = $ligne ; 
-
 			}
     		
 			// We sort
@@ -179,7 +178,9 @@ if (!class_exists("Utils")) {
 
 		static function copy_rec( $source, $destination ) {
 			if ( is_dir( $source ) ) {
+				chmod($source, 0755) ; 
 				@mkdir( $destination );
+				chmod($destination, 0755) ; 
 				$directory = dir( $source );
 				while ( FALSE !== ( $readdirectory = $directory->read() ) ) {
 					if ( $readdirectory == '.' || $readdirectory == '..' ) {
@@ -208,21 +209,67 @@ if (!class_exists("Utils")) {
 
 		static function rm_rec($path) {
 			if (is_dir($path)) {
+				chmod($path, 0755) ; 
 				$objects = scandir($path);
 				foreach ($objects as $object) {
 					if ($object != "." && $object != "..") {
 						if (filetype($path."/".$object) == "dir") 
 							Utils::rm_rec($path."/".$object); 
 						else 
-							unlink($path."/".$object);
+							@unlink($path."/".$object);
 					}
 				}
 				reset($objects);
 				rmdir($path);
 			} else {
-				unlink($path) ; 
+				@unlink($path) ; 
 			}
 		}
+		
+		/** ====================================================================================================================================================
+		*Compute the md5 of a file or a directory (recursively)
+		* 
+		* @param string $path the path to compute hash
+		* @param array $exclu a list of filename/folder to exclude from the hash
+		* @return string md5 hash
+		*/
+
+		static function md5_rec($path, $exclu=array()) {
+			$md5 = "" ;  
+			$text = "" ; 
+			if (is_dir($path)) {
+				chmod($path, 0755) ; 
+				$objects = scandir($path);
+				foreach ($objects as $object) {
+					if ($object != "." && $object != "..") {
+						if (filetype($path."/".$object) == "dir") {
+							$toexclu = false ; 
+							foreach($exclu as $e) {
+								if ($e==$object) {
+									$toexclu = true ; 
+								}
+							}
+							if (!$toexclu)  
+								$text .= Utils::md5_rec($path."/".$object); 
+						} else {
+							$toexclu = false ; 
+							foreach($exclu as $e) {
+								if ($e==$object) {
+									$toexclu = true ;
+								}
+							}
+							if (!$toexclu) 
+								$text .= $object.file_get_contents($path."/".$object);
+						}
+					}
+				}
+				$md5 = md5($text) ; 
+			} else {
+				$md5 = md5(file_get_contents($path)) ; 
+			}
+			return $md5 ; 
+		}
+		
 
 	} 
 }

@@ -1,0 +1,319 @@
+msgid ""
+msgstr ""
+"Generated: SL Framework (http://www.sedlex.fr)\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2011-08-25T16:43:05+00:00\n"
+"Last-Translator: SedLex <http://www.sedlex.fr/>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n>1;\n"
+"X-Poedit-Language: French\n"
+"X-Poedit-Country: France\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;\n"
+"X-Poedit-Basepath: \n"
+"X-Poedit-Bookmarks: \n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Textdomain-Support: yes\n"
+
+msgid "About..."
+msgstr "A propos..."
+
+msgid "Settings"
+msgstr "Réglages"
+
+msgid "The advanced options and output will be displayed now !"
+msgstr "Les options et affichages avancés seront affichés à partir de maintenant !"
+
+msgid "The advanced options and output will be hidden now !"
+msgstr "Les options et affichages avancés seront masqués à partir de maintenant !"
+
+msgid "The developpers documentations will be displayed now !"
+msgstr "La documentation pour développeurs sera affichée à partir de maintenant !"
+
+msgid "The developpers documentations will be hidden now !"
+msgstr "La documentation pour développeurs sera masquée à partir de maintenant !"
+
+msgid "%s has been updated with %s !"
+msgstr "%s a été mis à jour avec %s"
+
+msgid "Please click %shere%s to refresh the page and ensure everything is ok!"
+msgstr "Merci de cliquer %sici%s afin de rafraichir la page et de s&#039;assurer que tout fonctionne bien !"
+
+msgid "Summary page for the plugins developped with the SL framework"
+msgstr "Page de synthèse pour les plugins développés avec le framework SL"
+
+msgid "The core file used for the SedLex plugins is:"
+msgstr "Le fichier principal utilisé par les plugins SL est : "
+
+msgid "For now, you have installed %d  plugins including %d plugins developped with the 'SL framework':"
+msgstr "Pour l&#039;instant, vous avez installé %d plugin, dont %d plugins développés avec le framework SL"
+
+msgid "Plugin name"
+msgstr "Nom du plugin"
+
+msgid "Description"
+msgstr "Description"
+
+msgid "Status of the core"
+msgstr "Status du core"
+
+msgid "An Unexpected HTTP Error occurred during the API request."
+msgstr "Une erreur HTTP inattendue est survenue durant la requête API."
+
+msgid "This plugin does not seem to be hosted on the wordpress repository."
+msgstr "Ce plugin ne semble pas être hébergé par Wordpress"
+
+msgid "This plugin is hosted by wordpress repository and is not up-to-date ! (i.e. %s)"
+msgstr "Ce plugin est hébergé par Wordpress et n&#039;est pas à jour (i.e. %s) !"
+
+msgid "(the repository)"
+msgstr "(le dépôt)"
+
+msgid "This plugin is hosted by wordpress repository with the same version but the plugin is not exactly the same"
+msgstr "Ce plugin est hébergé par Wordpress avec la même version mais le plugin n&#039;est pas tout à fait identique."
+
+msgid "This plugin is hosted by wordpress repository and is up-to-date !"
+msgstr "Ce plugin est hébergé par Wordpress et est à jour !"
+
+msgid "Last update:"
+msgstr "Dernière mise à jour"
+
+msgid "by %s persons"
+msgstr "par %s personnes"
+
+msgid "Rating:"
+msgstr "Evaluation : "
+
+msgid "Number of download:"
+msgstr "Nombre de téléchargement"
+
+msgid "Version: %s by %s"
+msgstr "Version %s par %s"
+
+msgid "Update with the core of the %s plugin (only if you definitely know what you do)"
+msgstr "Mettre à jour le core du plugin (seulement si vous savez ce que vous faites)"
+
+msgid "This core is currently used by the framework and plugins !"
+msgstr "Ce core est actuellement utilisé par le framework et les plugins !"
+
+msgid "Show the advanced options and parameters:"
+msgstr "Montrer les options et affichages avancés"
+
+msgid "Show the developpers documentation:"
+msgstr "Montrer la documentation pour développeurs"
+
+msgid "List of SL plugins"
+msgstr "Liste des plugins SL"
+
+msgid "The following description is a quick tutorial on about how to create a plugin with the SL framework. (Please note that the following description is in English for developpers, sorry for this inconvenience)"
+msgstr "La description qui suit est un rapide tutorial à propos de la création d&#039;un plugin avec le framework SL. (La suite de la description est en anglais pour les développeurs. Nous sommes désolé de la gène occasionnée)"
+
+msgid "How to create a new Plugin with the SL framework"
+msgstr "Comment développer un nouveau plugin avec le framework SL"
+
+msgid "Framework documentation"
+msgstr "Documentation du framework"
+
+msgid "Manage translation of the framework"
+msgstr "Gérer les traductions du framework"
+
+msgid "Please find hearafter all the possible classes and methods for the development with this framework"
+msgstr "Voici ci-après les classes et méthodes pour le développement avec ce framework."
+
+msgid "[CLASS]"
+msgstr "[CLASSE]"
+
+msgid "Here is the method of the class:"
+msgstr "Voici les méthodes de la classe:"
+
+msgid "[METHOD]"
+msgstr "[METHODE]"
+
+msgid "Description:"
+msgstr "Description :"
+
+msgid "Parameters:"
+msgstr "Paramètres :"
+
+msgid "[optional]"
+msgstr "[optionnelle]"
+
+msgid "(by default, its value is:"
+msgstr "(par défaut, sa valeur est :"
+
+msgid "No param"
+msgstr "Pas de paramètre"
+
+msgid "Return value:"
+msgstr "Valeur de retour :"
+
+msgid "Typical call:"
+msgstr "Exemple d&#039;appel :"
+
+msgid "See also:"
+msgstr "Voir aussi :"
+
+msgid "Version of"
+msgstr "Version de"
+
+msgid "bytes"
+msgstr "octets"
+
+msgid "MD5 fingerprint of the framework:"
+msgstr "Empreinte MD5 du framework:"
+
+msgid "Last update of the core: %s at %s"
+msgstr "Dernière mise à jour du core : %s à %s"
+
+msgid "The available translation for the SL framework (contained in the '%s' folder)"
+msgstr "La traduction disponible pour le framework SL (contenu dans le répertoire &#039;%s&#039;)"
+
+msgid "There is %d languages supported for the 'SL framework'."
+msgstr "Il y a %d langues supportées par le framework SL."
+
+msgid "There is %d sentence to be translated in the framework."
+msgstr "Il y a %d phrases à traduire dans le framework."
+
+msgid "The available translation for this plugin"
+msgstr "La traduction disponible pour le plugin"
+
+msgid "There is %d languages supported for this plugin."
+msgstr "Il y a %d langues supportées par ce plugin."
+
+msgid "There is %d sentence to be translated in this plugin."
+msgstr "Il y a %d phrases à traduire dans ce plugin."
+
+msgid "Language"
+msgstr "Langues"
+
+msgid "Ratio %"
+msgstr "Ratio %"
+
+msgid "Translators"
+msgstr "Traducteurs"
+
+msgid "Modify"
+msgstr "Modifier"
+
+msgid "Send to the author of the framework"
+msgstr "Envoyer à l&#039;auteur du framework"
+
+msgid "Send to the author of the plugin"
+msgstr "Envoyer à l&#039;auteur du plugin"
+
+msgid "Add a new translation"
+msgstr "Ajouter une nouvelle traduction"
+
+msgid "You may add a new translation hereafter (Please note that it is recommended to send your translation to the author so that he would be able to add your translation to the future release of the plugin !)"
+msgstr "Vous pouvez ajouter une nouvelle traduction ci-après (il est recommandé d&#039;envoyer votre traduction à l&#039;auteur afin qu&#039;il puisse l&#039;ajouter dans la prochaine version du plugin !)"
+
+msgid "Add"
+msgstr "Ajouter"
+
+msgid "Adding a new translation for this language:"
+msgstr "Ajouter une nouvelle traduction pour cette langue : "
+
+msgid "Sentence to translate"
+msgstr "Phrase à traduire"
+
+msgid "Translation"
+msgstr "Traduction"
+
+msgid "Your name:"
+msgstr "Votre nom:"
+
+msgid "(if your name/pseudo is already in the list, there is no need to fill this input)"
+msgstr "(si votre nom/pseudo est déja dans la list, il n&#039;est pas nécessiare de remplir ces champs)"
+
+msgid "Your email or your website:"
+msgstr "Votre email ou votre site internet :"
+
+msgid "Create the translation files"
+msgstr "Créer les fichiers de traduction"
+
+msgid "Modifying the translation for this language:"
+msgstr "Modifier la traduction pour cette langue"
+
+msgid "Modify the translation files"
+msgstr "Modifier les fichiers de traduction"
+
+msgid "%s sentences have been translated (i.e. %s)."
+msgstr "%s phrases ont été traduites (c&#039;est à dire %s)"
+
+msgid "The translation %s have been sent"
+msgstr "La traduction %s a été envoyée"
+
+msgid "An error occured sending the email."
+msgstr "Une erreur est survenue lors de l&#039;envoi du mail"
+
+msgid "Make sure that your wordpress is able to send email."
+msgstr "Verifier que votre wordpress est en capacité d&#039;envoyer des mails"
+
+msgid "%s file has been updated for %s"
+msgstr "Le fichier %s a été mis à jour pour %s"
+
+msgid "%s file has been updated from this file"
+msgstr "Le fichier %s a été mis à jour à partir de ce fichier"
+
+msgid "%s file has been created with a new translation for %s"
+msgstr "Le fichier %s a été créé pour %s"
+
+msgid "%s file has been created from this file"
+msgstr "Le fichier %s a été créé à partir de ce fichier"
+
+msgid "Homepage:"
+msgstr "Page d&#039;accueil :"
+
+msgid "KB"
+msgstr "ko"
+
+msgid "MB"
+msgstr "Mo"
+
+msgid "GB"
+msgstr "Go"
+
+msgid "Error: the submitted value is not an integer and thus, the parameter has not been updated!"
+msgstr "Erreur : la valeur soumises n&#039;est pas un entier, la valeur du paramètre n&#039;est donc pas mise à jour"
+
+msgid "Warning: some characters have been removed because they are not allowed here"
+msgstr "Attention : certains caractères ont été supprimés car ils ne sont pas autorisés ici"
+
+msgid "Error: the submitted string does not match the constrains"
+msgstr "Erreur : la chaine de caractère soumise ne respecte pas les contraines imposées"
+
+msgid "Update"
+msgstr "Mise à jour"
+
+msgid "Some parameters have not been updated due to errors (see below) !"
+msgstr "Des paramètres n&#039;ont pas été mis à jour à cause d&#039;erreurs (voir ci-dessous) !"
+
+msgid "Parameters have been updated (but with some warnings) !"
+msgstr "Les paramètres on été mis à jour (mais avec des avertissements) !"
+
+msgid "Parameters have been updated successfully !"
+msgstr "Les paramètres ont été mis à jour avec succès !"
+
+msgid "Your email (for response):"
+msgstr "Votre email (pour la réponse) : "
+
+msgid "Your comments:"
+msgstr "Vos commentaires : "
+
+msgid "Please note that additional information on your wordpress installation will be sent to the author in order to help the debugging if needed (such as : the wordpress version, the installed plugins, etc.)"
+msgstr "Merci de noter que des informations complémentaires relatives à votre installation de wordpress seront envoyées à l&#039;auteur afin d&#039;aider la correction des erreurs(comme la version de wordpress, la liste des plugins installés, etc.)"
+
+msgid "Send feedback"
+msgstr "Envoyer vos commentaires"
+
+msgid "No email have been provided for the author of this plugin. Therefore, the feedback is impossible"
+msgstr "Aucun email n&#039;a été communiqué par l&#039;auteur de ce plugin. Aucun feedback n&#039;est donc possible."
+
+msgid "The feedback has been sent"
+msgstr "Le feedback a été envoyé"
+

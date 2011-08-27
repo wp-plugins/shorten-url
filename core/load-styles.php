@@ -43,7 +43,11 @@ foreach( $load as $handle ) {
 		$out .=  "/*====================================================*/\n";
 
 		$plugin = explode("/", str_replace('__',"/",$handle)) ; 
-		$out .= str_replace( '../img/', '../../'.$plugin[0].'/img/', $content );
+		if (strpos($path,'/core/css')===false) {
+			$out .= str_replace( '../img/', '../../'.$plugin[0].'/img/', $content );
+		} else {
+			$out .= str_replace( '../img/', '../../'.$plugin[0].'/core/img/', $content );			
+		}
 	} else {
 		$md5 = preg_replace( '/[^a-z0-9]+/i', '', $handle);
 		$out .=  "\n/*====================================================*/\n";

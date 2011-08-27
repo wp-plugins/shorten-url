@@ -11,6 +11,7 @@ if (!class_exists("adminTabs")) {
 	class adminTabs  {
 		var $title ; 
 		var $content ; 
+		var $activated ; 
 		
 		/** ====================================================================================================================================================
 		* Constructor of the class
@@ -20,6 +21,7 @@ if (!class_exists("adminTabs")) {
 		function adminTabs() {	
 			$this->title = array() ; 
 			$this->content = array() ; 
+			$this->activated = 0 ; 
 		}
 		
 		/** ====================================================================================================================================================
@@ -37,6 +39,17 @@ if (!class_exists("adminTabs")) {
 		}
 		
 		/** ====================================================================================================================================================
+		* Change the tabs activated by default (normally it is the first tab i.e. 1)
+		* 1 is the first, 2 is the second, etc.
+		* 
+		* @param integer $nb the tabultaion index to activate
+		* @return void
+		*/
+		function activate($nb) {
+			$this->activated = $nb-1 ; 
+		}
+		
+		/** ====================================================================================================================================================
 		* Print the tabulation HTML code. 
 		* 
 		* @return void
@@ -45,7 +58,13 @@ if (!class_exists("adminTabs")) {
 			ob_start() ; 
 			$rnd = rand(1, 100000) ; 
 ?>
-			<script>jQuery(function($){ $('#tabs<?php echo $rnd ; ?>').tabs(); }) ; </script>		
+			<script>
+				jQuery(function($){ 
+					$tabs<?php echo $rnd ; ?> = $('#tabs<?php echo $rnd ; ?>').tabs();  
+					$tabs<?php echo $rnd ; ?>.tabs('select', <?php echo ($this->activated) ?>) ; 
+				}) ; 
+			</script>		
+			
 			<div id="tabs<?php echo $rnd ; ?>">
 				<ul class="hide-if-no-js">
 <?php

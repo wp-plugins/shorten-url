@@ -6,6 +6,8 @@ Version: 1.0.0
 Framework: SL_Framework
 Author: The name of the author
 Author URI: http://www.yourdomain.com/
+Author Email: youremail@yourdomain.com
+Framework Email: sedlex@sedlex.fr
 Plugin URI: http://wordpress.org/extend/plugins/my-plugin/
 License: GPL3
 */
@@ -129,7 +131,8 @@ class my_plugin extends pluginSedLex {
 		<div class="wrap">
 			<div id="icon-themes" class="icon32"><br></div>
 			<h2><?php echo $this->pluginName ?></h2>
-			
+		</div>
+		<div style="padding:20px;">			
 			<?php
 			//===============================================================================================
 			// After this comment, you may modify whatever you want
@@ -198,6 +201,25 @@ class my_plugin extends pluginSedLex {
 			$params->add_param('opt4', 'Modify opt4:') ; 
 			
 			$params->flush() ; 
+			
+			
+			$tabs = new adminTabs() ; 
+			
+			ob_start() ; 
+				$plugin = str_replace("/","",str_replace(basename(__FILE__),"",plugin_basename( __FILE__))) ; 
+				$trans = new translationSL($this->pluginID, $plugin) ; 
+				$trans->enable_translation() ; 
+			$tabs->add_tab(__('Manage translations',  $this->pluginID), ob_get_clean() ) ; 	
+
+			ob_start() ; 
+				echo __('This form is an easy way to contact the author and to discuss issues / incompatibilities / etc.',  $this->pluginID) ; 
+				$plugin = str_replace("/","",str_replace(basename(__FILE__),"",plugin_basename( __FILE__))) ; 
+				$trans = new feedbackSL($plugin) ; 
+				$trans->enable_feedback() ; 
+			$tabs->add_tab(__('Give feedback',  $this->pluginID), ob_get_clean() ) ; 	
+			
+			echo $tabs->flush() ; 
+			
 			
 			// Before this comment, you may modify whatever you want
 			//===============================================================================================

@@ -1,0 +1,128 @@
+Content-Transfer-Encoding: 8bit
+
+#: shorten-url.php:115
+#@ shorturl
+msgid "This plugin helps you sharing your post with short-links."
+msgstr ""
+
+#: shorten-url.php:140
+#@ shorturl
+msgid "Title of your posts"
+msgstr ""
+
+#: shorten-url.php:140
+#: shorten-url.php:202
+#@ shorturl
+msgid "Short URL"
+msgstr ""
+
+#: shorten-url.php:165
+#@ shorturl
+msgid "Results for Posts URL"
+msgstr ""
+
+#: shorten-url.php:202
+#@ shorturl
+msgid "External URL"
+msgstr ""
+
+#: shorten-url.php:221
+#@ shorturl
+msgid "External URL:"
+msgstr ""
+
+#: shorten-url.php:224
+#: shorten-url.php:228
+#@ shorturl
+msgid "Add a new URL to shorten"
+msgstr ""
+
+#: shorten-url.php:231
+#@ shorturl
+msgid "Results for External URL"
+msgstr ""
+
+#: shorten-url.php:235
+#: shorten-url.php:253
+#@ shorturl
+msgid "Parameters"
+msgstr ""
+
+#: shorten-url.php:236
+#@ shorturl
+msgid "Here is the parameters of the plugin. Please modify them at your convenience."
+msgstr ""
+
+#: shorten-url.php:237
+#@ shorturl
+msgid "(Please note that the parameters will only be taken in account only for generation of new links)"
+msgstr ""
+
+#: shorten-url.php:241
+#@ shorturl
+msgid "Do you want to use the following characters?"
+msgstr ""
+
+#: shorten-url.php:242
+#@ shorturl
+msgid "Low-case characters ([a-z]):"
+msgstr ""
+
+#: shorten-url.php:243
+#@ shorturl
+msgid "Upper-case characters ([A-Z]):"
+msgstr ""
+
+#: shorten-url.php:244
+#@ shorturl
+msgid "Numeric characters ([0-9]):"
+msgstr ""
+
+#: shorten-url.php:246
+#@ shorturl
+msgid "Do you want to use a prefix before your short URL?"
+msgstr ""
+
+#: shorten-url.php:247
+#@ shorturl
+msgid "Prefix:"
+msgstr ""
+
+#: shorten-url.php:249
+#@ shorturl
+msgid "What is the length of your short URL (without the prefix)?"
+msgstr ""
+
+#: shorten-url.php:250
+#@ shorturl
+msgid "Length:"
+msgstr ""
+
+#: shorten-url.php:259
+#: core/templates/my-plugin.php:212
+#@ shorturl
+msgid "Manage translations"
+msgstr ""
+
+#: shorten-url.php:262
+#: core/templates/my-plugin.php:215
+#@ shorturl
+msgid "This form is an easy way to contact the author and to discuss issues / incompatibilities / etc."
+msgstr ""
+
+#: shorten-url.php:266
+#: core/templates/my-plugin.php:219
+#@ shorturl
+msgid "Give feedback"
+msgstr ""
+
+#: shorten-url.php:269
+#@ shorturl
+msgid "Here is the plugins developped by the author"
+msgstr ""
+
+#: shorten-url.php:272
+#@ shorturl
+msgid "Other possible plugins"
+msgstr ""
+

@@ -126,7 +126,7 @@ if (!class_exists("parametersSedLex")) {
 						$this->obj->set_param($param, (int)$_POST[$param]) ; 
 						$this->modified = true ; 
 					} else {
-						$problem_e .= "<p>Error: the submitted value is not an integer and thus, the parameter has not been updated!</p>\n" ; 
+						$problem_e .= "<p>".__('Error: the submitted value is not an integer and thus, the parameter has not been updated!', 'SL_framework')."</p>\n" ; 
 						$this->error = true ; 
 					}
 				} 
@@ -139,12 +139,12 @@ if (!class_exists("parametersSedLex")) {
 					} 
 
 					if ($tmp!=$_POST[$param]) {
-						$problem_w .= "<p>Warning: some characters have been removed because they are not allowed here (".$forbid.")!</p>\n" ; 
+						$problem_w .= "<p>".__('Warning: some characters have been removed because they are not allowed here', 'SL_framework')." (".$forbid.")!</p>\n" ; 
 						$this->warning = true ; 
 					}
 					
 					if (($allow!="")&&(!preg_match($allow, $_POST[$param]))) {
-						$problem_e .= "<p>Error: the submitted string does not match the constrains (".$allow.")!</p>\n" ; 
+						$problem_e .= "<p>".__('Error: the submitted string does not match the constrains', 'SL_framework')." (".$allow.")!</p>\n" ; 
 						$this->error = true ; 
 					} else {
 						$this->obj->set_param($param, stripslashes($tmp)) ; 
@@ -318,7 +318,7 @@ if (!class_exists("parametersSedLex")) {
 			?>
 					<hr/>
 					<div class="submit">
-						<input type="submit" name="submitOptions" class='button-primary validButton' value="<?php echo __('Update', $this->pluginID) ?>" />
+						<input type="submit" name="submitOptions" class='button-primary validButton' value="<?php echo __('Update', 'SL_framework') ?>" />
 					</div>
 				</form>
 			</div>
@@ -330,19 +330,19 @@ if (!class_exists("parametersSedLex")) {
 			if (($this->error) && ($this->maj)) {
 			?>
 			<div class="error fade">
-				<p><?php echo __('Some parameters have not been updated due to errors (see below) !', $this->pluginID) ?></p>
+				<p><?php echo __('Some parameters have not been updated due to errors (see below) !', 'SL_framework') ?></p>
 			</div>
 			<?php
 			} else if (($this->warning) && ($this->maj)) {
 			?>
 			<div class="updated  fade">
-				<p><?php echo __('Parameters have been updated (but with some warnings) !', $this->pluginID) ?></p>
+				<p><?php echo __('Parameters have been updated (but with some warnings) !', 'SL_framework') ?></p>
 			</div>
 			<?php
 			} else if (($this->modified) && ($this->maj)) {
 			?>
 			<div class="updated  fade">
-				<p><?php echo __('Parameters have been updated successfully !', $this->pluginID) ?></p>
+				<p><?php echo __('Parameters have been updated successfully !', 'SL_framework') ?></p>
 			</div>
 			<?php
 			} 

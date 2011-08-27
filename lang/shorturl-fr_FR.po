@@ -1,0 +1,94 @@
+msgid ""
+msgstr ""
+"Generated: SL Framework (http://www.sedlex.fr)\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2011-08-27T20:10:58+00:00\n"
+"Last-Translator: SedLex <http://www.sedlex.fr/>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n>1;\n"
+"X-Poedit-Language: French\n"
+"X-Poedit-Country: France\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;\n"
+"X-Poedit-Basepath: \n"
+"X-Poedit-Bookmarks: \n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Textdomain-Support: yes\n"
+
+msgid "This plugin helps you sharing your post with short-links."
+msgstr "Ce plugin vous permet de partager vos articles avec des liens courts."
+
+msgid "Title of your posts"
+msgstr "Titre de vos articles"
+
+msgid "Short URL"
+msgstr "Lien court"
+
+msgid "Results for Posts URL"
+msgstr "Résultats pour les articles"
+
+msgid "External URL"
+msgstr "URL externes"
+
+msgid "External URL:"
+msgstr "URL externes : "
+
+msgid "Add a new URL to shorten"
+msgstr "Ajouter une nouvelle URL à raccourcir"
+
+msgid "Results for External URL"
+msgstr "Résultats pour les URL externes"
+
+msgid "Parameters"
+msgstr "Paramètres"
+
+msgid "Here is the parameters of the plugin. Please modify them at your convenience."
+msgstr "Voici les paramètres du plugin. Modifier les comme cela vous convient."
+
+msgid "(Please note that the parameters will only be taken in account only for generation of new links)"
+msgstr "(Merci de noter que les paramètres ne seront pris en compte que pour la génération de nouveaux liens)"
+
+msgid "Do you want to use the following characters?"
+msgstr "Quels caractères voulez-vous utiliser ?"
+
+msgid "Low-case characters ([a-z]):"
+msgstr "Minuscules ([a-z]) :"
+
+msgid "Upper-case characters ([A-Z]):"
+msgstr "Majuscules ([A-Z]) :"
+
+msgid "Numeric characters ([0-9]):"
+msgstr "Caractères numériques ([0-9]) :"
+
+msgid "Do you want to use a prefix before your short URL?"
+msgstr "Voulez-vous un préfixe avant le lien court ? "
+
+msgid "Prefix:"
+msgstr "Préfixe :"
+
+msgid "What is the length of your short URL (without the prefix)?"
+msgstr "Quelle est la longueur de votre lien court (sans le préfixe) ? "
+
+msgid "Length:"
+msgstr "Longueur :"
+
+msgid "Manage translations"
+msgstr "Gérer les traductions"
+
+msgid "This form is an easy way to contact the author and to discuss issues / incompatibilities / etc."
+msgstr "Ce formulaire vous permets de contacter l&#039;auteur afin de discuter de problèmes / incompatibilités"
+
+msgid "Give feedback"
+msgstr "Donner un feedback"
+
+msgid "Here is the plugins developped by the author"
+msgstr "Voici les plugins développés par l&#039;auteur"
+
+msgid "Other possible plugins"
+msgstr "Autres plugins possibles"
+

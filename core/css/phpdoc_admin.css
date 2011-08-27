@@ -49,3 +49,11 @@ VersionPhpDocCss : 1.0
 	padding: 0.2em 0.2em 0.2em 10em;
 	margin: 0em;
 }
+
+.li_class {
+	padding : 1px 1px 1px 50px ; 
+}
+
+.li_method {
+	padding : 1px 1px 1px 100px ; 
+}
