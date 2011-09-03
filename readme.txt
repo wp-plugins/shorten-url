@@ -40,6 +40,9 @@ Moreover, you can add external links. These links will be automatiocally replace
 
 == Changelog ==
 
+= 1.1.1 =
+* Ensure that folders and files permissions are correct for an adequate behavior
+
 = 1.1.0 =
 * You can add any shortlink you want (i.e. with external links)
 * Add translation for French
@@ -57,4 +60,4 @@ Moreover, you can add external links. These links will be automatiocally replace
 Visit http://www.sedlex.fr/cote_geek/
 
  
-InfoVersion:5f4814f0c77b8dc9de02da44b8563971
+InfoVersion:c6e44af4b9560f3466f2a9fa65433fd7

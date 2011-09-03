@@ -331,7 +331,7 @@ if (!class_exists('pluginSedLex')) {
 			$url = WP_PLUGIN_URL.'/'.str_replace(basename( $this->path),"",plugin_basename($this->path)) .$name ; 
 			$path = WP_PLUGIN_DIR.'/'.str_replace(basename( $this->path),"",plugin_basename($this->path)) .$name ; 
 			if (file_exists($path)) {
-				if (filesize($path)>0) {
+				if (@filesize($path)>0) {
 					$this->add_js($url) ; 
 				}
 			}
@@ -356,14 +356,16 @@ if (!class_exists('pluginSedLex')) {
 		
 			@chmod(WP_PLUGIN_DIR.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'core/js/', 0755);
 			
-			$dir = opendir(WP_PLUGIN_DIR.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'core/js/'); 
-			while($file = readdir($dir)) {
-				if (preg_match('@\.js$@i',$file)) {
-					$path = WP_PLUGIN_DIR.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'core/js/'.$file ; 
-					$url = WP_PLUGIN_URL.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'core/js/'.$file ; 
-					if (filesize($path)>0) {
-						$this->add_js($url) ; 
-					}				
+			$dir = @opendir(WP_PLUGIN_DIR.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'core/js/'); 
+			if ($dir !== false) {
+				while($file = readdir($dir)) {
+					if (preg_match('@\.js$@i',$file)) {
+						$path = WP_PLUGIN_DIR.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'core/js/'.$file ; 
+						$url = WP_PLUGIN_URL.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'core/js/'.$file ; 
+						if (@filesize($path)>0) {
+							$this->add_js($url) ; 
+						}				
+					}
 				}
 			}
 
@@ -382,7 +384,7 @@ if (!class_exists('pluginSedLex')) {
 			$url = WP_PLUGIN_URL.'/'.str_replace(basename( $this->path),"",plugin_basename($this->path)) .$name ; 
 			$path = WP_PLUGIN_DIR.'/'.str_replace(basename( $this->path),"",plugin_basename($this->path)) .$name ; 
 			if (file_exists($path)) {
-				if (filesize($path)>0) {
+				if (@filesize($path)>0) {
 					$this->add_js($url) ; 
 				}
 			}
@@ -484,7 +486,7 @@ if (!class_exists('pluginSedLex')) {
 			$url = WP_PLUGIN_URL.'/'.str_replace(basename( $this->path),"",plugin_basename($this->path)) .$name ; 
 			$path = WP_PLUGIN_DIR.'/'.str_replace(basename( $this->path),"",plugin_basename($this->path)) .$name ; 
 			if (file_exists($path)) {
-				if (filesize($path)>0) {
+				if (@filesize($path)>0) {
 					$this->add_css($url) ; 
 				}
 			}
@@ -499,21 +501,21 @@ if (!class_exists('pluginSedLex')) {
 		*/
 		
 		public function css_admin_always() {
-		
 			wp_enqueue_style('wp-admin');
 			wp_enqueue_style('dashboard');
 			wp_enqueue_style('plugin-install');
 			
 			@chmod(WP_PLUGIN_DIR.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'core/css/', 0755);
-		
-			$dir = opendir(WP_PLUGIN_DIR.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'core/css/'); 
-			while($file = readdir($dir)) {
-				if (preg_match('@\.css$@i',$file)) {
-					$path = WP_PLUGIN_DIR.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'core/css/'.$file ; 
-					$url = WP_PLUGIN_URL.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'core/css/'.$file ; 
-					if (filesize($path)>0) {
-						$this->add_css($url) ; 
-					}				
+			$dir = @opendir(WP_PLUGIN_DIR.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'core/css/'); 
+			if ($dir!==false) {
+				while($file = readdir($dir)) {
+					if (preg_match('@\.css$@i',$file)) {
+						$path = WP_PLUGIN_DIR.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'core/css/'.$file ; 
+						$url = WP_PLUGIN_URL.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'core/css/'.$file ; 
+						if (@filesize($path)>0) {
+							$this->add_css($url) ; 
+						}			
+					}
 				}
 			}
 		}
@@ -533,7 +535,7 @@ if (!class_exists('pluginSedLex')) {
 			$url = WP_PLUGIN_URL.'/'.str_replace(basename( $this->path),"",plugin_basename($this->path)) .$name ; 
 			$path = WP_PLUGIN_DIR.'/'.str_replace(basename( $this->path),"",plugin_basename($this->path)) .$name ; 
 			if (file_exists($path)) {
-				if (filesize($path)>0) {
+				if (@filesize($path)>0) {
 					$this->add_css($url) ; 
 				}
 			}
@@ -976,7 +978,7 @@ if (!class_exists('pluginSedLex')) {
 				
 				// Stream the file to the client
 				header("Content-Type: application/zip");
-				header("Content-Length: " . filesize($file));
+				header("Content-Length: " . @filesize($file));
 				header("Content-Disposition: attachment; filename=\"".$folder_name.".zip\"");
 				readfile($file);
 				
@@ -1193,7 +1195,7 @@ if (!class_exists('pluginSedLex')) {
 				if (!$ok) {
 					$resultat .= "<p ".$style.">".__('Version of','SL_framework')." 'core.php' : ??" ; 
 				}
-				$resultat .= " (".filesize($path)." ".__('bytes','SL_framework').")</p>" ; 
+				$resultat .= " (".@filesize($path)." ".__('bytes','SL_framework').")</p>" ; 
 			}
 			
 			
@@ -1241,7 +1243,86 @@ if (!class_exists('pluginSedLex')) {
 
 			return $resultat ; 
 		} 
+		
+		/** ====================================================================================================================================================
+		* Ensure that the needed folders are writable by the webserver. 
+		* Will check usual folders and files.
+		* You may add this in your configuration page <code>$this->check_folder_rights( array(array($theFolderToCheck, "rwx")) ) ;</code>
+		* If not a error msg is printed
+		* 
+		* @param array $folders list of array with a first element (the complete path of the folder to check) and a second element (the needed rights "r", "w" or "x" [or a combination of those])
+		* @return void
+		*/
+		
+		public function check_folder_rights ($folders) {
+			$f = array(array(WP_CONTENT_DIR.'/sedlex/',"rwx"), 
+					array(WP_PLUGIN_DIR.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'readme.txt',"rw"), 
+					array(WP_PLUGIN_DIR.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'css/',"rx"), 
+					array(WP_PLUGIN_DIR.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'js/',"rx"), 
+					array(WP_PLUGIN_DIR.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'lang/',"rwx"), 
+					array(WP_PLUGIN_DIR.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'core/',"rx"), 
+					array(WP_PLUGIN_DIR.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'core/img/',"rx"), 
+					array(WP_PLUGIN_DIR.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'core/templates/',"rx"), 
+					array(WP_PLUGIN_DIR.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'core/lang/',"rwx"), 
+					array(WP_PLUGIN_DIR.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'core/js/',"rx"), 
+					array(WP_PLUGIN_DIR.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'core/css/',"rx")) ; 
+			$folders = array_merge($folders, $f) ; 
+			
+			$result = "" ; 
+			foreach ($folders as $f ) {
+				if ( (is_dir($f[0])) || (is_file($f[0])) ) {
+					$readable = is_readable($f[0]) ; 
+					$writable = is_writable($f[0]) ; 
+					$executable = is_executable($f[0]) ; 
+					
+					@chmod($f[0], 0755) ; 
+					
+					$pb = false ; 
+					if ((strpos($f[1], "r")!==false) && (!$readable)) {
+						$pb = true ; 
+					}
+					if ((strpos($f[1], "x")!==false) && (!$executable)) {
+						$pb = true ; 
+					}
+					if ((strpos($f[1], "w")!==false) && (!$writable)) {
+						$pb = true ; 
+					}
+					
+					if ($pb) {
+						if  (is_dir($f[0])) 
+							$result .= "<p>".sprintf(__('The folder %s is not %s !','SL_framework'), "<code>".$f[0]."</code>", "<code>".$f[1]."</code>")."</p>" ; 
+						if  (is_file($f[0])) 
+							$result .= "<p>".sprintf(__('The file %s is not %s !','SL_framework'), "<code>".$f[0]."</code>", "<code>".$f[1]."</code>")."</p>" ; 
+					}
+				} else {
+					// We check if the last have an extension
+					if (strpos(".", basename($f[0]))!==false) {
+						// It is a folder
+						if (!@mkdir($f[0],0755,true)) {
+							$result .= "<p>".sprintf(__('The folder %s does not exists and cannot be created !','SL_framework'), "<code>".$f[0]."</code>")."</p>" ; 
+						}
+					} else {
+						$foldtemp = str_replace(basename($f[0]), "", str_replace(basename($f[0])."/","", $f[0])) ; 
+						// We create the sub folders
+						if ((!is_dir($foldtemp))&&(!@mkdir($foldtemp,0755,true))) {
+							$result .= "<p>".sprintf(__('The folder %s does not exists and cannot be created !','SL_framework'), "<code>".$foldtemp."</code>")."</p>" ; 
+						} else {
+							// We touch the file
+							@chmod($foldtemp, 0755) ; 
+							if (@file_put_contents($f[0], '')===false) {
+								$result .= "<p>".sprintf(__('The file %s does not exists and cannot be created !','SL_framework'), "<code>".$f[0]."</code>")."</p>" ; 
+							}
+						}
+					}
+				}
+			}
+			if ($result != "") {
+				echo "<div class='error fade'><p>".__('There are some issues with folders rights. Please corret them as soon as possible as they could induce bugs and instabilities.','SL_framework')."</p><p>".__('Please see below:','SL_framework')."</p>".$result."</div>" ; 
+			}
+			
+		}
 	}
+
 }
 
 

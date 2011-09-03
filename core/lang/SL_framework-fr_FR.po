@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2011-08-25T16:43:05+00:00\n"
+"PO-Revision-Date: 2011-09-03T18:28:45+00:00\n"
 "Last-Translator: SedLex <http://www.sedlex.fr/>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -169,6 +169,24 @@ msgstr "Empreinte MD5 du framework:"
 
 msgid "Last update of the core: %s at %s"
 msgstr "Dernière mise à jour du core : %s à %s"
+
+msgid "The folder %s is not %s !"
+msgstr "Le répertoire %s n&#039;est pas %s !"
+
+msgid "The file %s is not %s !"
+msgstr "Le fichier %s n&#039;est pas %s !"
+
+msgid "The folder %s does not exists and cannot be created !"
+msgstr "Le répertoire %s n&#039;existe pas et ne peut pas être créer !"
+
+msgid "The file %s does not exists and cannot be created !"
+msgstr "Le fichier %s n&#039;existe pas et ne peux pas être créer !"
+
+msgid "There are some issues with folders rights. Please corret them as soon as possible as they could induce bugs and instabilities."
+msgstr "Il y a des problèmes avec les droits des répertoires. Merci de les corriger dès que possible afin d&#039;éviter des bugs et des instabilités."
+
+msgid "Please see below:"
+msgstr "Merci de voir ci-dessous :"
 
 msgid "The available translation for the SL framework (contained in the '%s' folder)"
 msgstr "La traduction disponible pour le framework SL (contenu dans le répertoire &#039;%s&#039;)"
