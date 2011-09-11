@@ -40,6 +40,11 @@ Moreover, you can add external links. These links will be automatiocally replace
 
 == Changelog ==
 
+= 1.1.2 =
+* Replacing the word "force" into "edit" (trevor's suggestion)
+* When forcing an url, you may use a-zA-Z0-9.-_ characters (trevor's suggestion)
+* ZipArchive class has been suppressed and pclzip is used instead
+
 = 1.1.1 =
 * Ensure that folders and files permissions are correct for an adequate behavior
 
@@ -60,4 +65,4 @@ Moreover, you can add external links. These links will be automatiocally replace
 Visit http://www.sedlex.fr/cote_geek/
 
  
-InfoVersion:c6e44af4b9560f3466f2a9fa65433fd7
+InfoVersion:b8be4c7a4993b93a213208577c4646ee

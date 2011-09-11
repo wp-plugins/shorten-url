@@ -270,7 +270,7 @@ if (!class_exists("translationSL")) {
 			} else {
 				echo "<h3>".__("The available translation for this plugin",'SL_framework')."</h3>" ; 
 				echo "<p>".sprintf(__("There is %d languages supported for this plugin.",'SL_framework'),$nb)."</p>" ; 
-
+				
 				// We count the number of sentences to be translated
 				$content_pot = file($path."/lang/".$domain.".pot") ;
 				$all_count_pot = 0 ; 
@@ -280,6 +280,7 @@ if (!class_exists("translationSL")) {
 					}
 				}
 				echo "<p>".sprintf(__("There is %d sentence to be translated in this plugin.",'SL_framework'),$all_count_pot)."</p>" ; 	
+				echo "<p><img src='".WP_PLUGIN_URL."/".$plugin."/core/img/info.png'/>".sprintf(__("Please note that the translation for the framework is available in the %s submenu (see the %s tab).",'SL_framework'),"<em>'<a href='".add_query_arg(array('page'=>'sedlex.php'))."'>".__('About...','SL_framework')."</a>'</em> ", "'<em>".__('Manage translation of the framework','SL_framework')."</em>'")."</p>" ; 	
 
 				
 				
@@ -411,7 +412,7 @@ if (!class_exists("translationSL")) {
 				$path = WP_PLUGIN_DIR."/".$plugin ; 
 			}
 
-			echo "<h3>".__('Adding a new translation for this language:','SL_framework')." $native ($code)</h3>" ; 
+			echo "<h3>".sprintf(__('Adding a new translation for this language: %s','SL_framework'),"$native ($code)")."</h3>" ; 
 			
 			// Create the table
 			$table = new adminTable() ;
@@ -469,7 +470,7 @@ if (!class_exists("translationSL")) {
 				$path = WP_PLUGIN_DIR."/".$plugin ; 
 			}	
 			
-			echo "<h3>".__('Modifying the translation for this language:','SL_framework')." $native ($lang)</h3>" ; 
+			echo "<h3>".sprintf(__('Modifying the translation for this language: %s','SL_framework'), "$native ($lang)")."</h3>" ; 
 			
 			// Create the table
 			$table = new adminTable() ;
@@ -805,6 +806,33 @@ if (!class_exists("translationSL")) {
 					echo "<p>".sprintf(__("%s file has been created from this file", 'SL_framework'), "<code>".$domain ."-".$lang.".mo</code>")."</p>" ; 								
 				}
 			}
+			// We propose to send the translation
+			
+			$info_file = pluginSedLex::get_plugins_data(WP_PLUGIN_DIR."/".$plugin."/".$plugin.".php") ; 
+			$isEmailAuthor = false ; 
+			if (strpos($domain,"SL_framework")!==false) {
+				if (preg_match("#^[a-z0-9-_.]+@[a-z0-9-_.]{2,}\.[a-z]{2,4}$#",$info_file['Framework_Email'])) {
+					$isEmailAuthor = true ; 
+				}				
+			} else {
+				if (preg_match("#^[a-z0-9-_.]+@[a-z0-9-_.]{2,}\.[a-z]{2,4}$#",$info_file['Email'])) {
+					$isEmailAuthor = true ; 
+				}
+			}
+			if ($isEmailAuthor) {
+				if (strpos($domain,"SL_framework")!==false) {
+					$url_to_send  ="<a href='#' onclick='send_trans(\"".$plugin."\",\"SL_framework\", \"".$lang."\")'>" ; 
+					$url_to_send2  ="</a>" ; 
+					echo "<p><img src='".WP_PLUGIN_URL."/".$plugin."/core/img/info.png'/>".sprintf(__("If you do not want to loose your translations on the next upgrading of this plugin, it is recommended to send the translation files to the author by clicking %s here %s !"), $url_to_send, $url_to_send2)."</p>";
+				} else {
+					$url_to_send  ="<a href='#' onclick='send_trans(\"".$plugin."\",\"".$domain."\", \"".$lang."\")'>" ; 
+					$url_to_send2  ="</a>" ; 
+					echo "<p><img src='".WP_PLUGIN_URL."/".$plugin."/core/img/info.png'/>".sprintf(__("If you do not want to loose your translations on the next upgrading of this plugin, it is recommended to send the translation files to the author by clicking %s here %s !"), $url_to_send, $url_to_send2)."</p>";
+				}
+			} else {
+				echo "<p><img src='".WP_PLUGIN_URL."/".$plugin."/core/img/warning.png'/>".__("If you do not want to loose your translations on the next upgrading of this plugin, please save them on your hard disk before upgrading and then restore them after the upgrade !")."</p>";
+			}
+			
 			echo "</div>" ; 
 			//Die in order to avoid the 0 character to be printed at the end
 			die() ;

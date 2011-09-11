@@ -16,6 +16,18 @@ msgstr ""
 msgid "Short URL"
 msgstr ""
 
+#: shorten-url.php:161
+#: shorten-url.php:213
+#@ shorturl
+msgid "Reset"
+msgstr ""
+
+#: shorten-url.php:162
+#: shorten-url.php:214
+#@ shorturl
+msgid "Edit"
+msgstr ""
+
 #: shorten-url.php:167
 #@ shorturl
 msgid "Results for Posts URL"
@@ -24,6 +36,11 @@ msgstr ""
 #: shorten-url.php:204
 #@ shorturl
 msgid "External URL"
+msgstr ""
+
+#: shorten-url.php:211
+#@ shorturl
+msgid "Delete"
 msgstr ""
 
 #: shorten-url.php:223

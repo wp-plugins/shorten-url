@@ -178,9 +178,9 @@ if (!class_exists("Utils")) {
 
 		static function copy_rec( $source, $destination ) {
 			if ( is_dir( $source ) ) {
-				chmod($source, 0755) ; 
+				@chmod($source, 0755) ; 
 				@mkdir( $destination );
-				chmod($destination, 0755) ; 
+				@chmod($destination, 0755) ; 
 				$directory = dir( $source );
 				while ( FALSE !== ( $readdirectory = $directory->read() ) ) {
 					if ( $readdirectory == '.' || $readdirectory == '..' ) {
@@ -209,7 +209,7 @@ if (!class_exists("Utils")) {
 
 		static function rm_rec($path) {
 			if (is_dir($path)) {
-				chmod($path, 0755) ; 
+				@chmod($path, 0755) ; 
 				$objects = scandir($path);
 				foreach ($objects as $object) {
 					if ($object != "." && $object != "..") {
@@ -238,7 +238,7 @@ if (!class_exists("Utils")) {
 			$md5 = "" ;  
 			$text = "" ; 
 			if (is_dir($path)) {
-				chmod($path, 0755) ; 
+				@chmod($path, 0755) ; 
 				$objects = scandir($path);
 				foreach ($objects as $object) {
 					if ($object != "." && $object != "..") {

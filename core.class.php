@@ -970,11 +970,13 @@ if (!class_exists('pluginSedLex')) {
 
 				// Zip the folder
 				$file = WP_CONTENT_DIR."/sedlex/new_plugins_zip/".$folder_name.".zip" ; 
-				$zip = new Zip() ; 
-				chdir(WP_CONTENT_DIR."/sedlex/new_plugins_zip/") ;
-				$zip->open($file, ZIPARCHIVE::CREATE | ZIPARCHIVE::OVERWRITE); 
-				$zip->addDir($folder_name) ; 
-				$zip->close() ; 
+				$zip = new PclZip($file) ; 
+				$remove = WP_CONTENT_DIR."/sedlex/new_plugins_zip/" ;
+				$result = $zip->create($path, PCLZIP_OPT_REMOVE_PATH, $remove); 
+				//$result = $zip->create($folder_name,  PCLZIP_OPT_REMOVE_PATH, $folder_name); 
+				if ($result == 0) {
+    				die("Error : ".$zip->errorInfo(true));
+  				}
 				
 				// Stream the file to the client
 				header("Content-Type: application/zip");

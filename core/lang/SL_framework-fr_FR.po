@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2011-09-03T18:28:45+00:00\n"
+"PO-Revision-Date: 2011-09-11T13:51:43+00:00\n"
 "Last-Translator: SedLex <http://www.sedlex.fr/>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -206,6 +206,9 @@ msgstr "Il y a %d langues supportées par ce plugin."
 msgid "There is %d sentence to be translated in this plugin."
 msgstr "Il y a %d phrases à traduire dans ce plugin."
 
+msgid "Please note that the translation for the framework is available in the %s submenu (see the %s tab)."
+msgstr "Les traductions du framework sont accessibles via le sous-menu %s (voir l&#039;onglet %s)"
+
 msgid "Language"
 msgstr "Langues"
 
@@ -233,8 +236,8 @@ msgstr "Vous pouvez ajouter une nouvelle traduction ci-après (il est recommand�
 msgid "Add"
 msgstr "Ajouter"
 
-msgid "Adding a new translation for this language:"
-msgstr "Ajouter une nouvelle traduction pour cette langue : "
+msgid "Adding a new translation for this language: %s"
+msgstr "Ajouter une traduction pour cette langue : %s"
 
 msgid "Sentence to translate"
 msgstr "Phrase à traduire"
@@ -254,8 +257,8 @@ msgstr "Votre email ou votre site internet :"
 msgid "Create the translation files"
 msgstr "Créer les fichiers de traduction"
 
-msgid "Modifying the translation for this language:"
-msgstr "Modifier la traduction pour cette langue"
+msgid "Modifying the translation for this language: %s"
+msgstr "Modifier la traductions pour cette langue : %s"
 
 msgid "Modify the translation files"
 msgstr "Modifier les fichiers de traduction"

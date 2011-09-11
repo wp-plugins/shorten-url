@@ -39,7 +39,8 @@ if (!class_exists("phpDoc")) {
 		public function parse() {
 		
 		
-		
+			$matches = array() ; 
+			
 			$tokens = token_get_all($this->content);
 			$class_token = false;
 			foreach ($tokens as $token) {
@@ -55,7 +56,7 @@ if (!class_exists("phpDoc")) {
 			}
 			
 			$c = array() ; 
-			
+
 			foreach($matches as $id => $cl){
 				
 				$methods = get_class_methods($cl) ;  

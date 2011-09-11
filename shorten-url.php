@@ -2,7 +2,7 @@
 /*
 Plugin Name: Short URL
 Description: <p>Replacing the internal function of wordpress <code>get_short_link()</code> by a bit.ly like url. </p><p>Instead of having a short link like http://www.yourdomain.com/?p=3564, your short link will be http://www.yourdomain.com/NgH5z (for instance). </p><p>You can configure: <ul><li>the length of the short link, </li><li>if the link is prefixed with a static word, </li><li>the characters used for the short link.</li></ul></p><p>Moreover, you can manage external links with this plugin. The links in your posts will be automatically replace by the short one if available.</p><p>This plugin is under GPL licence. </p>
-Version: 1.1.1
+Version: 1.1.2
 Author: SedLex
 Author Email: sedlex@sedlex.fr
 Framework Email: sedlex@sedlex.fr
@@ -158,8 +158,8 @@ class shorturl extends pluginSedLex {
 					<span id="lien<?php the_ID() ; ?>" ><a href="<?php echo wp_get_shortlink() ; ?>"><?php echo wp_get_shortlink() ; ?></a></span>
 					<?php
 					$cel2 = new adminCell(ob_get_clean()) ; 	
-					$cel2->add_action("Reset", "resetLink") ; 
-					$cel2->add_action("Force", "forceLink") ; 
+					$cel2->add_action(__("Reset", $this->pluginID), "resetLink") ; 
+					$cel2->add_action(__("Edit", $this->pluginID), "forceLink") ; 
 					
 					$table->add_line(array($cel1, $cel2), get_the_ID()) ; 
 				}
@@ -206,12 +206,12 @@ class shorturl extends pluginSedLex {
 				$res = $wpdb->get_results("SELECT * FROM ".$table_name." WHERE id_post=0 LIMIT ".($maxnb*($table->current_page()-1)).", ".$maxnb." ; ") ; 
 				
 				foreach($res as $r) {
-					$id_temp = $r->short_url ; 
+					$id_temp = md5($r->short_url) ; 
 					$cel1 = new adminCell("<a href='".$r->url_externe."'>".$r->url_externe."</a><img src='".WP_PLUGIN_URL.'/'.str_replace(basename( __FILE__),"",plugin_basename(__FILE__))."img/ajax-loader.gif' id='wait_external".$id_temp."' style='display: none;' />") ; 	
-					$cel1->add_action("Delete", "deleteLink_external('".$id_temp."')") ; 
+					$cel1->add_action(__("Delete", $this->pluginID), "deleteLink_external('".$id_temp."')") ; 
 					$cel2 = new adminCell("<span id='lien_external".$id_temp."'><a href='".site_url()."/".$r->short_url."'>".site_url()."/".$r->short_url."</a></span>") ; 
-					$cel2->add_action("Reset", "resetLink_external('".$id_temp."')") ; 
-					$cel2->add_action("Force", "forceLink_external('".$id_temp."')") ; 
+					$cel2->add_action(__("Reset", $this->pluginID), "resetLink_external('".$id_temp."')") ; 
+					$cel2->add_action(__("Edit", $this->pluginID), "forceLink_external('".$id_temp."')") ; 
 					
 					$table->add_line(array($cel1, $cel2), $id_temp) ; 
 				}
@@ -334,13 +334,23 @@ class shorturl extends pluginSedLex {
 		}
 		
 		// Empty the database for the given idLink
-		$q = "UPDATE  {$table_name} SET short_url = '".$result."' WHERE id_post=0 AND short_url='".$idLink."'"  ;
+		$q = "UPDATE  {$table_name} SET short_url = '".$result."' WHERE id_post=0 AND MD5(short_url)='".$idLink."'"  ;
 		$wpdb->query( $q ) ;
-		// Get a  entry
-		$link = site_url()."/".$wpdb->get_var("SELECT short_url FROM {$table_name} WHERE id_post=0 AND short_url='".$result."'") ;
+		
 		// Return the new URL to the interface
+		$old_id = $idLink ; 
+		$new_id = md5($result) ; 
+		$link = site_url()."/".$wpdb->get_var("SELECT short_url FROM {$table_name} WHERE id_post=0 AND short_url='".$result."'") ;
 		?>
 		<a href="<?php echo $link; ?>"><?php echo $link ; ?></a>
+		<script>
+			jQuery("#wait_external<?php echo $old_id ; ?>").attr("id","wait_external<?php echo $new_id ; ?>");
+			jQuery("#lien_external<?php echo $old_id ; ?>").attr("id","lien_external<?php echo $new_id ; ?>");
+			jQuery("#ligne<?php echo $old_id ; ?>").attr("id","ligne<?php echo $new_id ; ?>");
+			jQuery("#deleteLink_external<?php echo $old_id ; ?>_<?php echo $old_id ; ?>").attr("onclick","javascript: deleteLink_external('<?php echo $new_id ; ?>') ; return false ; ");
+			jQuery("#resetLink_external<?php echo $old_id ; ?>_<?php echo $old_id ; ?>").attr("onclick","javascript: resetLink_external('<?php echo $new_id ; ?>') ; return false ; ");
+			jQuery("#forceLink_external<?php echo $old_id ; ?>_<?php echo $old_id ; ?>").attr("onclick","javascript: forceLink_external('<?php echo $new_id ; ?>') ; return false ; ");
+		</script>
 		<?php
 		die();		
 	}
@@ -357,7 +367,7 @@ class shorturl extends pluginSedLex {
 		// get the arguments
 		$idLink = $_POST['idLink'];
 		$link = $_POST['link'];
-		$link = preg_replace("@[^a-zA-Z0-9_]@", '', $link);
+		$link = preg_replace("@[^a-zA-Z0-9_.-]@", '', $link);
 		
 		// Empty the database for the given idLink
 		$q = "UPDATE {$table_name} SET short_url = '".$link."' WHERE id_post=".$idLink ; 
@@ -383,16 +393,27 @@ class shorturl extends pluginSedLex {
 		// get the arguments
 		$idLink = $_POST['idLink'];
 		$link = $_POST['link'];
-		$link = preg_replace("@[^a-zA-Z0-9_]@", '', $link);
+		$link = preg_replace("@[^a-zA-Z0-9_.-]@", '', $link);
 		
 		// Empty the database for the given idLink
-		$q = "UPDATE  {$table_name} SET short_url = '".$link."' WHERE id_post=0 AND short_url='".$idLink."'"  ;
+		
+		$q = "UPDATE  {$table_name} SET short_url = '".$link."' WHERE id_post=0 AND MD5(short_url)='".$idLink."'"  ;
 		$wpdb->query( $q ) ;
-		// Get a  entry
-		$link = site_url()."/".$wpdb->get_var("SELECT short_url FROM {$table_name} WHERE id_post=0 AND short_url='".$link."'") ;
+
 		// Return the new URL to the interface
+		$old_id = $idLink ; 
+		$new_id = md5($link) ; 
+		$link = site_url()."/".$wpdb->get_var("SELECT short_url FROM {$table_name} WHERE id_post=0 AND short_url='".$link."'") ;
 		?>
 		<a href="<?php echo $link; ?>"><?php echo $link ; ?></a>
+		<script>
+			jQuery("#wait_external<?php echo $old_id ; ?>").attr("id","wait_external<?php echo $new_id ; ?>");
+			jQuery("#lien_external<?php echo $old_id ; ?>").attr("id","lien_external<?php echo $new_id ; ?>");
+			jQuery("#ligne<?php echo $old_id ; ?>").attr("id","ligne<?php echo $new_id ; ?>");
+			jQuery("#deleteLink_external<?php echo $old_id ; ?>_<?php echo $old_id ; ?>").attr("onclick","javascript: deleteLink_external('<?php echo $new_id ; ?>') ; return false ; ");
+			jQuery("#resetLink_external<?php echo $old_id ; ?>_<?php echo $old_id ; ?>").attr("onclick","javascript: resetLink_external('<?php echo $new_id ; ?>') ; return false ; ");
+			jQuery("#forceLink_external<?php echo $old_id ; ?>_<?php echo $old_id ; ?>").attr("onclick","javascript: forceLink_external('<?php echo $new_id ; ?>') ; return false ; ");
+		</script>
 		<?php
 		die();
 	}
@@ -428,7 +449,7 @@ class shorturl extends pluginSedLex {
 		// get the arguments
 		$idLink = $_POST['idLink'];
 		// Get a entry
-		$link =  site_url()."/".$wpdb->get_var("SELECT short_url FROM {$table_name} WHERE id_post=0 AND short_url='".$idLink."'") ;
+		$link =  site_url()."/".$wpdb->get_var("SELECT short_url FROM {$table_name} WHERE id_post=0 AND MD5(short_url)='".$idLink."'") ;
 		// Return the new URL to the interface
 		?>
 		<a href="<?php echo $link; ?>"><?php echo $link ; ?></a>
@@ -448,7 +469,7 @@ class shorturl extends pluginSedLex {
 		// get the arguments
 		$idLink = $_POST['idLink'];
 		// Delete a entry
-		$q = "DELETE FROM {$table_name} WHERE id_post=0 AND short_url='".$idLink."'"  ;
+		$q = "DELETE FROM {$table_name} WHERE id_post=0 AND MD5(short_url)='".$idLink."'"  ;
 		$wpdb->query( $q ) ;
 		die();
 	}
@@ -518,7 +539,7 @@ class shorturl extends pluginSedLex {
 		
 		if(is_404()) {
 			$param = explode("/", $_SERVER['REQUEST_URI']) ; 
-			if (preg_match("/^([a-zA-Z0-9_])*$/",$param[1],$matches)==1) {
+			if (preg_match("/^([a-zA-Z0-9_.-])*$/",$param[1],$matches)==1) {
 				$select = "SELECT id_post FROM {$table_name} WHERE short_url='".$param[1]."'" ; 
 				$temp_id = $wpdb->get_var( $select ) ;
 				if (is_numeric($temp_id)) {
