@@ -89,6 +89,15 @@ if (!class_exists('pluginSedLex')) {
 					dbDelta($sql);
 			
 					add_option("db_version", $db_version);
+					
+					// Gestion de l'erreur
+					ob_start() ; 
+					$wpdb->print_error();
+					$result = ob_get_clean() ; 
+					if (strlen($result)>0) {
+						echo $result ; 
+						die() ; 
+					}
 				}
 			}
 			if (method_exists($this,'_update')) {
@@ -184,7 +193,14 @@ if (!class_exists('pluginSedLex')) {
 			}
 		
 			//add sub menus
-			$page = add_submenu_page($topLevel, $this->pluginName, $this->pluginName, 10, $plugin, array($this,'configuration_page'));
+			$number = "" ; 
+			if (method_exists($this,'_notify')) {
+				$number = $this->_notify() ; 
+				if (is_numeric($number)) {
+					$number = "<span class='update-plugins count-1' title='title'><span class='update-count'>".$number."</span></span>" ; 
+				}
+			}
+			$page = add_submenu_page($topLevel, $this->pluginName, $this->pluginName . $number, 10, $plugin, array($this,'configuration_page'));
 			
 			// Different actions
 
@@ -542,7 +558,7 @@ if (!class_exists('pluginSedLex')) {
 		}
 		
 		/** ====================================================================================================================================================
-		* This function display the configuration page of the core 
+		* This function displays the configuration page of the core 
 		* 
 		* @access private
 		* @return void
@@ -605,6 +621,7 @@ if (!class_exists('pluginSedLex')) {
 				Utils::copy_rec(WP_PLUGIN_DIR."/".$path_from_update."core.nfo", WP_PLUGIN_DIR."/".$path_to_update."core.nfo") ; 
 				echo "<div class='updated  fade'><p>".sprintf(__('%s has been updated with %s !','SL_framework'), $path_to_update, $path_from_update)."</p>" ; 
 				
+
 				echo "<p>".sprintf(__('Please click %shere%s to refresh the page and ensure everything is ok!','SL_framework'), "<a href='".remove_query_arg(array("update", "from"))."'>","</a>")."</p></div>" ; 
 			}
 				
@@ -651,10 +668,9 @@ if (!class_exists('pluginSedLex')) {
 							$plugin_name = explode("/",$url) ;
 							$plugin_name = $plugin_name[count($plugin_name)-2] ; 
 							
-							
-							
 							if ($i != 0) {
 								if (get_option('SL_framework_show_advanced', false)){
+									$info_core = $this->checkCoreOfThePlugin(dirname(WP_PLUGIN_DIR.'/'.$url )."/core.php") ; 
 									$hash_plugin = $this->update_hash_plugin(dirname(WP_PLUGIN_DIR."/".$url)) ; 
 								}
 								$info = $this->get_plugins_data(WP_PLUGIN_DIR."/".$url);
@@ -711,7 +727,7 @@ if (!class_exists('pluginSedLex')) {
 								$cel2 = new adminCell(ob_get_clean()) ; 
 								
 								if (get_option('SL_framework_show_advanced', false)){
-									$info_core = $this->checkCoreOfThePlugin(dirname(WP_PLUGIN_DIR.'/'.$url )."/core.php") ; 
+									
 									if ($current_fingerprint_core_used != $info_core) {
 										$info_core = str_replace('#666666','#660000',$info_core) ;  
 										$info_core .= "<p style='color:#666666;font-size:75%;text-align:right'><a href='".add_query_arg(array("update"=>base64_encode($url), "from"=>base64_encode($current_core_used."/".current_core_used.".php")))."'>".sprintf(__('Update with the core of the %s plugin (only if you definitely know what you do)', 'SL_framework'), $current_core_used)."</a></p>" ;  
@@ -885,7 +901,7 @@ if (!class_exists('pluginSedLex')) {
 		*/
 		private function update_hash_plugin($path)  {
 
-			$hash_plugin = Utils::md5_rec($path, array('readme.txt', 'core.nfo')) ; 
+			$hash_plugin = Utils::md5_rec($path, array('readme.txt', 'core', 'core.php', 'core.class.php')) ; // Par contre je conserve le core.nfo 
 			
 			// we recreate the readme.txt
 			$lines = file( $path."/readme.txt" , FILE_IGNORE_NEW_LINES );
@@ -956,6 +972,7 @@ if (!class_exists('pluginSedLex')) {
 				Utils::copy_rec($plugin_dir.'/core',$path.'/core') ; 
 				Utils::copy_rec($plugin_dir.'/core.php',$path."/core.php") ; 
 				Utils::copy_rec($plugin_dir.'/core.class.php',$path."/core.class.php") ; 
+				Utils::copy_rec($plugin_dir.'/core.nfo',$path."/core.nfo") ; 
 				
 				// Copy the dynamic files
 				$content = file_get_contents($plugin_dir.'/core/templates/my-plugin.php') ; 
@@ -1192,19 +1209,18 @@ if (!class_exists('pluginSedLex')) {
 						$resultat .= "<p ".$style.">".__('Version of','SL_framework')." 'core.php' : ".trim($tmp[1])."" ; 
 						$ok = true ; 
 						break ; 
-					}
-				}
+					} 
+				}  
 				if (!$ok) {
 					$resultat .= "<p ".$style.">".__('Version of','SL_framework')." 'core.php' : ??" ; 
 				}
-				$resultat .= " (".@filesize($path)." ".__('bytes','SL_framework').")</p>" ; 
 			}
 			
 			
 			$resultat .= "<hr/>\n" ; 
 			
 			// We compute the hash of the core folder
-			$md5 = Utils::md5_rec(dirname($path).'/core/') ; 
+			$md5 = Utils::md5_rec(dirname($path).'/core/', array('SL_framework.pot')) ; 
 			if (is_file(dirname($path).'/core.php'))
 				$md5 .= file_get_contents(dirname($path).'/core.php') ; 
 			if (is_file(dirname($path).'/core.class.php'))

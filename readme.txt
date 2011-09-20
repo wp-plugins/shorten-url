@@ -25,6 +25,18 @@ You can configure:
 
 Moreover, you can add external links. These links will be automatiocally replace by the short link in your posts.
 
+= Localizations =
+
+* French translation (by me)
+
+= Features of the framework = 
+
+This plugin use SL framework.
+
+You may translate this plugin with an embedded feature which is very easy to use by any end-users (without any external tools / knowledge).
+
+You may also create a new plugin. You will download, from the plugin, an "hello World" plugin: You just have to fill the blank and follow the comments.
+
 == Installation ==
 
 1. Upload this folder to your plugin directory (for instance '/wp-content/plugins/')
@@ -39,6 +51,9 @@ Moreover, you can add external links. These links will be automatiocally replace
 2. The configuration page of the plugin
 
 == Changelog ==
+
+= 1.1.3 =
+* Updating the core plugin
 
 = 1.1.2 =
 * Replacing the word "force" into "edit" (trevor's suggestion)
@@ -65,4 +80,4 @@ Moreover, you can add external links. These links will be automatiocally replace
 Visit http://www.sedlex.fr/cote_geek/
 
  
-InfoVersion:b8be4c7a4993b93a213208577c4646ee
+InfoVersion:e4145c095178f6474443119be574baed

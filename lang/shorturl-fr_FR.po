@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2011-09-08T12:00:52+00:00\n"
+"PO-Revision-Date: 2011-09-20T13:36:03+00:00\n"
 "Last-Translator: SedLex <http://www.sedlex.fr/>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -100,4 +100,7 @@ msgstr "Voici les plugins développés par l&#039;auteur"
 
 msgid "Other possible plugins"
 msgstr "Autres plugins possibles"
+
+msgid "Here is the plugins developped by the author:"
+msgstr "Voici les plugins développés par l&#039;auteur :"
 

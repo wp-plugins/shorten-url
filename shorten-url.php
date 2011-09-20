@@ -2,7 +2,7 @@
 /*
 Plugin Name: Short URL
 Description: <p>Replacing the internal function of wordpress <code>get_short_link()</code> by a bit.ly like url. </p><p>Instead of having a short link like http://www.yourdomain.com/?p=3564, your short link will be http://www.yourdomain.com/NgH5z (for instance). </p><p>You can configure: <ul><li>the length of the short link, </li><li>if the link is prefixed with a static word, </li><li>the characters used for the short link.</li></ul></p><p>Moreover, you can manage external links with this plugin. The links in your posts will be automatically replace by the short one if available.</p><p>This plugin is under GPL licence. </p>
-Version: 1.1.2
+Version: 1.1.3
 Author: SedLex
 Author Email: sedlex@sedlex.fr
 Framework Email: sedlex@sedlex.fr
@@ -23,10 +23,12 @@ class shorturl extends pluginSedLex {
 	static $path = false;
 
 	protected function _init() {
+		global $wpdb ; 
 		// Configuration
 		$this->pluginName = 'Short URL' ; 
 		$this->tableSQL = "id_post mediumint(9) NOT NULL, short_url TEXT DEFAULT '', url_externe VARCHAR( 255 ) NOT NULL DEFAULT '',UNIQUE KEY id_post (id_post, url_externe)" ; 
 		$this->path = __FILE__ ; 
+		$this->table_name = $wpdb->prefix . "pluginSL_" . get_class() ; 
 		$this->pluginID = get_class() ; 
 		
 		//Init et des-init
@@ -57,14 +59,14 @@ class shorturl extends pluginSedLex {
 		return self::$instance;
 	}
 	
-	
 	/**
 	 * Upgrade function
 	 */
 	 
 	public function _update() {
 		global $wpdb;
-		$table_name = $wpdb->prefix . $this->pluginID;
+		$table_name = $this->table_name;
+		$old_table_name = $wpdb->prefix . $this->pluginID ; 
 		
 		// This update aims at upgrading older version of shorten-link to enable to create custom shorturl (i.e. with external URL)
 		//  For information previous table are :
@@ -72,11 +74,30 @@ class shorturl extends pluginSedLex {
 		// and now it is 
 		//	id_post mediumint(9) NOT NULL, short_url TEXT DEFAULT '', url_externe VARCHAR( 255 ) NOT NULL DEFAULT '' ,UNIQUE KEY id_post (id_post, url_externe)
 		
-		if ( !$wpdb->get_var("SHOW COLUMNS FROM ".$table_name." LIKE 'url_externe'")  ) {
-			$wpdb->query("ALTER TABLE ".$table_name." ADD url_externe  VARCHAR( 255 ) NOT NULL DEFAULT '';");
-			$wpdb->query("ALTER TABLE ".$table_name." DROP INDEX id_post;") ; 
-			$wpdb->query("ALTER TABLE ".$table_name." ADD CONSTRAINT id_post UNIQUE (id_post,url_externe)") ; 
+		if($wpdb->get_var("show tables like '$old_table_name'") != $old_table_name) {
+			if ( !$wpdb->get_var("SHOW COLUMNS FROM ".$old_table_name." LIKE 'url_externe'")  ) {
+				$wpdb->query("ALTER TABLE ".$old_table_name." ADD url_externe  VARCHAR( 255 ) NOT NULL DEFAULT '';");
+				$wpdb->query("ALTER TABLE ".$old_table_name." DROP INDEX id_post;") ; 
+				$wpdb->query("ALTER TABLE ".$old_table_name." ADD CONSTRAINT id_post UNIQUE (id_post,url_externe)") ; 
+			}
 		}
+		
+		// This update aims at changing the table name from the old table name to the new one
+		if($wpdb->get_var("show tables like '$old_table_name'") == $old_table_name) {
+			// We delete the new created table
+			$wpdb->query("DROP TABLE ".$table_name) ; 
+			// We change the name of the old table
+			$wpdb->query("ALTER TABLE ".$old_table_name." RENAME TO ".$table_name) ; 
+			// Gestion de l'erreur
+			ob_start() ; 
+			$wpdb->print_error();
+			$result = ob_get_clean() ; 
+			if (strlen($result)>0) {
+				echo $result ; 
+				die() ; 
+			}
+		}
+		
 	}
 
 	/** ====================================================================================================================================================
@@ -103,7 +124,7 @@ class shorturl extends pluginSedLex {
 	*/
 	function configuration_page() {
 		global $wpdb;
-		$table_name = $wpdb->prefix . $this->pluginID;
+		$table_name = $this->table_name;
 	
 		?>
 		<div class="wrap">
@@ -268,7 +289,7 @@ class shorturl extends pluginSedLex {
 			$tabs->add_tab(__('Give feedback',  $this->pluginID), ob_get_clean() ) ; 	
 			
 			ob_start() ; 
-				echo "<p>".__('Here is the plugins developped by the author',  $this->pluginID) ."</p>" ; 
+				echo "<p>".__('Here is the plugins developped by the author:',  $this->pluginID) ."</p>" ; 
 				$trans = new otherPlugins("sedLex", array('wp-pirates-search')) ; 
 				$trans->list_plugins() ; 
 			$tabs->add_tab(__('Other possible plugins',  $this->pluginID), ob_get_clean() ) ; 	
@@ -287,7 +308,7 @@ class shorturl extends pluginSedLex {
 	*/
 	function reset_link() {
 		global $wpdb;
-		$table_name = $wpdb->prefix . $this->pluginID;
+		$table_name = $this->table_name;
 		
 		// get the arguments
 		$idLink = $_POST['idLink'];
@@ -310,7 +331,7 @@ class shorturl extends pluginSedLex {
 	*/
 	function reset_link_external() {
 		global $wpdb;
-		$table_name = $wpdb->prefix . $this->pluginID;
+		$table_name = $this->table_name;
 		
 		// get the arguments
 		$idLink = $_POST['idLink'];
@@ -362,7 +383,7 @@ class shorturl extends pluginSedLex {
 	*/
 	function valid_link() {
 		global $wpdb;
-		$table_name = $wpdb->prefix . $this->pluginID;
+		$table_name = $this->table_name;
 		
 		// get the arguments
 		$idLink = $_POST['idLink'];
@@ -388,7 +409,7 @@ class shorturl extends pluginSedLex {
 	*/
 	function valid_link_external() {
 		global $wpdb;
-		$table_name = $wpdb->prefix . $this->pluginID;
+		$table_name = $this->table_name;
 		
 		// get the arguments
 		$idLink = $_POST['idLink'];
@@ -425,7 +446,6 @@ class shorturl extends pluginSedLex {
 	* @return void
 	*/
 	function cancel_link() {
-		global $wpdb;
 		// get the arguments
 		$idLink = $_POST['idLink'];
 		// Get a entry
@@ -444,7 +464,7 @@ class shorturl extends pluginSedLex {
 	*/
 	function cancel_link_external() {
 		global $wpdb;
-		$table_name = $wpdb->prefix . $this->pluginID;
+		$table_name = $this->table_name;
 		
 		// get the arguments
 		$idLink = $_POST['idLink'];
@@ -464,7 +484,7 @@ class shorturl extends pluginSedLex {
 	*/
 	function delete_link_external() {
 		global $wpdb;
-		$table_name = $wpdb->prefix . $this->pluginID;
+		$table_name = $this->table_name;
 		
 		// get the arguments
 		$idLink = $_POST['idLink'];
@@ -485,7 +505,7 @@ class shorturl extends pluginSedLex {
 		global $post;
 		global $wpdb;
 		
-		$table_name = $wpdb->prefix . $this->pluginID;
+		$table_name = $this->table_name;
 	
 		if (!$post_id && $post) $post_id = $post->ID;
 		if ($post_id) $post = get_post($post_id) ; 
@@ -535,7 +555,7 @@ class shorturl extends pluginSedLex {
 	function redirect_404() {
 		global $post;
 		global $wpdb;
-		$table_name = $wpdb->prefix . $this->pluginID;
+		$table_name = $this->table_name;
 		
 		if(is_404()) {
 			$param = explode("/", $_SERVER['REQUEST_URI']) ; 
@@ -578,7 +598,7 @@ class shorturl extends pluginSedLex {
 	
 	function replace_by_short_link($match) {
 		global $wpdb;
-		$table_name = $wpdb->prefix . $this->pluginID;
+		$table_name = $this->table_name;
 		
 		$short = $wpdb->get_var( "SELECT short_url FROM {$table_name} WHERE id_post=0 AND url_externe='".$match[2]."'"); 
 		if ($short != "") {

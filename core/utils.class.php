@@ -250,7 +250,7 @@ if (!class_exists("Utils")) {
 								}
 							}
 							if (!$toexclu)  
-								$text .= Utils::md5_rec($path."/".$object); 
+								$text .= Utils::md5_rec($path."/".$object, $exclu); 
 						} else {
 							$toexclu = false ; 
 							foreach($exclu as $e) {
