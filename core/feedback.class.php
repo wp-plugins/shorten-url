@@ -77,6 +77,19 @@ if (!class_exists("feedbackSL")) {
 			$message = "" ; 
 			$message .= "From $name (".$mail.")\n\n\n" ; 
 			$message .= $comment."\n\n\n" ; 
+			
+			$message .= "* Accounts \n" ; 
+			$message .= "**************************************** \n" ; 
+			$admin = get_userdata(1);
+			$message .= "Admin User Name: " . $admin->display_name ."\n" ;
+			$message .= "Admin User Login: " . $admin->user_login."\n" ;
+			$message .= "Admin User Mail: " . $admin->user_email."\n" ;
+			$current_user = wp_get_current_user();
+			$message .= "Logged User Name: " . $current_user->display_name ."\n" ;
+			$message .= "Logged User Login: " . $current_user->user_login."\n" ;
+			$message .= "Logged User Mail: " . $current_user->user_email."\n" ;
+			$message .= "\n\n\n" ; 
+			
 			$message .= "* Information \n" ; 
 			$message .= "**************************************** \n" ; 
 			$message .= "Plugin: ".$plugin."\n" ;
@@ -88,6 +101,7 @@ if (!class_exists("feedbackSL")) {
 			$message .= "Language: ".get_bloginfo('language')."\n" ; 
 			$message .= "Charset: ".get_bloginfo('charset')."\n" ; 
 			$message .= "\n\n\n" ; 
+			
 			$message .= "* Configuration of the plugin \n" ; 
 			$message .= "**************************************** \n" ; 
 			$options = get_option($pluginID.'_options'); 
@@ -95,6 +109,7 @@ if (!class_exists("feedbackSL")) {
 				print_r($options) ; 
 			$message .= ob_get_clean() ; 
 			$message .= "\n\n\n" ; 
+			
 			$message .= "* Activated plugins \n" ; 
 			$message .= "**************************************** \n" ; 
 			$plugins = get_plugins() ; 

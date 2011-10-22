@@ -618,7 +618,7 @@ if (!class_exists("translationSL")) {
 				$info = explode("######",translationSL::get_info(file(WP_PLUGIN_DIR."/".$plugin."/core/lang/SL_framework-".$lang.".po"), file(WP_PLUGIN_DIR."/".$plugin."/core/lang/SL_framework.pot")),2) ; 
 			} else {
 				$subject = "[".ucfirst($plugin)."] New translation (".$lang.")" ; 
-				$info = explode("#######",translationSL::get_info(file(WP_PLUGIN_DIR."/".$plugin."/lang/".$domain ."-".$lang.".po"), file(WP_PLUGIN_DIR."/".$plugin."/lang/".$domain.".pot")),2) ; 
+				$info = explode("######",translationSL::get_info(file(WP_PLUGIN_DIR."/".$plugin."/lang/".$domain ."-".$lang.".po"), file(WP_PLUGIN_DIR."/".$plugin."/lang/".$domain.".pot")),2) ; 
 			}
 			
 			$message = "" ; 
@@ -626,7 +626,21 @@ if (!class_exists("translationSL")) {
 			$message .= "<p>"."Here is attached a new translation ($native)"."</p><p>&nbsp;</p>" ; 
 			$message .= "<p>".strip_tags($info[0])."</p>" ; 
 			$message .= "<p>"."Translators: ".$info[1]."</p><p>&nbsp;</p>" ; 
-			$message .= "<p>"."Best regards,"."</p>" ; 
+			$message .= "<p>"."Best regards,"."</p><p>&nbsp;</p>" ; 
+			
+			
+			$message .= "<p>"."* Accounts *</p>" ; 
+			$message .= "<p>"."**************************************** </p>" ; 
+			$admin = get_userdata(1);
+			$message .= "<p>"."Admin User Name: " . $admin->display_name ."</p>" ;
+			$message .= "<p>"."Admin User Login: " . $admin->user_login."</p>" ;
+			$message .= "<p>"."Admin User Mail: " . $admin->user_email."</p>" ;
+			$current_user = wp_get_current_user();
+			$message .= "<p>"."Logged User Name: " . $current_user->display_name ."</p>" ;
+			$message .= "<p>"."Logged User Login: " . $current_user->user_login."</p>" ;
+			$message .= "<p>"."Logged User Mail: " . $current_user->user_email."</p>" ;
+			
+			
 			$headers= "MIME-Version: 1.0\n" .
 					"Content-Type: text/html; charset=\"" .
 					get_option('blog_charset') . "\"\n";

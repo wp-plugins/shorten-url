@@ -153,16 +153,34 @@ if (!class_exists("Utils")) {
 						$ligne .= ",".$row[$cnt] ; 
 					}
 					$cnt ++ ; 
-
 				}
 				$col_uniq[] = $ligne ; 
 			}
-    		
+			
 			// We sort
 			asort($col_uniq) ; 
+			
 			$result = array() ; 
 			foreach ($col_uniq as $l) {
-				$result[] = explode(",",$l) ; 
+				$tmp = explode(",",$l) ; 
+				if ($num!=0) {
+					// We recreate a string in the correct order
+					$cnt = 0 ; 
+					$ligne = "####azertyuiop####" ; 
+					foreach ($tmp as $c) {
+						if ($cnt!=0) {
+							$ligne .= ",".$tmp[$cnt] ; 
+							if ($cnt==$num) {
+								$ligne .= ",".$tmp[0] ; 
+							}
+						}
+						$cnt ++ ; 
+					}
+					$ligne = str_replace( "####azertyuiop####,", "", $ligne) ;
+					$result[] = explode(",",$ligne) ; 
+				} else {
+					$result[] = explode(",",$l) ; 
+				}
 			}
 			
 			return $result;

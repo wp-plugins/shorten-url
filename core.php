@@ -1,7 +1,7 @@
 <?php
 /**
 * Core SedLex Plugin Bootstrap
-* VersionInclude : 3.0
+* VersionInclude : 4.0
 */ 
 
 
@@ -32,13 +32,16 @@ if (!class_exists('pluginSedLex')) {
 	require_once($url.'core/tabs.class.php') ; 
 	require_once($url.'core/box.class.php') ; 
 	require_once($url.'core/feedback.class.php') ; 
+	require_once($url.'core/folder_diff.class.php') ; 
 	require_once($url.'core/otherplugins.class.php') ; 
 	require_once($url.'core/parameters.class.php') ; 
 	require_once($url.'core/phpdoc.class.php') ; 
+	require_once($url.'core/popup.class.php') ; 
 	require_once($url.'core/translation.class.php') ; 
+	require_once($url.'core/text_diff.class.php') ; 
+	require_once($url.'core/svn.class.php') ; 
 	require_once($url.'core/utils.class.php') ; 
 	require_once($url.'core/zip.class.php') ; 
-
 }
 
 ?>
