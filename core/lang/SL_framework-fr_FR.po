@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2011-10-20T11:37:12+00:00\n"
+"PO-Revision-Date: 2011-10-31T19:52:24+00:00\n"
 "Last-Translator: SedLex <http://www.sedlex.fr/>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -47,12 +47,6 @@ msgstr "L&#039;interface SVN sera masquée à partir de maintenant !"
 msgid "The SVN parameters have been updated !"
 msgstr "Les paramètres SVN ont été mis à jour !"
 
-msgid "%s has been updated with %s !"
-msgstr "%s a été mis à jour avec %s"
-
-msgid "Please click %shere%s to refresh the page and ensure everything is ok!"
-msgstr "Merci de cliquer %sici%s afin de rafraichir la page et de s&#039;assurer que tout fonctionne bien !"
-
 msgid "Summary page for the plugins developped with the SL framework"
 msgstr "Page de synthèse pour les plugins développés avec le framework SL"
 
@@ -71,68 +65,8 @@ msgstr "Description"
 msgid "Status of the core"
 msgstr "Status du core"
 
-msgid "An Unexpected HTTP Error occurred during the API request."
-msgstr "Une erreur HTTP inattendue est survenue durant la requête API."
-
-msgid "This plugin does not seem to be hosted on the wordpress repository."
-msgstr "Ce plugin ne semble pas être hébergé par Wordpress"
-
-msgid "This plugin is hosted by wordpress repository and is not up-to-date ! (i.e. %s)"
-msgstr "Ce plugin est hébergé par Wordpress et n&#039;est pas à jour (i.e. %s) !"
-
-msgid "(the repository)"
-msgstr "(le dépôt)"
-
-msgid "This plugin is hosted by wordpress repository with the same version but the plugin is not exactly the same"
-msgstr "Ce plugin est hébergé par Wordpress avec la même version mais le plugin n&#039;est pas tout à fait identique."
-
-msgid "This plugin is hosted by wordpress repository and is up-to-date !"
-msgstr "Ce plugin est hébergé par Wordpress et est à jour !"
-
-msgid "Last update:"
-msgstr "Dernière mise à jour"
-
-msgid "by %s persons"
-msgstr "par %s personnes"
-
-msgid "Rating:"
-msgstr "Evaluation : "
-
-msgid "Number of download:"
-msgstr "Nombre de téléchargement"
-
 msgid "Version: %s by %s"
-msgstr "Version %s par %s"
-
-msgid "Update with the core of the %s plugin (only if you definitely know what you do)"
-msgstr "Mettre à jour le core du plugin (seulement si vous savez ce que vous faites)"
-
-msgid "This core is currently used by the framework and plugins !"
-msgstr "Ce core est actuellement utilisé par le framework et les plugins !"
-
-msgid "SVN management"
-msgstr "Gestion SVN"
-
-msgid "An error occurs when requesting %s"
-msgstr "Une erreur est survenue pendant la requête"
-
-msgid "You do not seem to have a repository for Wordpress because %s returns a 404 error. Thus, ask for one here: %s"
-msgstr "Vous ne semblez pas avoir de dépôt Wordpress car %s retourne une erreur 404. Demandez un dépôt ici : %s"
-
-msgid "Overwrite the local plugin files with files stored the SVN repository"
-msgstr "Ecraser le plugin local avec les fichiers du dépôt SVN"
-
-msgid "Quick"
-msgstr "Rapide"
-
-msgid "Slow"
-msgstr "Lent"
-
-msgid "Update the SVN repository with your current local plugin files"
-msgstr "Mettre à jour le dépôt SVN avec les fichiers de votre plugin local"
-
-msgid "The slow version may be useful if you have issues with the quick version."
-msgstr "La version lente peut être utile si vous rencontrez des difficultés avec la version rapide."
+msgstr "Version : %s par %s"
 
 msgid "Show the advanced options and parameters:"
 msgstr "Montrer les options et affichages avancés"
@@ -176,6 +110,75 @@ msgstr "Documentation du framework"
 msgid "Manage translation of the framework"
 msgstr "Gérer les traductions du framework"
 
+msgid "An Unexpected HTTP Error occurred during the API request."
+msgstr "Une erreur HTTP inattendue est survenue durant la requête API."
+
+msgid "This plugin does not seem to be hosted on the wordpress repository."
+msgstr "Ce plugin ne semble pas être hébergé par Wordpress"
+
+msgid "The Wordpress page: %s"
+msgstr "La page Wordpress : %s"
+
+msgid "Last update:"
+msgstr "Dernière mise à jour :"
+
+msgid "Rating: %s"
+msgstr "Evaluation : %s"
+
+msgid "by %s persons"
+msgstr "par %s personnes"
+
+msgid "Number of download:"
+msgstr "Nombre de téléchargement :"
+
+msgid "Update with the core of the %s plugin (only if you definitely know what you do)"
+msgstr "Mettre à jour le core du plugin (seulement si vous savez ce que vous faites)"
+
+msgid "SVN management"
+msgstr "Gestion SVN"
+
+msgid "The SVN repository: %s"
+msgstr "The dépôt SVN : %s"
+
+msgid "An error occurs when requesting %s"
+msgstr "Une erreur est survenue pendant la requête %s"
+
+msgid "You do not seem to have a repository for Wordpress because %s returns a 404 error. Thus, ask for one here: %s"
+msgstr "Vous ne semblez pas avoir de dépôt Wordpress car %s retourne une erreur 404. Demandez un dépôt ici : %s"
+
+msgid "The SVN repository is identical to your local plugin! You do not need to update..."
+msgstr "Le dépôt SVN est identique à votre plugin local ! Vous n&#039;avez pas besoin de le mettre à jour ..."
+
+msgid "Cannot check the plugin hash due to HTTP Error occurred during the API request"
+msgstr "Ne peut pas vérifier le hash du plugin à cause d&#039;une erreur HTTP survenue durant la requête API"
+
+msgid "Please note that the plugin released does not match with the local plugin. If you want to release a new version with this local plugin, please modify the Version in %s, and then commit it."
+msgstr "Merci de noter que le plugin déployé ne correspond pas au plugin local. Si vous souhaitez déployer une nouvelle version à partir du plugin local, merci de modifier la Version dans %s et le commiter après."
+
+msgid "(Cannot check the version of the plugin due to HTTP Error occurred during the API request)"
+msgstr "(Ne peut pas vérifier la version du plugin à cause d&#039;une erreur HTTP survenue durant la requête API)"
+
+msgid "(If you update, a new version will be released, i.e. %s instead of %s)"
+msgstr "(Si vous mettez à jour le plugin, une nouvelle version sera déployée, c&#039;est à dire %s au lieu de %s)"
+
+msgid "The SVN repository is not identical to your local plugin!"
+msgstr "Le dépôt SVN n&#039;est pas identique à votre plugin local !"
+
+msgid "Overwrite the local plugin files with files stored the SVN repository"
+msgstr "Ecraser le plugin local avec les fichiers du dépôt SVN"
+
+msgid "Quick"
+msgstr "Rapide"
+
+msgid "Slow"
+msgstr "Lent"
+
+msgid "Update the SVN repository with your current local plugin files"
+msgstr "Mettre à jour le dépôt SVN avec les fichiers de votre plugin local"
+
+msgid "The slow version may be useful if you have issues with the quick version."
+msgstr "La version lente peut être utile si vous rencontrez des difficultés avec la version rapide."
+
 msgid "Please find hearafter all the possible classes and methods for the development with this framework"
 msgstr "Voici ci-après les classes et méthodes pour le développement avec ce framework."
 
@@ -211,12 +214,6 @@ msgstr "Exemple d&#039;appel :"
 
 msgid "See also:"
 msgstr "Voir aussi :"
-
-msgid "Version of"
-msgstr "Version de"
-
-msgid "MD5 fingerprint of the framework:"
-msgstr "Empreinte MD5 du framework:"
 
 msgid "Last update of the core: %s at %s"
 msgstr "Dernière mise à jour du core : %s à %s"
@@ -449,6 +446,12 @@ msgstr "Le fichier %s a été créé pour %s"
 msgid "%s file has been created from this file"
 msgstr "Le fichier %s a été créé à partir de ce fichier"
 
+msgid "If you do not want to loose your translations on the next upgrading of this plugin, it is recommended to send the translation files to the author by clicking %s here %s !"
+msgstr "Si vous ne voulez pas perdre vos traductions à la prochaine mise à jour du plugin, il est recommandé d&#039;envoyer le fichier de traduction à l&#039;auteur en cliquant %s ici %s"
+
+msgid "If you do not want to loose your translations on the next upgrading of this plugin, please save them on your hard disk before upgrading and then restore them after the upgrade !"
+msgstr "Si vous ne voulez pas perdre vos traductions à la prochaine mise à jour du plugin, merci de les sauver sur votre disque dur avant de mettre à jour et de les restaurer après !"
+
 msgid "Select all"
 msgstr "Tout sélectionnez"
 
@@ -475,67 +478,4 @@ msgstr "Le feedback a été envoyé"
 
 msgid "Close popup"
 msgstr "Fermer le popup"
-
-msgid "The file %s cannot be created. Therefore, no svn script can be created. Please make the folder writable or visit %s to install a SubVersion package on your server."
-msgstr "Le fichier %s ne peut pas être créé. Ainsi, aucun script SVN ne peut être créé. Merci de permettre l&#039;écriture dans le répertoire ou allez sur %s pour installer SubVersion sur votre serveur."
-
-msgid "The folder %s does not exists and cannot be created. Therefore, no svn script can be created in that folder. Please create this folder (and make it writable) or visit %s to install a SubVersion package on your server."
-msgstr "Le répertoire %s n&#039;existe pas et ne peut pas être créé. Ainsi, aucun script SVN ne peut être créé dans ce répertoire. Merci de créer ce répertoire (et permettez l&#039;écriture dans ce répertoire) ou allez sur %s pour installer SubVersion sur votre serveur."
-
-msgid "The operating system of your server is %s. No installation of SVN has been found. Please visit %s to install a SubVersion package on your server."
-msgstr "Le système d&#039;exploitation de votre serveur est %s. Aucune installation de SVN n&#039;a été trouvé. Merci visiter %s pour installer SubVersion sur votre serveur."
-
-msgid "The exec function is disabled on your installation. This function is mandatory to be able to use SVN."
-msgstr "La fonction exec est désactivée sur votre server. Cette fonction est obligatoire pour utiliser SVN. "
-
-msgid "SVN command:"
-msgstr "Commande SVN :"
-
-msgid "%s returns the following code: %s"
-msgstr "%s retourne le code suivant : %s"
-
-msgid "Checkout has failed! Please retry ..."
-msgstr "Checkout a échoué ! Merci de ré-essayer ..."
-
-msgid "Indeed, it is known that the Checkout command have some difficulties to work. You may have to re-test several times (1-20 times) to finally succeed."
-msgstr "En effet, il est connu que la command checkout a quelques problème de fonctionnement. Vous pouvez avoir à re-essayer plusieurs fois (1-20 fois) pour y réussir finalement."
-
-msgid "Do not panic: once the checkout have worked one time, the update command will be used and it is far more robust!"
-msgstr "Ne paniquez pas : une fois que la commande checkout a fonctionné une seul fois, la commande d&#039;update sera utilisée et est beaucoup plus robuste."
-
-msgid "NOTE: The command outputs the following information:"
-msgstr "NOTE : La commande a retourné les informations suivantes :"
-
-msgid "The checkout have begun but have been interrupted without any reason!"
-msgstr "La commande checkout a commencé mais a été interrompu pour une raison inconnu !"
-
-msgid "Update the local cache"
-msgstr "Mettre à jour le cache local"
-
-msgid "Compare the local cache with the plugins files"
-msgstr "Comparer le cache local avec les fichiers du plugin"
-
-msgid "Yes, the local version will be deleted and be replaced by the files stored on the SVN repository"
-msgstr "Oui, la version locale sera supprimée et remplacée avec les fichiers stockés sur le dépôt SVN"
-
-msgid "Retry the SVN preparation!"
-msgstr "Retenter la préparartion SVN !"
-
-msgid "Add a file: %s"
-msgstr "Ajouter le fichier : %s"
-
-msgid "Delete a file: %s"
-msgstr "Supprimer le fichier : %s"
-
-msgid "Final commit:"
-msgstr "Soumission finale :"
-
-msgid "The commit has ended and you may restart a normal life by closing the window..."
-msgstr "La soumission est terminée et vous pouvez recommencer une vie normale en fermant la fenêtre..."
-
-msgid "Thank you!"
-msgstr "Merci"
-
-msgid "The overwrite has ended and you may restart a normal life by closing the window..."
-msgstr "Le remplacement est terminé et vous pouvez recommencer une vie normale en fermant la fenêtre..."
 

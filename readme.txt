@@ -59,6 +59,9 @@ Moreover, all the plugins developped with this framework is able to use astonish
 
 == Changelog ==
 
+= 1.2.1 =
+* Update of the core and translations
+
 = 1.2.0 =
 * SVN support
 
@@ -90,4 +93,4 @@ Moreover, all the plugins developped with this framework is able to use astonish
 Visit http://www.sedlex.fr/cote_geek/
 
  
-InfoVersion:53331845d018c62370dc3cfad6f37d56
+InfoVersion:c62a18566508a57161b14a4cad204f2d

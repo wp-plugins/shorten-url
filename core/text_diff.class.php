@@ -28,6 +28,8 @@ if (!class_exists("textDiff")) {
 		/** ====================================================================================================================================================
 		* Identify the added part
 		* 
+		* @param string $text1 the reference text
+		* @param string $text2 the text to compare with
 		* @return array
 		*/
 		public function diff($text1, $text2) {

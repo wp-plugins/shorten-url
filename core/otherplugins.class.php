@@ -65,6 +65,7 @@ if (!class_exists("otherPlugins")) {
 		/** ====================================================================================================================================================
 		* Display the screenshot of a plugin
 		* 
+		* @param string $plugin the name of the plugin (slug name)
 		* @return void 
 		*/
 		

@@ -14,12 +14,14 @@ if (!class_exists("popupAdmin")) {
 		/** ====================================================================================================================================================
 		* Constructor of the class
 		* 
+		* @param string $title the title which will be displayed in the top of the popup
 		* @param string $css the css of the popup if needed.
 		* @param string $content the content of the popup
 		* @return void 
 		*/
 		
-		public function popupAdmin($title, $content, $css="") {
+		public function popupAdmin($title, $content, $css="", $callback="") {
+			$this->callback = $callback ; 
 			$this->css = $css ; 
 			$this->title = $title ; 
 			$this->content = $content ; 
@@ -57,6 +59,7 @@ if (!class_exists("popupAdmin")) {
 				if(popupStatus==1){  
 					jQuery("#backgroundPopup").fadeOut("slow", function() { jQuery("#backgroundPopup").remove(); });  
 					jQuery("#popupForm").fadeOut("slow", function() { jQuery("#popupForm").remove(); jQuery("#popupScript2").remove(); jQuery("#popupScript").remove(); } );  
+					<?php echo $this->callback ; ?>
 					popupStatus = 0;  
 				}  
 			} 
