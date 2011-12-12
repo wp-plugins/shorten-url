@@ -7,7 +7,7 @@
 function pluginInfo(id_div, url, plugin_name) {
 	
 	//POST the data and append the results to the results div
-	rand = Math.floor(Math.random()*500) ; 
+	rand = Math.floor(Math.random()*3000) ; 
 	window.setTimeout(function() {
 		var arguments = {
 			action: 'pluginInfo', 
@@ -34,7 +34,7 @@ function pluginInfo(id_div, url, plugin_name) {
 function coreInfo(id_div, url, plugin_name, current_core, current_finger, author) {
 	
 	//POST the data and append the results to the results div
-	rand = Math.floor(Math.random()*500) ; 
+	rand = Math.floor(Math.random()*3000) ; 
 	window.setTimeout(function() {
 		var arguments = {
 			action: 'coreInfo', 

@@ -169,11 +169,6 @@ function svnToLocal(plugin) {
 	});    
 }
 
-
-
-
-
-
 function repoToSvn(plugin) {
 	jQuery("#wait_svn").show();
 	jQuery("#svn_button").remove() ;
@@ -187,4 +182,33 @@ function repoToSvn(plugin) {
 	jQuery.post(ajaxurl, arguments, function(response) {
 		jQuery("#svn_div").html(response);
 	});    
+}
+
+function changeVersionReadme(md5, plugin, type) {
+	jQuery("#wait_gm_"+md5).show();
+	var arguments = {
+		action: 'svn_changeVersionReadme', 
+		plugin : plugin
+	} 
+	//POST the data and append the results to the results div
+	jQuery.post(ajaxurl, arguments, function(response) {
+		jQuery('body').append(response);
+		jQuery("#wait_gm_"+md5).hide();
+	});
+}
+
+function saveVersionReadme(plugin) {
+	jQuery("#wait_save").show();
+	readmetext = jQuery("#ReadmeModify").val() ; 
+	versiontext = jQuery("#versionNumberModify").val() ; 
+	var arguments = {
+		action: 'svn_saveVersionReadme', 
+		readme : readmetext, 
+		plugin : plugin,
+		version : versiontext
+	} 
+	//POST the data and append the results to the results div
+	jQuery.post(ajaxurl, arguments, function(response) {
+		jQuery('#readmeVersion').html(response);
+	});
 }

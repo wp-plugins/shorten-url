@@ -21,6 +21,7 @@ if (!class_exists("adminTabs")) {
 		function adminTabs() {	
 			$this->title = array() ; 
 			$this->content = array() ; 
+			$this->image = array() ; 
 			$this->activated = 0 ; 
 		}
 		
@@ -31,11 +32,13 @@ if (!class_exists("adminTabs")) {
 		* will create to basic tabulation.
 		* @param string $title the title of the tabulation
 		* @param string $content the HTML content of the tab
+		* @param string $image the path of an image that will be display before the title. Please indicate a 20x20px image.
 		* @return void
 		*/
-		function add_tab($title, $content) {
+		function add_tab($title, $content, $image="") {
 			$this->title[] = $title ; 
 			$this->content[] = $content ; 
+			$this->image[] = $image ; 
 		}
 		
 		/** ====================================================================================================================================================
@@ -55,13 +58,51 @@ if (!class_exists("adminTabs")) {
 		* @return void
 		*/
 		function flush() {
+			global $_SERVER ; 
 			ob_start() ; 
 			$rnd = rand(1, 100000) ; 
 ?>
 			<script>
+				function setCookie(name,value,days) {
+					if (days) {
+						var date = new Date();
+						date.setTime(date.getTime()+(days*24*60*60*1000));
+						var expires = "; expires="+date.toGMTString();
+					}
+					else var expires = "";
+					document.cookie = name+"="+value+expires+"; path=/";
+				}
+				
+				function getCookie(name) {
+					var nameEQ = name + "=";
+					var ca = document.cookie.split(';');
+					for(var i=0;i < ca.length;i++) {
+						var c = ca[i];
+						while (c.charAt(0)==' ') c = c.substring(1,c.length);
+						if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+					}
+					return null;
+				}
+				
+				function deleteCookie(name) {
+					setCookie(name,"",-1);
+				}
+
 				jQuery(function($){ 
-					$tabs<?php echo $rnd ; ?> = $('#tabs<?php echo $rnd ; ?>').tabs();  
+					$tabs<?php echo $rnd ; ?> = jQuery('#tabs<?php echo $rnd ; ?>').tabs();  
+					<?php 
+					if ($this->activated != 0) {
+					?>
 					$tabs<?php echo $rnd ; ?>.tabs('select', <?php echo ($this->activated) ?>) ; 
+					<?php
+					} else {
+					?>
+					idToGo = getCookie("tabSL").split("#") ; 
+					$tabs<?php echo $rnd ; ?>.tabs('select', "#"+idToGo[1] ) ; 
+					<?php
+					}
+					?>
+					$tabs<?php echo $rnd ; ?>.tabs({ select: function(event, ui) { setCookie("tabSL", ui.tab, 1 ) ; } });
 				}) ; 
 			</script>		
 			
@@ -69,13 +110,16 @@ if (!class_exists("adminTabs")) {
 				<ul class="hide-if-no-js">
 <?php
 			for ($i=0 ; $i<count($this->title) ; $i++) {
-?>					<li><a href="#tab-<? echo md5($this->title[$i]) ?>"><? echo $this->title[$i] ?></a></li>		
+				if ($this->image[$i]=="") {
+					$this->image[$i] = WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."img/tab_empty.png" ; 
+				}
+?>					<li><a href="#tab-<? echo md5($_SERVER['REQUEST_URI'].$this->title[$i]) ?>"><img style='vertical-align:middle;' src='<? echo $this->image[$i] ?>'> <? echo $this->title[$i] ?></a></li>		
 <?php
 			}
 ?>				</ul>
 <?php
 			for ($i=0 ; $i<count($this->title) ; $i++) {
-?>				<div id="tab-<? echo md5($this->title[$i]) ?>" class="blc-section">
+?>				<div id="tab-<? echo md5($_SERVER['REQUEST_URI'].$this->title[$i]) ?>" class="blc-section">
 					<?php echo $this->content[$i] ; ?>
 				</div>
 <?php

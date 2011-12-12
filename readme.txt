@@ -55,9 +55,13 @@ Moreover, all the plugins developped with this framework is able to use astonish
 == Screenshots ==
 
 1. The synthesis of the short link generated for your post and page
-2. The configuration page of the plugin
+2. The configuration page of the plugin 
 
 == Changelog ==
+
+= 1.2.2 =
+* Improve English text thanks to Rene
+* Correct a bug since home_url is different from site_url (thanks to Julian)
 
 = 1.2.1 =
 * Update of the core and translations
@@ -93,4 +97,4 @@ Moreover, all the plugins developped with this framework is able to use astonish
 Visit http://www.sedlex.fr/cote_geek/
 
  
-InfoVersion:c62a18566508a57161b14a4cad204f2d
+InfoVersion:4b28eb378bf7b7c7df824b3659f4f5c0

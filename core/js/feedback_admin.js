@@ -27,3 +27,15 @@ function send_feedback(plug_param, plug_ID) {
 	});    
 }
 
+function modifyFormContact() {
+	name = jQuery("#feedback_name").val() ; 
+	mail = jQuery("#feedback_mail").val() ;
+	var emailRegEx = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+	
+	if ((name.length!=0)&&(mail.length!=0)&&(mail.search(emailRegEx)!=-1)) {
+		jQuery("#feedback_submit_button").removeAttr('disabled');
+	} else {
+		jQuery("#feedback_submit_button").attr('disabled', 'disabled') ; 	
+	}
+	
+}

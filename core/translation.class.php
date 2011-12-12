@@ -181,7 +181,9 @@ if (!class_exists("translationSL")) {
 			while ($f = readdir($dir)) {
 				if (is_dir($root."/".$other.$f)) {
 					if (preg_match("/^[^.].*/i", $f)) {
-						$folder[] = $other.$f ;
+						if (!preg_match("/^templates/i", $f)) {
+							$folder[] = $other.$f ;
+						}
 					}
 				}
 				if (is_file($root."/".$other.$f)) {
@@ -253,7 +255,7 @@ if (!class_exists("translationSL")) {
 			$nb = count($file) ; 
 			
 			if (strpos($domain,"SL_framework")!==false) {
-				echo "<h3>".sprintf(__("The available translation for the SL framework (contained in the '%s' folder)",'SL_framework'),$plugin)."</h3>" ; 
+				echo "<h3>".sprintf(__("The available translations for the SL framework (contained in the '%s' folder)",'SL_framework'),$plugin)."</h3>" ; 
 				echo "<p>".sprintf(__("There is %d languages supported for the 'SL framework'.",'SL_framework'),$nb)."</p>" ; 	
 				
 				// We count the number of sentences to be translated
@@ -268,8 +270,8 @@ if (!class_exists("translationSL")) {
 				
 				
 			} else {
-				echo "<h3>".__("The available translation for this plugin",'SL_framework')."</h3>" ; 
-				echo "<p>".sprintf(__("There is %d languages supported for this plugin.",'SL_framework'),$nb)."</p>" ; 
+				echo "<h3>".__("The available translations for this plugin",'SL_framework')."</h3>" ; 
+				echo "<p>".sprintf(__("This plugin is available in %d languages.",'SL_framework'),$nb)."</p>" ; 
 				
 				// We count the number of sentences to be translated
 				$content_pot = file($path."/lang/".$domain.".pot") ;
@@ -279,7 +281,7 @@ if (!class_exists("translationSL")) {
 						$all_count_pot ++ ; 
 					}
 				}
-				echo "<p>".sprintf(__("There is %d sentence to be translated in this plugin.",'SL_framework'),$all_count_pot)."</p>" ; 	
+				echo "<p>".sprintf(__("There are %d sentences to be translated in this plugin.",'SL_framework'),$all_count_pot)."</p>" ; 	
 				echo "<p><img src='".WP_PLUGIN_URL."/".$plugin."/core/img/info.png'/>".sprintf(__("Please note that the translation for the framework is available in the %s submenu (see the %s tab).",'SL_framework'),"<em>'<a href='".add_query_arg(array('page'=>'sedlex.php'))."'>".__('About...','SL_framework')."</a>'</em> ", "'<em>".__('Manage translation of the framework','SL_framework')."</em>'")."</p>" ; 	
 
 				

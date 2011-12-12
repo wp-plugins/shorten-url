@@ -2,7 +2,7 @@
 /*
 Plugin Name: Short URL
 Description: <p>Replacing the internal function of wordpress <code>get_short_link()</code> by a bit.ly like url. </p><p>Instead of having a short link like http://www.yourdomain.com/?p=3564, your short link will be http://www.yourdomain.com/NgH5z (for instance). </p><p>You can configure: <ul><li>the length of the short link, </li><li>if the link is prefixed with a static word, </li><li>the characters used for the short link.</li></ul></p><p>Moreover, you can manage external links with this plugin. The links in your posts will be automatically replace by the short one if available.</p><p>This plugin is under GPL licence. </p>
-Version: 1.2.1
+Version: 1.2.2
 Author: SedLex
 Author Email: sedlex@sedlex.fr
 Framework Email: sedlex@sedlex.fr
@@ -154,7 +154,7 @@ class shorturl extends pluginSedLex {
 			$get = $_GET;
 			unset($get['paged']) ;			
 			ob_start() ; 
-				echo '<script language="javascript">var site="'.site_url().'"</script>' ; 
+				echo '<script language="javascript">var site="'.home_url().'"</script>' ; 
 				
 				$count = count(get_posts(array('post_status' => 'publish', 'posts_per_page' => -1))) ;
 				$maxnb = 20 ; 
@@ -230,7 +230,7 @@ class shorturl extends pluginSedLex {
 					$id_temp = md5($r->short_url) ; 
 					$cel1 = new adminCell("<a href='".$r->url_externe."'>".$r->url_externe."</a><img src='".WP_PLUGIN_URL.'/'.str_replace(basename( __FILE__),"",plugin_basename(__FILE__))."img/ajax-loader.gif' id='wait_external".$id_temp."' style='display: none;' />") ; 	
 					$cel1->add_action(__("Delete", $this->pluginID), "deleteLink_external('".$id_temp."')") ; 
-					$cel2 = new adminCell("<span id='lien_external".$id_temp."'><a href='".site_url()."/".$r->short_url."'>".site_url()."/".$r->short_url."</a></span>") ; 
+					$cel2 = new adminCell("<span id='lien_external".$id_temp."'><a href='".home_url()."/".$r->short_url."'>".home_url()."/".$r->short_url."</a></span>") ; 
 					$cel2->add_action(__("Reset", $this->pluginID), "resetLink_external('".$id_temp."')") ; 
 					$cel2->add_action(__("Edit", $this->pluginID), "forceLink_external('".$id_temp."')") ; 
 					
@@ -256,13 +256,12 @@ class shorturl extends pluginSedLex {
 			ob_start() ; 
 				?>
 					<h3 class="hide-if-js"><? echo __('Parameters',$this->pluginID) ?></h3>
-					<p><?php echo __('Here is the parameters of the plugin. Please modify them at your convenience.',$this->pluginID) ; ?> </p>
-					<p><i><?php echo __('(Please note that the parameters will only be taken in account only for generation of new links)',$this->pluginID) ; ?> </i></p>
 				
 					<?php
 					$params = new parametersSedLex($this, 'tab-parameters') ; 
 					$params->add_title(__('Do you want to use the following characters?',$this->pluginID)) ; 
-					$params->add_param('low_char', __('Low-case characters ([a-z]):',$this->pluginID)) ; 
+					$params->add_comment(__('These parameters will be taken in account only for generation of new links',$this->pluginID)) ; 
+					$params->add_param('low_char', __('Lower-case characters ([a-z]):',$this->pluginID)) ; 
 					$params->add_param('upp_char', __('Upper-case characters ([A-Z]):',$this->pluginID)) ; 
 					$params->add_param('num_char', __('Numeric characters ([0-9]):',$this->pluginID)) ; 
 					
@@ -273,26 +272,24 @@ class shorturl extends pluginSedLex {
 					$params->add_param('length', __('Length:',$this->pluginID)) ; 
 					
 					$params->flush() ; 
-			$tabs->add_tab(__('Parameters',  $this->pluginID), ob_get_clean() ) ; 	
+			$tabs->add_tab(__('Parameters',  $this->pluginID), ob_get_clean() , WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_param.png") ; 	
 					
 			ob_start() ; 
 				$plugin = str_replace("/","",str_replace(basename(__FILE__),"",plugin_basename( __FILE__))) ; 
 				$trans = new translationSL($this->pluginID, $plugin) ; 
 				$trans->enable_translation() ; 
-			$tabs->add_tab(__('Manage translations',  $this->pluginID), ob_get_clean() ) ; 	
+			$tabs->add_tab(__('Manage translations',  $this->pluginID), ob_get_clean() , WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_trad.png") ; 	
 
 			ob_start() ; 
-				echo __('This form is an easy way to contact the author and to discuss issues / incompatibilities / etc.',  $this->pluginID) ; 
 				$plugin = str_replace("/","",str_replace(basename(__FILE__),"",plugin_basename( __FILE__))) ; 
 				$trans = new feedbackSL($plugin, $this->pluginID) ; 
 				$trans->enable_feedback() ; 
-			$tabs->add_tab(__('Give feedback',  $this->pluginID), ob_get_clean() ) ; 	
+			$tabs->add_tab(__('Give feedback',  $this->pluginID), ob_get_clean() , WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_mail.png") ; 	
 			
 			ob_start() ; 
-				echo "<p>".__('Here is the plugins developped by the author:',  $this->pluginID) ."</p>" ; 
 				$trans = new otherPlugins("sedLex", array('wp-pirates-search')) ; 
 				$trans->list_plugins() ; 
-			$tabs->add_tab(__('Other possible plugins',  $this->pluginID), ob_get_clean() ) ; 	
+			$tabs->add_tab(__('Other plugins',  $this->pluginID), ob_get_clean() , WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_plug.png") ; 	
 
 			echo $tabs->flush() ; 
 			
@@ -361,7 +358,7 @@ class shorturl extends pluginSedLex {
 		// Return the new URL to the interface
 		$old_id = $idLink ; 
 		$new_id = md5($result) ; 
-		$link = site_url()."/".$wpdb->get_var("SELECT short_url FROM {$table_name} WHERE id_post=0 AND short_url='".$result."'") ;
+		$link = home_url()."/".$wpdb->get_var("SELECT short_url FROM {$table_name} WHERE id_post=0 AND short_url='".$result."'") ;
 		?>
 		<a href="<?php echo $link; ?>"><?php echo $link ; ?></a>
 		<script>
@@ -424,7 +421,7 @@ class shorturl extends pluginSedLex {
 		// Return the new URL to the interface
 		$old_id = $idLink ; 
 		$new_id = md5($link) ; 
-		$link = site_url()."/".$wpdb->get_var("SELECT short_url FROM {$table_name} WHERE id_post=0 AND short_url='".$link."'") ;
+		$link = home_url()."/".$wpdb->get_var("SELECT short_url FROM {$table_name} WHERE id_post=0 AND short_url='".$link."'") ;
 		?>
 		<a href="<?php echo $link; ?>"><?php echo $link ; ?></a>
 		<script>
@@ -469,7 +466,7 @@ class shorturl extends pluginSedLex {
 		// get the arguments
 		$idLink = $_POST['idLink'];
 		// Get a entry
-		$link =  site_url()."/".$wpdb->get_var("SELECT short_url FROM {$table_name} WHERE id_post=0 AND MD5(short_url)='".$idLink."'") ;
+		$link =  home_url()."/".$wpdb->get_var("SELECT short_url FROM {$table_name} WHERE id_post=0 AND MD5(short_url)='".$idLink."'") ;
 		// Return the new URL to the interface
 		?>
 		<a href="<?php echo $link; ?>"><?php echo $link ; ?></a>
@@ -518,7 +515,7 @@ class shorturl extends pluginSedLex {
 		$url = $wpdb->get_var( $select ) ;
 	
 		if ($url!="") {
-			return site_url()."/".$url ; 
+			return home_url()."/".$url ; 
 		}
 	
 		// We generate a new short Url
@@ -542,7 +539,7 @@ class shorturl extends pluginSedLex {
 				$wpdb->query( $sql ) ;
 			}
 		}
-		return site_url()."/".$result ; 
+		return home_url()."/".$result ; 
 	}
 
 
@@ -602,7 +599,7 @@ class shorturl extends pluginSedLex {
 		
 		$short = $wpdb->get_var( "SELECT short_url FROM {$table_name} WHERE id_post=0 AND url_externe='".$match[2]."'"); 
 		if ($short != "") {
-			return '<a'.$match[1].'href="'.site_url()."/".$short.'"'.$match[3].'>';
+			return '<a'.$match[1].'href="'.home_url()."/".$short.'"'.$match[3].'>';
 		} else {
 			return '<a'.$match[1].'href="'.$match[2].'"'.$match[3].'>';
 		}

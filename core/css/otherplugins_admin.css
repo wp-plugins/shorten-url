@@ -8,12 +8,17 @@ div.screenshot_wordpress {
 
 div.screenshot_wordpress .screenshot {
   /* Code standard */ 
-  max-width: 200px; 
-  max-height: 200px; 
+  max-width: 100px; 
+  max-height: 100px; 
  
   /* Code spécial IE */ 
   _width: expression((this.offsetWidth>=this.offsetHeight) ? 
-      Math.min(parseInt(this.offsetWidth), 200 ) : true); 
+      Math.min(parseInt(this.offsetWidth), 100 ) : true); 
   _height: expression((this.offsetHeight>this.offsetWidth) ? 
-      Math.min(parseInt(this.offsetHeight), 200 ) : true);
+      Math.min(parseInt(this.offsetHeight), 100 ) : true);
+}
+
+div.description_wordpress ul {
+	list-style: disc;
+	padding-left: 2em;
 }

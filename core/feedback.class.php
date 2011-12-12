@@ -31,17 +31,31 @@ if (!class_exists("feedbackSL")) {
 
 		public function enable_feedback() {
 			
+			echo  "<h3>".__("Feedback form",'SL_framework')."</h3>" ; 
+			echo "<p>".__('This form is an easy way to contact the author and to discuss issues/incompatibilities/etc. with him',  "SL_framework")."</p>" ; 
 			echo "<a name='top_feedback'></a><div id='form_feedback_info'></div><div id='form_feedback'>" ; 
 			$_POST['plugin'] = $this->plugin ; 
 			
 			$info_file = pluginSedLex::get_plugins_data(WP_PLUGIN_DIR."/".$this->plugin."/".$this->plugin.".php") ; 
 			if (preg_match("#^[a-z0-9-_.]+@[a-z0-9-_.]{2,}\.[a-z]{2,4}$#",$info_file['Email'])) {
-				echo "<p>".__('Your name:', 'SL_framework')." <input id='feedback_name' type='text' name='feedback_name' value='' /></p>" ; 
-				echo "<p>".__('Your email (for response):', 'SL_framework')." <input id='feedback_mail' type='text' name='feedback_mail' value='' /></p>" ; 
-				echo "<p>".__('Your comments:', 'SL_framework')." </p>" ; 
-				echo "<p><textarea id='feedback_comment' style='width:500px;height:400px;'></textarea></p>" ; 
-				echo "<p>".__('Please note that additional information on your wordpress installation will be sent to the author in order to help the debugging if needed (such as : the wordpress version, the installed plugins, etc.)', 'SL_framework')." </p>" ; 
-				echo "<p id='feedback_submit'><input type='submit' name='add' class='button-primary validButton' onclick='send_feedback(\"".$this->plugin."\", \"".$this->pluginID."\");return false;' value='".__('Send feedback','SL_framework')."' /></p>" ; 
+				$table = new adminTable() ; 
+				$table->title(array(__("Contact the author", "SL_framework"), "") ) ;
+				// Name
+				$cel1 = new adminCell("<p>".__('Your name:', 'SL_framework')."*</p>") ;
+				$cel2 = new adminCell("<p><input onChange='modifyFormContact()' id='feedback_name' type='text' name='feedback_name' value='' /></p>") ;
+				$table->add_line(array($cel1, $cel2), '1') ;	
+				// Email
+				$cel1 = new adminCell("<p>".__('Your email:', 'SL_framework')."*</p><p class='paramComment' style='color: rgb(164, 164, 164);'>".__('Useful... so that the author will be able to anwser you.', 'SL_framework')."</p>") ;
+				$cel2 = new adminCell("<p><input onChange='modifyFormContact()' id='feedback_mail' type='text' name='feedback_mail' value='' /></p>") ;
+				$table->add_line(array($cel1, $cel2), '1') ;	
+				// Comment
+				$cel1 = new adminCell("<p>".__('Your comments:', 'SL_framework')."*</p><p class='paramComment' style='color: rgb(164, 164, 164);'>".__('Please note that additional information on your wordpress installation will be sent to the author in order to help the debugging if needed (such as : the wordpress version, the installed plugins, etc.)', 'SL_framework')."</p>") ;
+				$cel2 = new adminCell("<p><textarea id='feedback_comment' style='width:500px;height:200px;'></textarea></p>") ;
+				$table->add_line(array($cel1, $cel2), '1') ;	
+				
+				echo $table->flush() ; 
+				
+				echo "<p id='feedback_submit'><input id='feedback_submit_button' disabled type='submit' name='add' class='button-primary validButton' onclick='send_feedback(\"".$this->plugin."\", \"".$this->pluginID."\");return false;' value='".__('Send feedback','SL_framework')."' /></p>" ; 
 				
 				$x = WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__)) ; 
 				echo "<img id='wait_feedback' src='".$x."/img/ajax-loader.gif' style='display:none;'>" ; 

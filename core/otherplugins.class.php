@@ -43,60 +43,97 @@ if (!class_exists("otherPlugins")) {
 				if ( ! $res ) {
 					echo  "<p>???</p>";
 				} else {
+					$table = new adminTable() ; 
+					$table->title(array(__("Plugin Information", "SL_framework"), __("Description and Screenshots", "SL_framework")) ) ;
+					
+					$pV = array() ; 
+					foreach ($res->plugins as $plug) {
+						$pV = array_merge($pV, array($plug->name => $plug)) ;  
+					}
+					ksort($pV) ; 
+					$res->plugins = $pV ; 
+					
 					foreach ($res->plugins as $plug) {
 						$found_exclu = false ; 
+
 						foreach($this->exclu as $e) {
 							if ($e == $plug->slug) {
 								$found_exclu = true ; 
 							}
 						}
 						if (!$found_exclu) {
-							echo "<h3>".$plug->name." (".$plug->version.")</h3>" ; 
-							echo "<p style='padding-left:2cm;'>".__('Homepage:', 'SL_framework' )." <a href='".$plug->homepage." target='blank'>".$plug->homepage."</a></p>" ; 
-							echo str_replace("<ul>", "<ul style='list-style-type:circle; padding-left:3cm;'>", str_replace('<p>', "<p style='padding-left:2cm;'>" , $plug->description)) ;
-							$this->display_screenshot($plug->slug) ; 
-							echo "<hr/>" ; 
+							ob_start() ; 
+							
+								echo "<p><b>".$plug->name."</b></p>" ; 
+								echo "<p>".sprintf(__('The Wordpress page: %s', 'SL_framework'),"<a href='http://wordpress.org/extend/plugins/".$plug->slug."'>http://wordpress.org/extend/plugins/".$plug->slug."</a>")."</p>" ; 
+								$cells = $this->pluginInfo($plug->slug) ; 
+								echo $cells[0] ; 
+							
+							$cel1 = new adminCell(ob_get_clean()) ;
+							$cel2 = new adminCell($cells[1] ) ;
+							$table->add_line(array($cel1, $cel2), '1') ;
+	
 						}
 					}
+					echo "<h3>".__("Other plugins",'SL_framework')."</h3>" ; 
+					echo "<p>".__('Here are other plugins developped by the author:',  "SL_framework") ."</p>" ; 
+					echo $table->flush() ; 
 				}
 			}
 		}
+		
 		
 		/** ====================================================================================================================================================
-		* Display the screenshot of a plugin
+		* Display the plugin Info
 		* 
 		* @param string $plugin the name of the plugin (slug name)
-		* @return void 
+		* @return array the first cell is for the synthesis, the second is for the description and the screenshot 
 		*/
-		
-		public function display_screenshot($plugin) {
+		function pluginInfo($plugin) {
+
+			// $action: query_plugins, plugin_information or hot_tags
+			// $req is an object
 			$action = "plugin_information" ; 
-			$req->slug = $plugin; 
-			
+			$req->slug = $plugin;
 			$request = wp_remote_post('http://api.wordpress.org/plugins/info/1.0/', array( 'body' => array('action' => $action, 'request' => serialize($req))) );
 			if ( is_wp_error($request) ) {
-				echo  "<p>".__('An Unexpected HTTP Error occurred during the API request.', 'SL_framework' )."</p>";
+				return  array("<p>".__('An Unexpected HTTP Error occurred during the API request.', 'SL_framework' )."</p>", "");
 			} else {
 				$res = unserialize($request['body']);
-				if ( ! $res ) {
-					echo  "<p>???</p>";
-				} else {
-					$screen = $res->sections['screenshots'] ; 
-					$screen = str_replace("</ol>", "", $screen) ; 
-					$screen = str_replace("<ol>", "", $screen) ; 
-					$screen = str_replace("<li>", "<div class='screenshot_wordpress'>", $screen) ; 
-					$screen = str_replace("</li>", "</div>", $screen) ; 
-					//<img class="screenshot" src="http://s.wordpress.org/extend/plugins/content-table/screenshot-1.png?r=429528" alt="content-table screenshot 1">
-					$screen = preg_replace('#<img([^>]*)src=\'([^\']*?)\'([^>]*)>#isU', '<a href="$2" target="blank"><img$1src="$2"$3></a>', $screen) ; 
-					//$screen = preg_replace('#<img([^>]*)src=["\']?([^"\']*)["\']?#isU', '<a href="$2"><img$1src="$2"></a>', $screen) ; 
-					
-					echo "<div style='padding-left:100px ; '>".$screen."<div style='clear:both;'></div></div>" ; 
-				}
+				ob_start() ; 
+				$lastUpdate = date_i18n(get_option('date_format') , strtotime($res->last_updated)) ; 
+				echo  "<p>".__('Last update:', 'SL_framework' )." ".$lastUpdate."</p>";
+				echo  "<div class='inline'>".sprintf(__('Rating: %s', 'SL_framework' ), $res->rating)." &nbsp; &nbsp; </div> " ; 
+				echo "<div class='star-holder inline'>" ; 
+				echo "<div class='star star-rating' style='width: ".$res->rating."px'></div>" ; 
+				echo "<div class='star star5'><img src='".WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."img/star.gif' alt='5 stars' /></div>" ; 
+				echo "<div class='star star4'><img src='".WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."img/star.gif' alt='4 stars' /></div>" ; 
+				echo "<div class='star star3'><img src='".WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."img/star.gif' alt='3 stars' /></div>" ; 
+				echo "<div class='star star2'><img src='".WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."img/star.gif' alt='2 stars' /></div>" ; 
+				echo "<div class='star star1'><img src='".WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."img/star.gif' alt='1 stars' /></div>" ; 
+				echo "</div> " ; 
+				echo " <div class='inline'> &nbsp; (".sprintf(__("by %s persons", 'SL_framework' ),$res->num_ratings).")</div>";
+				echo "<br class='clearBoth' />" ; 
+				echo  "<p>".__('Number of download:', 'SL_framework' )." ".$res->downloaded."</p>";
+				$cell1 = ob_get_clean() ; 
+				
+				ob_start() ;
+				echo "<div class='description_wordpress'>" ; 
+				$content = explode("<h", $res->sections['description']) ; 
+				echo $content[0] ; 
+				echo "</div>" ; 
+				
+				$screen = $res->sections['screenshots'] ; 
+				$screen = str_replace("</ol>", "", $screen) ; 
+				$screen = str_replace("<ol>", "", $screen) ; 
+				$screen = str_replace("<li>", "<div class='screenshot_wordpress'>", $screen) ; 
+				$screen = str_replace("</li>", "</div>", $screen) ; 
+				$screen = preg_replace('#<img([^>]*)src=\'([^\']*?)\'([^>]*)>#isU', '<a href="$2" target="blank"><img$1src="$2"$3></a>', $screen) ; 				
+				echo "<div style='padding-left:10px ; '>".$screen."<div style='clear:both;'></div></div>" ; 
+				$cell2 = ob_get_clean() ; 
+				return array($cell1, $cell2) ; 
 			}
 		}
-
-
-
 	} 
 }
 

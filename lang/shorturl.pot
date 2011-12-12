@@ -60,88 +60,68 @@ msgid "Results for External URL"
 msgstr ""
 
 #: shorten-url.php:258
-#: shorten-url.php:276
+#: shorten-url.php:275
 #@ shorturl
 msgid "Parameters"
 msgstr ""
 
-#: shorten-url.php:259
-#@ shorturl
-msgid "Here is the parameters of the plugin. Please modify them at your convenience."
-msgstr ""
-
-#: shorten-url.php:260
-#@ shorturl
-msgid "(Please note that the parameters will only be taken in account only for generation of new links)"
-msgstr ""
-
-#: shorten-url.php:264
+#: shorten-url.php:262
 #@ shorturl
 msgid "Do you want to use the following characters?"
 msgstr ""
 
-#: shorten-url.php:265
+#: shorten-url.php:263
 #@ shorturl
-msgid "Low-case characters ([a-z]):"
+msgid "These parameters will be taken in account only for generation of new links"
 msgstr ""
 
-#: shorten-url.php:266
+#: shorten-url.php:264
+#@ shorturl
+msgid "Lower-case characters ([a-z]):"
+msgstr ""
+
+#: shorten-url.php:265
 #@ shorturl
 msgid "Upper-case characters ([A-Z]):"
 msgstr ""
 
-#: shorten-url.php:267
+#: shorten-url.php:266
 #@ shorturl
 msgid "Numeric characters ([0-9]):"
 msgstr ""
 
-#: shorten-url.php:269
+#: shorten-url.php:268
 #@ shorturl
 msgid "Do you want to use a prefix before your short URL?"
 msgstr ""
 
-#: shorten-url.php:270
+#: shorten-url.php:269
 #@ shorturl
 msgid "Prefix:"
 msgstr ""
 
-#: shorten-url.php:272
+#: shorten-url.php:271
 #@ shorturl
 msgid "What is the length of your short URL (without the prefix)?"
 msgstr ""
 
-#: shorten-url.php:273
+#: shorten-url.php:272
 #@ shorturl
 msgid "Length:"
 msgstr ""
 
-#: shorten-url.php:282
-#: core/templates/my-plugin.php:227
+#: shorten-url.php:281
 #@ shorturl
 msgid "Manage translations"
 msgstr ""
 
-#: shorten-url.php:285
-#: core/templates/my-plugin.php:230
-#@ shorturl
-msgid "This form is an easy way to contact the author and to discuss issues / incompatibilities / etc."
-msgstr ""
-
-#: shorten-url.php:289
-#: core/templates/my-plugin.php:234
+#: shorten-url.php:287
 #@ shorturl
 msgid "Give feedback"
 msgstr ""
 
 #: shorten-url.php:292
-#: core/templates/my-plugin.php:237
 #@ shorturl
-msgid "Here is the plugins developped by the author:"
-msgstr ""
-
-#: shorten-url.php:295
-#: core/templates/my-plugin.php:243
-#@ shorturl
-msgid "Other possible plugins"
+msgid "Other plugins"
 msgstr ""
 

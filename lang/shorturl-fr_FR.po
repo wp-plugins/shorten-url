@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2011-09-20T13:36:03+00:00\n"
+"PO-Revision-Date: 2011-12-12T14:34:22+00:00\n"
 "Last-Translator: SedLex <http://www.sedlex.fr/>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -56,16 +56,13 @@ msgstr "Résultats pour les URL externes"
 msgid "Parameters"
 msgstr "Paramètres"
 
-msgid "Here is the parameters of the plugin. Please modify them at your convenience."
-msgstr "Voici les paramètres du plugin. Modifier les comme cela vous convient."
-
-msgid "(Please note that the parameters will only be taken in account only for generation of new links)"
-msgstr "(Merci de noter que les paramètres ne seront pris en compte que pour la génération de nouveaux liens)"
-
 msgid "Do you want to use the following characters?"
 msgstr "Quels caractères voulez-vous utiliser ?"
 
-msgid "Low-case characters ([a-z]):"
+msgid "These parameters will be taken in account only for generation of new links"
+msgstr "Ces paramètres ne seront pris en compte que pour la génération de nouveaux liens"
+
+msgid "Lower-case characters ([a-z]):"
 msgstr "Minuscules ([a-z]) :"
 
 msgid "Upper-case characters ([A-Z]):"
@@ -89,18 +86,9 @@ msgstr "Longueur :"
 msgid "Manage translations"
 msgstr "Gérer les traductions"
 
-msgid "This form is an easy way to contact the author and to discuss issues / incompatibilities / etc."
-msgstr "Ce formulaire vous permets de contacter l&#039;auteur afin de discuter de problèmes / incompatibilités"
-
 msgid "Give feedback"
 msgstr "Donner un feedback"
 
-msgid "Here is the plugins developped by the author"
-msgstr "Voici les plugins développés par l&#039;auteur"
-
-msgid "Other possible plugins"
-msgstr "Autres plugins possibles"
-
-msgid "Here is the plugins developped by the author:"
-msgstr "Voici les plugins développés par l&#039;auteur :"
+msgid "Other plugins"
+msgstr "Autres plugins"
 

@@ -4,11 +4,15 @@
 * VersionInclude : 4.0
 */ 
 
+/* Prevent direct access to this file */
+if (!defined('ABSPATH')) {
+	exit("Sorry, you are not allowed to access this file directly.");
+}
 
+$url = "" ; 
 
 if (!class_exists('pluginSedLex')) {
 	$folders = scandir(WP_PLUGIN_DIR) ; 
-	$url = "" ; 
 	$date = 0 ; 
 	foreach ($folders as $f) {
 		if ($f != "." && $f != "..") {
@@ -37,6 +41,7 @@ if (!class_exists('pluginSedLex')) {
 	require_once($url.'core/parameters.class.php') ; 
 	require_once($url.'core/phpdoc.class.php') ; 
 	require_once($url.'core/popup.class.php') ; 
+	require_once($url.'core/progress_bar.class.php') ; 
 	require_once($url.'core/translation.class.php') ; 
 	require_once($url.'core/text_diff.class.php') ; 
 	require_once($url.'core/svn.class.php') ; 

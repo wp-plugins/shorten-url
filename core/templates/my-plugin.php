@@ -40,7 +40,7 @@ class my_plugin extends pluginSedLex {
 		$this->pluginName = 'My Plugin' ; 
 		
 		// The structure of the SQL table if needed (for instance, 'id_post mediumint(9) NOT NULL, short_url TEXT DEFAULT '', UNIQUE KEY id_post (id_post)') 
-		$this->table_sql = '' ; 
+		$this->tableSQL = '' ; 
 		// The name of the SQL table (Do no modify except if you know what you do)
 		$this->table_name = $wpdb->prefix . "pluginSL_" . get_class() ; 
 
@@ -152,95 +152,79 @@ class my_plugin extends pluginSedLex {
 			//===============================================================================================
 			// After this comment, you may modify whatever you want
 			?>
-			<p>This is the configuration page</p>
+			<p><? echo __("This is the configuration page of the plugin", $this->pluginID) ;?></p>
 			<?php
 			
-			// Examples for creating tabs
-			//----------------------------------
-			
-			echo "<h5>Tabs</h5>" ; 
 			$tabs = new adminTabs() ; 
-			ob_start() ; 
-			echo "Content 1" ; 
-			$tabs->add_tab("Tab1", ob_get_clean() ) ; 	
-			ob_start() ; 
-			echo "Content 2" ; 
-			$tabs->add_tab("Tab2", ob_get_clean() ) ; 
-			
-			echo $tabs->flush() ; 			
-			
-			// Examples for creating tables
-			//----------------------------------
-			
-			echo "<h5>Tables</h5>" ; 
-			$table = new adminTable() ; 
-			$table->title(array("Col1", "Col2", "Col3")) ; 
 			
 			ob_start() ; 
-			echo "Cell 1-1" ; 
-			$cel1 = new adminCell(ob_get_clean()) ; 		
-			ob_start() ; 
-			echo "Cell 1-2" ; 
-			$cel2 = new adminCell(ob_get_clean()) ; 		
-			ob_start() ; 
-			echo "Cell 1-3" ; 
-			$cel3 = new adminCell(ob_get_clean()) ; 		
-			$table->add_line(array($cel1, $cel2, $cel3), '1') ; 
 			
-			ob_start() ; 
-			echo "Cell 2-1" ; 
-			$cel1 = new adminCell(ob_get_clean()) ; 		
-			ob_start() ; 
-			echo "Cell 2-2" ; 
-			$cel2 = new adminCell(ob_get_clean()) ; 		
-			ob_start() ; 
-			echo "Cell 2-3" ; 
-			$cel3 = new adminCell(ob_get_clean()) ; 		
-			$table->add_line(array($cel1, $cel2, $cel3), '2') ; 
+				// Examples for creating tables
+				//----------------------------------
+				
+				echo "<h5>Tables</h5>" ; 
+				$table = new adminTable() ; 
+				$table->title(array("Col1", "Col2", "Col3")) ; 
+				
+				ob_start() ; 
+				echo "Cell 1-1" ; 
+				$cel1 = new adminCell(ob_get_clean()) ; 		
+				ob_start() ; 
+				echo "Cell 1-2" ; 
+				$cel2 = new adminCell(ob_get_clean()) ; 		
+				ob_start() ; 
+				echo "Cell 1-3" ; 
+				$cel3 = new adminCell(ob_get_clean()) ; 		
+				$table->add_line(array($cel1, $cel2, $cel3), '1') ; 
+				
+				ob_start() ; 
+				echo "Cell 2-1" ; 
+				$cel1 = new adminCell(ob_get_clean()) ; 		
+				ob_start() ; 
+				echo "Cell 2-2" ; 
+				$cel2 = new adminCell(ob_get_clean()) ; 		
+				ob_start() ; 
+				echo "Cell 2-3" ; 
+				$cel3 = new adminCell(ob_get_clean()) ; 		
+				$table->add_line(array($cel1, $cel2, $cel3), '2') ; 
 
-			echo $table->flush() ; 
+				echo $table->flush() ; 
+				
+			$tabs->add_tab(__('Summary',  $this->pluginID), ob_get_clean()) ; 	
 
-			// Examples for creating option form
-			//----------------------------------		
-			
-			echo "<h5>Option Form</h5>" ; 
-			
-			$params = new parametersSedLex($this, "tab-parameters") ; 
-			$params->add_title("Title 1") ; 
-			$params->add_param('opt1', 'Modify opt1:') ; 
-			$params->add_comment("This is a comment") ; 
-			$params->add_param('opt2', 'Modify opt2:') ; 
-			$params->add_param('opt3', 'Modify opt3:') ; 
-			$params->add_comment("This is another comment") ; 
-			$params->add_title("Title 2") ; 
-			$params->add_param('opt4', 'Modify opt4:') ; 
-			
-			$params->flush() ; 
-			
-			
-			$tabs = new adminTabs() ; 
+			ob_start() ; 
+				$params = new parametersSedLex($this, "tab-parameters") ; 
+				$params->add_title("Title 1") ; 
+				$params->add_param('opt1', 'Modify opt1:') ; 
+				$params->add_comment("This is a comment") ; 
+				$params->add_param('opt2', 'Modify opt2:') ; 
+				$params->add_param('opt3', 'Modify opt3:') ; 
+				$params->add_comment("This is another comment") ; 
+				$params->add_title("Title 2") ; 
+				$params->add_param('opt4', 'Modify opt4:') ; 
+				$params->flush() ; 
+				
+			$tabs->add_tab(__('Parameters',  $this->pluginID), ob_get_clean() , WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_param.png") ; 	
 			
 			ob_start() ; 
 				$plugin = str_replace("/","",str_replace(basename(__FILE__),"",plugin_basename( __FILE__))) ; 
 				$trans = new translationSL($this->pluginID, $plugin) ; 
 				$trans->enable_translation() ; 
-			$tabs->add_tab(__('Manage translations',  $this->pluginID), ob_get_clean() ) ; 	
+			$tabs->add_tab(__('Manage translations',  $this->pluginID), ob_get_clean() , WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_trad.png") ; 	
 
 			ob_start() ; 
-				echo __('This form is an easy way to contact the author and to discuss issues / incompatibilities / etc.',  $this->pluginID) ; 
 				$plugin = str_replace("/","",str_replace(basename(__FILE__),"",plugin_basename( __FILE__))) ; 
 				$trans = new feedbackSL($plugin, $this->pluginID) ; 
 				$trans->enable_feedback() ; 
-			$tabs->add_tab(__('Give feedback',  $this->pluginID), ob_get_clean() ) ; 	
+			$tabs->add_tab(__('Give feedback',  $this->pluginID), ob_get_clean() , WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_mail.png")) ; 	
 			
 			ob_start() ; 
-				echo "<p>".__('Here is the plugins developped by the author:',  $this->pluginID) ."</p>" ; 
 				// A liste of plugin slug to be excluded
-				$exlude = array() ; 
+				$exlude = array('wp-pirate-search') ; 
 				// Replace sedLex by your own author name
 				$trans = new otherPlugins("sedLex", $exlude) ; 
 				$trans->list_plugins() ; 
-			$tabs->add_tab(__('Other possible plugins',  $this->pluginID), ob_get_clean() ) ; 	
+			$tabs->add_tab(__('Other plugins',  $this->pluginID), ob_get_clean() , WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_plug.png")) ; 	
 			
 			echo $tabs->flush() ; 
 			
@@ -248,7 +232,7 @@ class my_plugin extends pluginSedLex {
 			// Before this comment, you may modify whatever you want
 			//===============================================================================================
 			?>
-			<?php echo "Powered by ".$this->signature ; ?>
+			<?php echo $this->signature ; ?>
 		</div>
 		<?php
 	}

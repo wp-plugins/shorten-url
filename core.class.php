@@ -4,6 +4,11 @@
 * VersionInclude : 3.0
 */ 
 
+/* Prevent direct access to this file */
+if (!defined('ABSPATH')) {
+	exit("Sorry, you are not allowed to access this file directly.");
+}
+
 if (!class_exists('pluginSedLex')) {
 
 	$sedlex_list_scripts = array() ; 
@@ -16,7 +21,7 @@ if (!class_exists('pluginSedLex')) {
 	* @abstract
 	*/
 	abstract class pluginSedLex {
-	
+	 
 		protected $pluginID = '';
 		protected $pluginName = '';
 		protected $signature = '';
@@ -33,6 +38,7 @@ if (!class_exists('pluginSedLex')) {
 			}
 			add_action('admin_menu',  array( $this, 'admin_menu'));
 			add_filter('plugin_row_meta', array( $this, 'plugin_actions'), 10, 2);
+			add_filter('plugin_action_links', array($this, 'plugin_action_links'), 10, 2);
 			add_action('init', array( $this, 'init_textdomain'));
 			
 			add_action('wp_print_scripts', array( $this, 'javascript_front'), 5);
@@ -61,7 +67,10 @@ if (!class_exists('pluginSedLex')) {
 			add_action('wp_ajax_svn_merge', array($this,'svn_merge')) ; 
 			add_action('wp_ajax_svn_put_folder_in_repo', array($this,'svn_put_folder_in_repo')) ; 
 			add_action('wp_ajax_svn_delete_in_repo', array($this,'svn_delete_in_repo')) ; 
-			
+			add_action('wp_ajax_svn_changeVersionReadme', array($this,'svn_changeVersionReadme')) ; 
+			add_action('wp_ajax_svn_saveVersionReadme', array($this,'svn_saveVersionReadme')) ; 
+			add_action('wp_ajax_svn_viewDifferences', array($this,'svn_viewDifferences')) ; 
+												
 			// We add ajax call for enhancing the performance of the information page
 			add_action('wp_ajax_pluginInfo', array($this,'pluginInfo')) ; 
 			add_action('wp_ajax_coreInfo', array($this,'coreInfo')) ; 
@@ -81,6 +90,8 @@ if (!class_exists('pluginSedLex')) {
 			//remove_action( 'wp_head', 'wp_shortlink_wp_head');
 			
 			$this->signature = '<p style="text-align:right;font-size:75%;">&copy; SedLex - <a href="http://www.sedlex.fr/">http://www.sedlex.fr/</a></p>' ; 
+			
+			$this->frmk = new coreSLframework() ;
 		}
 		
 		/** ====================================================================================================================================================
@@ -123,7 +134,19 @@ if (!class_exists('pluginSedLex')) {
 				$this->_update() ; 
 			}
 		}
-		
+
+		/** ====================================================================================================================================================
+		* Get the plugin ID
+		* 
+		* @return string the plugin ID string. the string will be empty if it is not a plugin (i.e. the framework)
+		*/
+		public function getPluginID () {
+			$tmp = $this->pluginID ; 
+			if ($tmp=="coreSLframework") 
+				return "" ; 
+			return $tmp ; 
+		}
+	
 		/** ====================================================================================================================================================
 		* In order to uninstall the plugin, few things are to be done ... 
 		* This function is not supposed to be called from your plugin : it is a purely internal function called when you de-activate the plugin
@@ -216,7 +239,13 @@ if (!class_exists('pluginSedLex')) {
 			if (method_exists($this,'_notify')) {
 				$number = $this->_notify() ; 
 				if (is_numeric($number)) {
-					$number = "<span class='update-plugins count-1' title='title'><span class='update-count'>".$number."</span></span>" ; 
+					if ($number>0) {
+						$number = "<span class='update-plugins count-1' title='title'><span class='update-count'>".$number."</span></span>" ; 
+					} else {
+						$number = "" ; 
+					}
+				} else {
+					$number = "" ; 
 				}
 			}
 			$page = add_submenu_page($topLevel, $this->pluginName, $this->pluginName . $number, 10, $plugin, array($this,'configuration_page'));
@@ -258,6 +287,27 @@ if (!class_exists('pluginSedLex')) {
 			return $links;
 		}
 		
+		/** ====================================================================================================================================================
+		* Handler for the 'plugin_action_links' hook. Adds a "Settings" link to this plugin's entry
+		* on the plugin list.
+		*
+		* @access private
+		* @param array $links
+		* @param string $file
+		* @return array
+		*/
+		function plugin_action_links($links, $file) {
+			$tmp = explode('/',plugin_basename($this->path)) ; 
+			$plugin = $tmp[0]."/".$tmp[0].".php" ; 
+			if ($file == $plugin) {
+				return array_merge(
+					$links,
+					array( '<a href="admin.php?page='.$plugin.'">'. __('Settings', 'SL_framework') .'</a>')
+				);
+			}
+			return $links;
+		}
+		
 		
 		/** ====================================================================================================================================================
 		* Translate the plugin with international settings
@@ -278,6 +328,7 @@ if (!class_exists('pluginSedLex')) {
 		* 
 		* For instance, <code> $this->add_js('http://www.monserveur.com/wp-content/plugins/my_plugin/js/foo.js') ; </code> will add the 'my_plugin/js/foo.js' in the header.
 		* In order to save bandwidth and boost your website, the framework will concat all the added javascript (by this function) and serve the browser with a single js file 
+		* Note : you have to call this function in function <code>your_function</code> called by <code>add_action('wp_print_scripts', array( $this, 'your_function'));</code>
 		*
 		* @param string $url the complete http url of the javascript (this javascript should be an internal javascript i.e. stored by your blog and not, for instance, stored by Google) 
 		* @see pluginSedLex::add_inline_js
@@ -296,6 +347,7 @@ if (!class_exists('pluginSedLex')) {
 		* 
 		* For instance <code> $this->add_inline_js('alert("foo");') ; </code>
 		* In order to save bandwidth and boost your website, the framework will concat all the added javascript (by this function) and serve the browser with a single js file 
+		* Note : you have to call this function in function <code>your_function</code> called by <code>add_action('wp_print_scripts', array( $this, 'your_function'));</code>
 		*
 		* @param string $text the javascript to be inserted in the header (without any <script> tags)
 		* @see pluginSedLex::add_js
@@ -430,6 +482,7 @@ if (!class_exists('pluginSedLex')) {
 		* 
 		* For instance,  <code>$this->add_css('http://www.monserveur.com/wp-content/plugins/my_plugin/js/foo.css') ;</code> will add the 'my_plugin/js/foo.css' in the header.
 		* In order to save bandwidth and boost your website, the framework will concat all the added css (by this function) and serve the browser with a single css file 
+		* Note : you have to call this function in function <code>your_function</code> called by <code>add_action('wp_print_styles', array( $this, 'your_function'));</code>
 		*
 		* @param string $url the complete http url of the css file (this css should be an internal javascript i.e. stored by your blog and not, for instance, stored by Google) 
 		* @see pluginSedLex::add_inline_css
@@ -449,6 +502,7 @@ if (!class_exists('pluginSedLex')) {
 		*
 		* For instance,  <code> $this->add_inline_css('.head { color:#FFFFFF; }') ; </code>
 		* In order to save bandwidth and boost your website, the framework will concat all the added css (by this function) and serve the browser with a single css file 
+		* Note : you have to call this function in function <code>your_function</code> called by <code>add_action('wp_print_styles', array( $this, 'your_function'));</code>
 		*
 		* @param string $text the css to be inserted in the header (without any <style> tags)
 		* @see pluginSedLex::add_css
@@ -583,54 +637,36 @@ if (!class_exists('pluginSedLex')) {
 		* @return void
 		*/
 		function sedlex_information() {
-			echo "<a name='top'></a>" ; 
+			
 			global $submenu;
-			if (isset($_POST['showhide_advanced'])) {
-				if ($_POST['show_advanced']=="true") {
-					update_option('SL_framework_show_advanced', true) ; 
-					echo "<div class='updated  fade'><p>" ; 
-					echo __("The advanced options and output will be displayed now !",'SL_framework') ; 
-					echo "</p></div>" ; 
-				} else {
-					update_option('SL_framework_show_advanced', false) ; 
-					echo "<div class='updated  fade'><p>".__('The advanced options and output will be hidden now !','SL_framework')."</p></div>" ; 
-				}
-			}
-			if (isset($_POST['showhide_developpers'])) {
-				if ($_POST['show_developpers']=="true") {
-					update_option('SL_framework_developpers', true) ; 
-					echo "<div class='updated  fade'><p>" ; 
-					echo __("The developpers documentations will be displayed now !",'SL_framework') ; 
-					echo "</p></div>" ; 
-				} else {
-					update_option('SL_framework_developpers', false) ; 
-					echo "<div class='updated  fade'><p>".__('The developpers documentations will be hidden now !','SL_framework')."</p></div>" ; 
-				}
-			}
-			if (isset($_POST['showhide_svn'])) {
-				if ($_POST['show_svn']=="true") {
-					update_option('SL_framework_SVN', true) ; 
-					echo "<div class='updated  fade'><p>" ; 
-					echo __("The SVN interface will be displayed now !",'SL_framework') ; 
-					echo "</p></div>" ; 
-				} else {
-					update_option('SL_framework_SVN', false) ; 
-					echo "<div class='updated  fade'><p>".__('The SVN interface will be hidden now !','SL_framework')."</p></div>" ; 
-				}
-			}
-			if (isset($_POST['update_svn'])) {
-				echo __("The SVN parameters have been updated !",'SL_framework') ; 
-				update_option('SL_framework_SVN_login', $_POST['svn_login']) ; 
-				update_option('SL_framework_SVN_password', $_POST['svn_password']) ; 
-				update_option('SL_framework_SVN_author', $_POST['svn_author']) ; 
-			}
+			
+			
+			ob_start() ; 
+			$params = new parametersSedLex ($this->frmk) ;
+			$params->add_title (__('Advanced options','SL_framework')) ; 
+			$params->add_param ("adv_param", __('Show the advanced options:','SL_framework'), "", "", array('adv_svn_login', 'adv_svn_pwd', 'adv_svn_author')) ; 
+			$params->add_comment (__('Will display additionnal information on the plugin (including SVN features). Recommended for developpers which develop plugins with this framework.','SL_framework')) ; 
+			$params->add_param ("adv_doc", __('Show the developpers documentation:','SL_framework')) ; 
+			$params->add_comment (sprintf(__('You should register a new wordpress plugin first on %s.','SL_framework'),"<a href='http://wordpress.org/extend/plugins/add/'>Wordpress.org</a>")) ; 
+			$params->add_param ("adv_svn_login", __('What is your SVN Login:','SL_framework')) ; 
+			$params->add_comment (sprintf(__('You should have an account on %s before. Thus, the login will be the same!','SL_framework'),"<a href='http://wordpress.org/'>Wordpress.org</a>")) ; 
+			$params->add_param ("adv_svn_pwd", __('What is your SVN Password:','SL_framework')) ; 
+			$params->add_comment (__('Same comment as above...','SL_framework')) ; 
+			$params->add_param ("adv_svn_author", __('What is your Author Name:','SL_framework')) ; 
+			$params->add_comment (__('Your author name is the name that is displayed in your plugin.','SL_framework')) ; 
+			
+			echo $params->flush() ; 
+			$paramSave = ob_get_clean() ; 
+
+			
 
 			if (isset($_GET['download'])) {
 				$this->getPluginZip($_GET['download']) ; 
 			}
+			echo "<a name='top'></a>" ; 
 			$current_core_used = str_replace(WP_PLUGIN_DIR."/",'',dirname(__FILE__)) ; 
 			
-			if (get_option('SL_framework_show_advanced', false)){
+			if ($this->frmk->get_param('adv_param')){
 				$current_fingerprint_core_used = $this->checkCoreOfThePlugin(WP_PLUGIN_DIR."/".$current_core_used."/core.php") ; 
 			}
 						
@@ -663,9 +699,8 @@ if (!class_exists('pluginSedLex')) {
 					$tabs = new adminTabs() ; 
 										
 					ob_start() ; 
-					
 						$table = new adminTable() ; 
-						if (get_option('SL_framework_show_advanced', false)){
+						if ($this->frmk->get_param('adv_param')){
 							$table->title(array(__("Plugin name", 'SL_framework'), __("Description", 'SL_framework'), __("Status of the core", 'SL_framework'))) ; 
 						} else {
 							$table->title(array(__("Plugin name", 'SL_framework'), __("Description", 'SL_framework'))) ; 
@@ -688,7 +723,7 @@ if (!class_exists('pluginSedLex')) {
 
 								<?php
 								
-									if (get_option('SL_framework_show_advanced', false)){
+									if ($this->frmk->get_param('adv_param')){
 										echo "<div id='infoPlugin_".md5($url)."'><img src='".WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/ajax-loader.gif'></div><script>pluginInfo('infoPlugin_".md5($url)."', '".$url."', '".$plugin_name."'); </script>" ; 
 									}
 									
@@ -702,13 +737,13 @@ if (!class_exists('pluginSedLex')) {
 									<?php
 								$cel2 = new adminCell(ob_get_clean()) ; 
 								
-								if (get_option('SL_framework_show_advanced', false)){
+								if ($this->frmk->get_param('adv_param')){
 									ob_start() ; 
 									echo "<div id='corePlugin_".md5($url)."'><img src='".WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/ajax-loader.gif'></div><script>coreInfo('corePlugin_".md5($url)."', '".$url."', '".$plugin_name."', '".$current_core_used."', '".md5($current_fingerprint_core_used)."', '".$info['Author']."'); </script>" ;
 									$cel3 = new adminCell( ob_get_clean() ) ; 
 								}
 								
-								if (get_option('SL_framework_show_advanced', false)){
+								if ($this->frmk->get_param('adv_param')){
 									$table->add_line(array($cel1, $cel2, $cel3), '1') ; 
 								} else {
 									$table->add_line(array($cel1, $cel2), '1') ; 
@@ -716,50 +751,15 @@ if (!class_exists('pluginSedLex')) {
 							}
 						}
 						echo $table->flush() ; 
-						
-						
-						echo "<form action='".remove_query_arg(array("update", "from"))."' method='POST'>" ; 
-						$checked = "" ; 
-						if (get_option('SL_framework_show_advanced', false)==true) {
-							$checked = "checked" ;
-						}
-						echo "<p style='text-align:right'>".__('Show the advanced options and parameters:','SL_framework')." <input name='show_advanced' value='true' type='checkbox' $checked> "  ; 
-						echo "<input class='button-secondary action' name='showhide_advanced' id='showhide_advanced' value='".__('Show/Hide', 'SL_framework')."' type='submit' ></p>"  ; 
-						echo "</form>" ; 
-						echo "<form action='".remove_query_arg(array("update", "from"))."' method='POST'>" ; 
-						$checked = "" ; 
-						if (get_option('SL_framework_developpers', false)==true) {
-							$checked = "checked" ;
-						}
-						echo "<p style='text-align:right'>".__('Show the developpers documentation:','SL_framework')." <input name='show_developpers' value='true' type='checkbox' $checked> "  ; 
-						echo "<input class='button-secondary action' name='showhide_developpers' id='showhide_developpers' value='".__('Show/Hide', 'SL_framework')."' type='submit' ></p>"  ; 
-						echo "</form>" ; 	
-						
-						// SVN
-						if (get_option('SL_framework_show_advanced', false)==true) {
-							echo "<form action='".remove_query_arg(array("update", "from"))."' method='POST'>" ; 
-							$checked = "" ; 
-							if (get_option('SL_framework_SVN', false)==true) {
-								$checked = "checked" ;
-							}
-							echo "<p style='text-align:right'>".__('Enable SVN to commit your developed plugin to wordpress.org:','SL_framework')." <input name='show_svn' value='true' type='checkbox' $checked> "  ; 
-							echo "<input class='button-secondary action' name='showhide_svn' id='showhide_svn' value='".__('Enable/Disable', 'SL_framework')."' type='submit' ></p>"  ; 
-							echo "</form>" ; 	
-							
-							if (get_option('SL_framework_SVN', false)==true) {
-								echo "<form action='".remove_query_arg(array("update", "from"))."' method='POST'>" ; 
-								echo "<p style='text-align:right'>".__('Your SVN Login:','SL_framework')." <input name='svn_login' value='".get_option('SL_framework_SVN_login', "")."'> "  ; 
-								echo "<br/>".__('Your SVN password:','SL_framework')." <input name='svn_password' value='".get_option('SL_framework_SVN_password', "")."' type='password'> "  ; 
-								echo "<br/>".__('The author name displayed in the Wordpress plugin (probably close to your login):','SL_framework')." <input name='svn_author' value='".get_option('SL_framework_SVN_author', "")."' > "  ; 
-								echo "<br/><input class='button-secondary action' name='update_svn' id='update_svn' value='".__('Update', 'SL_framework')."' type='submit' ></p>"  ; 
-								echo "</form>" ; 	
-							}
-							
-						}
-					$tabs->add_tab(__('List of SL plugins',  'SL_framework'), ob_get_clean() ) ; 
+					$tabs->add_tab(__('List of SL plugins',  'SL_framework'), ob_get_clean(), WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_list.png" ) ; 
 					
+					//======================================================================================
+					//= Tab for parameters
+					//======================================================================================
+													
+					$tabs->add_tab(__('Parameters of the framework',  'SL_framework'),  $paramSave, WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_param.png") ; 					
 					
-					if (get_option('SL_framework_developpers', false)==true) {
+					if ($this->frmk->get_param('adv_doc')==true) {
 						//======================================================================================
 						//= Tab with a zip file for downloading an empty plugin with a quick tuto
 						//======================================================================================
@@ -835,7 +835,7 @@ if (!class_exists('pluginSedLex')) {
 						</div>
 						
 						<?php
-						$tabs->add_tab(__('How to develop a plugin?',  'SL_framework'), ob_get_clean() ) ; 
+						$tabs->add_tab(__('How to develop a plugin?',  'SL_framework'), ob_get_clean() , WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_how.png") ; 
 						
 						//======================================================================================
 						//= Tab presenting the core documentation
@@ -861,7 +861,7 @@ if (!class_exists('pluginSedLex')) {
 							
 							$this->printDoc($classes) ; 
 
-						$tabs->add_tab(__('Framework documentation',  'SL_framework'), ob_get_clean() ) ; 
+						$tabs->add_tab(__('Framework documentation',  'SL_framework'), ob_get_clean() , WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_doc.png") ; 
 					}
 					//======================================================================================
 					//= Tab for the translation
@@ -871,7 +871,7 @@ if (!class_exists('pluginSedLex')) {
 						$plugin = str_replace("/","",str_replace(basename(__FILE__),"",plugin_basename( __FILE__))) ; 
 						$trans = new translationSL("SL_framework", $plugin) ; 
 						$trans->enable_translation() ; 
-					$tabs->add_tab(__('Manage translation of the framework',  'SL_framework'), ob_get_clean() ) ; 
+					$tabs->add_tab(__('Manage translation of the framework',  'SL_framework'), ob_get_clean() , WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_trad.png") ; 
 								
 					echo $tabs->flush() ; 
 					
@@ -909,7 +909,8 @@ if (!class_exists('pluginSedLex')) {
 					echo  "<p>".__('This plugin does not seem to be hosted on the wordpress repository.', 'SL_framework' )."</p>";
 				} else {
 					echo "<p>".sprintf(__('The Wordpress page: %s', 'SL_framework'),"<a href='http://wordpress.org/extend/plugins/$plugin_name'>http://wordpress.org/extend/plugins/$plugin_name</a>")."</p>" ; 
-					echo  "<p>".__('Last update:', 'SL_framework' )." ".$res->last_updated."</p>";
+					$lastUpdate = date_i18n(get_option('date_format') , strtotime($res->last_updated)) ; 
+					echo  "<p>".__('Last update:', 'SL_framework' )." ".$lastUpdate."</p>";
 					echo  "<div class='inline'>".sprintf(__('Rating: %s', 'SL_framework' ), $res->rating)." &nbsp; &nbsp; </div> " ; 
 					echo "<div class='star-holder inline'>" ; 
 					echo "<div class='star star-rating' style='width: ".$res->rating."px'></div>" ; 
@@ -953,9 +954,9 @@ if (!class_exists('pluginSedLex')) {
 			$info = $this->get_plugins_data(WP_PLUGIN_DIR."/".$url);
 			
 			// SVN interface
-			if (get_option('SL_framework_SVN', false)==true) {
-				if (strlen(get_option('SL_framework_SVN_author', ""))>0) {
-					if (preg_match("/".get_option('SL_framework_SVN_author', "")."/i", $author)) {
+			if ($this->frmk->get_param('adv_param')==true) {
+				if (strlen($this->frmk->get_param('adv_svn_author'))>0) {
+					if (preg_match("/".$this->frmk->get_param('adv_svn_author')."/i", $author)) {
 						$info_core .= "<hr/>" ; 
 						$info_core .= "<div><img style='border:0px' src='".WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/SVN.png' height='24px'><b>".__("SVN management", 'SL_framework')."</b></div>"; 
 						$info_core .= "<p style='color:#666666;font-size:85%;'>".sprintf(__('The SVN repository: %s', 'SL_framework'),"<a href='http://svn.wp-plugins.org/$plugin_name'>http://svn.wp-plugins.org/$plugin_name</a>")."</p>" ; 
@@ -968,8 +969,8 @@ if (!class_exists('pluginSedLex')) {
 							if ($request['response']['code']!='200') {
 								$info_core .= "<p>".sprintf(__("You do not seem to have a repository for Wordpress because %s returns a 404 error. Thus, ask for one here: %s", 'SL_framework'), "<a href='http://svn.wp-plugins.org/$plugin_name'>http://svn.wp-plugins.org/$plugin_name</a>", "<a href='http://wordpress.org/extend/plugins/add/'>Wordpress Repository</a>") ."</p>" ; 
 							} else {
-								$readme_remote = file_get_contents('http://svn.wp-plugins.org/'.$plugin_name.'/trunk/readme.txt' );
-								$readme_local = file_get_contents(WP_PLUGIN_DIR."/".$plugin_name.'/readme.txt' );
+								$readme_remote = @file_get_contents('http://svn.wp-plugins.org/'.$plugin_name.'/trunk/readme.txt' );
+								$readme_local = @file_get_contents(WP_PLUGIN_DIR."/".$plugin_name.'/readme.txt' );
 								if ($readme_remote == $readme_local) {
 									$info_core .= "<p style='color:#666666;font-size:85%;'>".__('The SVN repository is identical to your local plugin! You do not need to update...', 'SL_framework')."</p>" ; 
 								} else {
@@ -986,6 +987,8 @@ if (!class_exists('pluginSedLex')) {
 										$res = unserialize($request['body']);
 										if ( ! $res ) {
 											$version_update = "" ; 
+											$version_on_wordpress = "0.0" ; 
+											$version_update_bool = true ; 
 										} else {
 											$version_on_wordpress = $res->version ; 
 											
@@ -998,6 +1001,14 @@ if (!class_exists('pluginSedLex')) {
 									
 									$info_core .= "<p style='color:#660000;font-size:85%;'>".__('The SVN repository is not identical to your local plugin!', 'SL_framework')."</p>" ; 
 									$md5 = md5($plugin_name." to_local") ; 
+									
+									$info_core .=  "<p style='color:#666666;font-size:75%;padding-left:3em;'>" ; 
+									$info_core .= "<img id='wait_gm_".$md5."' src='".WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/ajax-loader.gif' style='display:none;'>" ; 
+									$info_core .= "<img src='".WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/arrow-no.png'>&nbsp;" ; 
+									$info_core .= __("General modifications:", 'SL_framework') ;
+									$info_core .= " <a href='#' onClick='changeVersionReadme(\"".$md5."\", \"".$plugin_name."\"); return false;'>".__("Modify the version of the plugin and the readme.txt file", 'SL_framework') ."</a>" ;
+									$info_core .=  "</p>" ;
+									
 									$info_core .=  "<p style='color:#666666;font-size:75%;padding-left:3em;'>" ; 
 									$info_core .= "<img id='wait_svn_".$md5."' src='".WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/ajax-loader.gif' style='display:none;'>" ; 
 									$info_core .= "<img src='".WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/arrow-left.png'>&nbsp;" ; 
@@ -1515,7 +1526,7 @@ if (!class_exists('pluginSedLex')) {
 			// SVN preparation
 			$local_cache = WP_CONTENT_DIR."/sedlex/svn" ; 
 			Utils::rm_rec($local_cache."/".$plugin) ;
-			$svn = new svnAdmin("svn.wp-plugins.org", 80, get_option('SL_framework_SVN_login', ""), get_option('SL_framework_SVN_password', "") ) ; 
+			$svn = new svnAdmin("svn.wp-plugins.org", 80, $this->frmk->get_param('adv_svn_login'), $this->frmk->get_param('adv_svn_pwd') ) ; 
 				
 			if (($sens=="to_repo_quick")||($sens=="to_local_quick")) {
 				$revision = $svn->getRevision("/".$plugin."/trunk", true) ;
@@ -1652,7 +1663,7 @@ if (!class_exists('pluginSedLex')) {
 			
 			// SVN preparation
 			$local_cache = WP_CONTENT_DIR."/sedlex/svn" ; 
-			$svn = new svnAdmin("svn.wp-plugins.org", 80, get_option('SL_framework_SVN_login', ""), get_option('SL_framework_SVN_password', "") ) ; 
+			$svn = new svnAdmin("svn.wp-plugins.org", 80, $this->frmk->get_param('adv_svn_login'), $this->frmk->get_param('adv_svn_pwd') ) ; 
 			
 			// GET the file
 			$result = $svn->getFile($from, $to, true) ; 
@@ -1758,7 +1769,7 @@ if (!class_exists('pluginSedLex')) {
 			// SVN preparation
 			$local_cache = WP_CONTENT_DIR."/sedlex/svn" ;
 			$root = "/".$plugin."/trunk/" ; 
-			$svn = new svnAdmin("svn.wp-plugins.org", 80, get_option('SL_framework_SVN_login', ""), get_option('SL_framework_SVN_password', "") ) ; 
+			$svn = new svnAdmin("svn.wp-plugins.org", 80, $this->frmk->get_param('adv_svn_login'), $this->frmk->get_param('adv_svn_pwd') ) ; 
 			
 			$result = $svn->prepareCommit($root, $comment, true) ; 
 			if ($result['isOK']) {
@@ -1885,7 +1896,7 @@ if (!class_exists('pluginSedLex')) {
 			
 			// SVN preparation
 			$local_cache = WP_CONTENT_DIR."/sedlex/svn" ; 
-			$svn = new svnAdmin("svn.wp-plugins.org", 80, get_option('SL_framework_SVN_login', ""), get_option('SL_framework_SVN_password', "") ) ; 
+			$svn = new svnAdmin("svn.wp-plugins.org", 80, $this->frmk->get_param('adv_svn_login'), $this->frmk->get_param('adv_svn_pwd') ) ; 
 			
 			// PUT the file
 			$res = $svn->putFile($urldepot, $file , true) ; 
@@ -1914,7 +1925,7 @@ if (!class_exists('pluginSedLex')) {
 			
 			// SVN preparation
 			$local_cache = WP_CONTENT_DIR."/sedlex/svn" ; 
-			$svn = new svnAdmin("svn.wp-plugins.org", 80, get_option('SL_framework_SVN_login', ""), get_option('SL_framework_SVN_password', "") ) ; 
+			$svn = new svnAdmin("svn.wp-plugins.org", 80, $this->frmk->get_param('adv_svn_login'), $this->frmk->get_param('adv_svn_pwd') ) ; 
 			
 			// PUT the file
 			$res = $svn->putFolder($urlfolder , true) ; 
@@ -1940,7 +1951,7 @@ if (!class_exists('pluginSedLex')) {
 			
 			// SVN preparation
 			$local_cache = WP_CONTENT_DIR."/sedlex/svn" ; 
-			$svn = new svnAdmin("svn.wp-plugins.org", 80, get_option('SL_framework_SVN_login', ""), get_option('SL_framework_SVN_password', "") ) ; 
+			$svn = new svnAdmin("svn.wp-plugins.org", 80, $this->frmk->get_param('adv_svn_login'), $this->frmk->get_param('adv_svn_pwd') ) ; 
 			
 			// PUT the file
 			$res = $svn->deleteFileFolder($url , true) ; 
@@ -1967,7 +1978,7 @@ if (!class_exists('pluginSedLex')) {
 			$activityFolder = $_POST['activityFolder'] ;
 			
 			// SVN preparation
-			$svn = new svnAdmin("svn.wp-plugins.org", 80, get_option('SL_framework_SVN_login', ""), get_option('SL_framework_SVN_password', "") ) ; 
+			$svn = new svnAdmin("svn.wp-plugins.org", 80, $this->frmk->get_param('adv_svn_login'), $this->frmk->get_param('adv_svn_pwd') ) ; 
 			
 			// PUT the file
 			$res = $svn->merge($root, $activityFolder.$uuid,  true) ; 
@@ -2064,12 +2075,148 @@ if (!class_exists('pluginSedLex')) {
 							
 			die() ; 
 		}
+		
+		/** ====================================================================================================================================================
+		* Callback for changing the version in the main php file
+		* 
+		* @access private
+		* @return void
+		*/		
+		
+		function svn_changeVersionReadme() {
+			// get the arguments
+			$plugin = $_POST['plugin'];
 
+			$title = sprintf(__('Change the plugin version for %s', 'SL_framework'),'<em>'.$plugin.'</em>') ;
+			
+			$lines = @file(WP_PLUGIN_DIR."/".$plugin."/".$plugin.".php") ; 
+			$version="" ; 
+			foreach ($lines as $l) {
+				if (preg_match("/^Version:(.*)$/i", $l, $match)) {
+					$version = trim($match[1]) ;
+					break ; 
+				}
+			}
+			if ($version!="") {
+				$content = "<div id='readmeVersion'><h3>".__('Version number', 'SL_framework')."</h3>" ; 
+				$content .= "<p>".sprintf(__('The current version of the plugin %s is %s.', 'SL_framework'), "<code>".$plugin."/".$plugin.".php</code>", $version)."</p>" ; 
+				$content .= "<p>".__('Please modify the version:', 'SL_framework')." <input type='text' size='7' name='versionNumberModify' id='versionNumberModify' value='".$version."'></p>" ; 
+				// We look now at the readme.txt
+				$readme = strip_tags(@file_get_contents(WP_PLUGIN_DIR."/".$plugin."/readme.txt")) ; 
+				$content .= "<h3>".__('Readme file', 'SL_framework')."</h3>" ; 
+				$content .= "<p>".sprintf(__('The current content of %s is:', 'SL_framework'), "<code>".$plugin."/readme.txt</code>")."</p>" ; 
+				$content .= "<p><textarea id='ReadmeModify' rows='15' cols='100%'>".$readme."</textarea></p>" ; 
+				$content .= "<p id='svn_button'><input onclick='saveVersionReadme(\"".$plugin."\") ; return false ; ' type='submit' name='submit' class='button-primary validButton' value='".__('Save these data', 'SL_framework')."' /><img id='wait_save' src='".WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/ajax-loader.gif' style='display:none;'></p></div>" ;  
+			} else {
+				$content = "<div class='error fade'><p>".sprintf(__('There is a problem with the header of %s. It appears that there is no Version header.', 'SL_framework'), "<code>".$plugin."/".$plugin.".php</code>")."</p></div>"; 
+			}
+			
+			$current_core_used = str_replace(WP_PLUGIN_DIR."/",'',dirname(__FILE__)) ; 
+			$current_fingerprint_core_used = md5($this->checkCoreOfThePlugin(WP_PLUGIN_DIR."/".$current_core_used."/core.php")) ; 
+			$info = $this->get_plugins_data(WP_PLUGIN_DIR."/".$plugin."/".$plugin.".php");
+			$popup = new popupAdmin($title, $content, "", "coreInfo('corePlugin_".md5($plugin."/".$plugin.".php")."', '".$plugin."/".$plugin.".php', '".$plugin."' , '".$current_core_used."', '".$current_fingerprint_core_used."', '".$info['Author']."') ; ") ; 
+			$popup->render() ; 
+
+			die() ; 
+		}
+		
+		/** ====================================================================================================================================================
+		* Callback for viewing the differences between the current files and repository
+		* 
+		* @access private
+		* @return void
+		*/		
+		
+		function svn_saveVersionReadme() {
+			// get the arguments
+			$plugin = $_POST['plugin'];
+			$readme = $_POST['readme'];
+			$version = $_POST['version'];
+			
+			// We clean the readme before saving it
+			$readme = str_replace("\\'", "'", $readme) ; 
+			$readme = str_replace('\\"', '"', $readme) ; 
+			$readme = str_replace('<', '&lt;', $readme) ; 
+			$readme = str_replace('>', '&gt;', $readme) ; 
+			
+			// We save the readme
+			@file_put_contents(WP_PLUGIN_DIR."/".$plugin."/readme.txt", $readme) ; 
+			
+			// We save the version
+			$lines = @file(WP_PLUGIN_DIR."/".$plugin."/".$plugin.".php") ; 
+			$save = "" ; 
+			foreach ($lines as $l) {
+				//if ($save!="") {
+				//	$save .= "\r\n" ; 
+				//}
+				if (preg_match("/^Version:(.*)$/i", $l, $match)) {
+					$save .= "Version: ".$version."\r\n" ; 
+				} else {
+					$save .= $l ; 
+				}
+			}
+			@file_put_contents(WP_PLUGIN_DIR."/".$plugin."/".$plugin.".php", $save) ; 
+			
+			echo "<div class='updated fade'><p>".__('The data has been saved. You may close this window.', 'SL_framework')."</p></div>"; 
+			die() ; 
+		}
+		
+		/** ====================================================================================================================================================
+		* Callback for viewing the differences between the current files and repository
+		* 
+		* @access private
+		* @return void
+		*/		
+		
+		function svn_viewDifferences() {
+			die() ; 
+		}
+	}
+	
+	/** =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+	* This PHP class has only for purpose to fake a plugin class and allow parameters administration for the framework.
+	* 
+	*/
+	class coreSLframework extends pluginSedLex {
+	/** ====================================================================================================================================================
+	* Plugin initialization
+	* 
+	* @return void
+	*/
+	static $instance = false;
+	
+		/**====================================================================================================================================================
+		* Constructor
+		*
+		* @return void
+		*/
+		protected function coreSLframework() {
+			$this->path = __FILE__ ; 
+			$this->pluginID = get_class() ; 
+		}
+	
+		
+		/** ====================================================================================================================================================
+		* Define the default option values of the framework
+		* 
+		* @param string $option the name of the option
+		* @return variant of the option
+		*/
+		public function get_default_option($option) {
+			switch ($option) {
+				// Alternative default return values (Please modify)
+				case 'adv_param' 		: return false 		; break ; 
+				case 'adv_doc' 		: return false 		; break ; 
+				case 'adv_svn_login' 		: return "" 		; break ; 
+				case 'adv_svn_pwd' 		: return "" 		; break ; 
+				case 'adv_svn_author' 		: return "" 		; break ; 
+			}
+			return null ;
+		}	
 	}
 
 }
-
-
+						
 
 
 ?>

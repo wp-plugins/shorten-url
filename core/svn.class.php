@@ -599,6 +599,7 @@ if (!class_exists("svnAdmin")) {
 		*
 		* @param string $message the HTTP message
 		* @return array the parsed response
+		* @access private
 		*/			
 		
 		function httpMessageParse($message) {
@@ -664,6 +665,7 @@ if (!class_exists("svnAdmin")) {
 		* 
 		* @param string $content the plain XML text
 		* @return DOMdocument the parsed XML
+		* @access private
 		*/			
 		
 		function xmlContentParse($content) {
@@ -678,6 +680,7 @@ if (!class_exists("svnAdmin")) {
 		* 
 		* @param string $raw the raw message to render
 		* @return string the readeable message
+		* @access private
 		*/			
 		
 		function printRawResult($raw) {
@@ -699,6 +702,7 @@ if (!class_exists("svnAdmin")) {
 		* @param string $string the string from which the byte should be extracted
 		* @param integer $offset the offset from which the byte should be extracted from the string
 		* @return array 'byte' is the extracted byte, "new_offset' is the new offset (i.e. the offset+1)
+		* @access private
 		*/
 		
 		function pop($string, $offset){
@@ -712,6 +716,7 @@ if (!class_exists("svnAdmin")) {
 		* @param string $string the string from which the integer should be extracted
 		* @param integer $offset the offset from which the integer should be extracted from the string
 		* @return array 'int' is the extracted integer, "new_offset' is the new offset 
+		* @access private
 		*/
 
 		function popInt($string, $offset) {
@@ -733,6 +738,7 @@ if (!class_exists("svnAdmin")) {
 		* 
 		* @param integer $int the integer to convert
 		* @return string the bytes representing the integer in a variable-length format 
+		* @access private
 		*/
 
 		function getChr($int) {
@@ -762,6 +768,7 @@ if (!class_exists("svnAdmin")) {
 		* 
 		* @param string $ascii the byte-string to convert
 		* @return string the binary representation (8-blocks with space)
+		* @access private
 		*/
 		
 		function asc2bin ($ascii) {
