@@ -1,0 +1,94 @@
+msgid ""
+msgstr ""
+"Generated: SL Framework (http://www.sedlex.fr)\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2011-12-19T09:55:31+00:00\n"
+"Last-Translator: Pacifik <4888880@gmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%100/10==1 ? 2 : n%10==1 ? 0 : (n+9)%10>3 ? 2 : 1;\n"
+"X-Poedit-Language: Russian\n"
+"X-Poedit-Country: Russia\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;\n"
+"X-Poedit-Basepath: \n"
+"X-Poedit-Bookmarks: \n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Textdomain-Support: yes\n"
+
+msgid "This plugin helps you sharing your post with short-links."
+msgstr "Этот плагин позволяет обмениваться сообщение с коротким ссылкам."
+
+msgid "Title of your posts"
+msgstr "Название свои сообщения"
+
+msgid "Short URL"
+msgstr "Short URL"
+
+msgid "Reset"
+msgstr "Сброс"
+
+msgid "Edit"
+msgstr "Редактировать"
+
+msgid "Results for Posts URL"
+msgstr "Результаты URL сообщения"
+
+msgid "External URL"
+msgstr "Внешний URL"
+
+msgid "Delete"
+msgstr "Удалять"
+
+msgid "External URL:"
+msgstr "Внешний URL:"
+
+msgid "Add a new URL to shorten"
+msgstr "Добавить новый URL, чтобы сократить"
+
+msgid "Results for External URL"
+msgstr "Результаты по внешним URL"
+
+msgid "Parameters"
+msgstr "Параметры"
+
+msgid "Do you want to use the following characters?"
+msgstr "Вы хотите использовать следующие символы?"
+
+msgid "These parameters will be taken in account only for generation of new links"
+msgstr "Эти параметры будут приняты во внимание только для генерации новых ссылок"
+
+msgid "Lower-case characters ([a-z]):"
+msgstr "Строчные буквы ([a-z]):"
+
+msgid "Upper-case characters ([A-Z]):"
+msgstr "Верхний регистр символов ([A-Z]):"
+
+msgid "Numeric characters ([0-9]):"
+msgstr "Цифровые знаки ([0-9]):"
+
+msgid "Do you want to use a prefix before your short URL?"
+msgstr "Вы хотите использовать префикс перед вашим коротким URL?"
+
+msgid "Prefix:"
+msgstr "Префикс:"
+
+msgid "What is the length of your short URL (without the prefix)?"
+msgstr "Какова длина вашего короткие URL (без префикса)?"
+
+msgid "Length:"
+msgstr "Длительность:"
+
+msgid "Manage translations"
+msgstr "Управление переводы"
+
+msgid "Give feedback"
+msgstr "Дайте обратную связь"
+
+msgid "Other plugins"
+msgstr "Другие плагины"
+

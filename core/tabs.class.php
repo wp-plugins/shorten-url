@@ -97,8 +97,10 @@ if (!class_exists("adminTabs")) {
 					<?php
 					} else {
 					?>
-					idToGo = getCookie("tabSL").split("#") ; 
-					$tabs<?php echo $rnd ; ?>.tabs('select', "#"+idToGo[1] ) ; 
+					if (getCookie("tabSL")!=null) {
+						idToGo = getCookie("tabSL").split("#") ; 
+						$tabs<?php echo $rnd ; ?>.tabs('select', "#"+idToGo[1] ) ; 
+					} 
 					<?php
 					}
 					?>

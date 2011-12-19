@@ -27,6 +27,7 @@ Moreover, you can add external links. These links will be automatiocally replace
 
 = Localizations =
 
+* Russian translation (by Pacifik)
 * French translation (by me)
 
 = Features of the framework = 
@@ -58,6 +59,9 @@ Moreover, all the plugins developped with this framework is able to use astonish
 2. The configuration page of the plugin 
 
 == Changelog ==
+
+= 1.2.3 =
+* Russian translation (by Pacifik)
 
 = 1.2.2 =
 * Improve English text thanks to Rene
@@ -97,4 +101,4 @@ Moreover, all the plugins developped with this framework is able to use astonish
 Visit http://www.sedlex.fr/cote_geek/
 
  
-InfoVersion:4b28eb378bf7b7c7df824b3659f4f5c0
+InfoVersion:c4036b9a64983e04dbb31810331bfa64

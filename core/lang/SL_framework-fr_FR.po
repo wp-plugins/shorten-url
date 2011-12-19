@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2011-12-12T14:45:58+00:00\n"
+"PO-Revision-Date: 2011-12-17T16:24:07+00:00\n"
 "Last-Translator: SedLex <http://www.sedlex.fr/>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -329,11 +329,44 @@ msgstr "Il y a un problème avec l&#039;entête de %s. Il semble qu&#039;il n&#0
 msgid "The data has been saved. You may close this window."
 msgstr "Les informations ont été sauvegardées. Vous pouvez fermer cette fenêtre."
 
-msgid "Error: %s function is not found"
-msgstr "Erreur : la fonction %s n&#039;est pas trouvée"
+msgid "(SQL extraction)"
+msgstr "(Extraction SQL)"
+
+msgid "(ZIP creation)"
+msgstr "(Création ZIP)"
+
+msgid "The file %s cannot be read. You should have a problem with file permissions or security restrictions."
+msgstr "Le fichier %s ne peut pas être lu. Vous avez probablement un problème de droit sur ce fichier et des restrictions de sécurité."
+
+msgid "The file %s cannot be deleted. You should have a problem with file permissions or security restrictions."
+msgstr "Le fichier %s ne peut pas être effacé. Vous avez probablement un problème de droit sur ce fichier et des restrictions de sécurité."
+
+msgid "The folder %s cannot be opened. You should have a problem with folder permissions or security restrictions."
+msgstr "Le répertoire %s ne peut pas être ouvert. Vous avez probablement un problème de droit sur ce répertoire et des restrictions de sécurité."
 
 msgid "An other process is still running (it runs for %s seconds)"
 msgstr "Un autre processus est en cours d&#039;exécution (il tourne depuis %s seconds)"
+
+msgid "The file %s cannot be modified/created. You should have a problem with file permissions or security restrictions."
+msgstr "Le fichier %s ne peut pas être modifié/créé. Vous avez probablement un problème de droit sur ce fichier et des restrictions de sécurité."
+
+msgid "The file %s cannot be created. You should have a problem with file permissions or security restrictions."
+msgstr "Le fichier %s ne peut pas être créé. Vous avez probablement un problème de droit sur ce fichier et des restrictions de sécurité."
+
+msgid "The file %s cannot be created/modified. You should have a problem with file permissions or security restrictions."
+msgstr ""
+
+msgid "The file %s cannot be modified. You should have a problem with file permissions or security restrictions."
+msgstr "Ce fichier ne peut pas être modifié. Vous avez probablement un problème de droit sur ce fichier et des restrictions de sécurité."
+
+msgid "The file %s cannot be renamed. You should have a problem with file permissions or security restrictions."
+msgstr "Le fichier %s ne peut pas être renommé. Vous avez probablement un problème de droit sur ce fichier et des restrictions de sécurité."
+
+msgid "Error: %s function is not found"
+msgstr "Erreur : la fonction %s n&#039;est pas trouvée"
+
+msgid "The file %s cannot be compressed."
+msgstr "Le fichier %s ne peut pas être compressé."
 
 msgid "KB"
 msgstr "ko"

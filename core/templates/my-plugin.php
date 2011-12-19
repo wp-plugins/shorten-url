@@ -155,6 +155,9 @@ class my_plugin extends pluginSedLex {
 			<p><? echo __("This is the configuration page of the plugin", $this->pluginID) ;?></p>
 			<?php
 			
+			// We check rights
+			$this->check_folder_rights( array(array(WP_CONTENT_DIR."/sedlex/test/", "rwx")) ) ;
+			
 			$tabs = new adminTabs() ; 
 			
 			ob_start() ; 

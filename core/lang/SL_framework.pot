@@ -540,14 +540,101 @@ msgstr ""
 msgid "The data has been saved. You may close this window."
 msgstr ""
 
+#: backup-scheduler.php:389
+#: backup-scheduler.php:396
+#@ SL_framework
+msgid "(SQL extraction)"
+msgstr ""
+
+#: backup-scheduler.php:442
+#: backup-scheduler.php:465
+#@ SL_framework
+msgid "(ZIP creation)"
+msgstr ""
+
+#: core/database.class.php:28
+#: core/database.class.php:72
+#: core/database.class.php:103
+#: core/zip.class.php:103
+#: core/zip.class.php:164
+#: core/zip.class.php:188
+#: core/zip.class.php:240
+#: core/zip.class.php:334
+#: core/zip.class.php:373
+#: core/zip.class.php:412
+#@ SL_framework
+msgid "The file %s cannot be read. You should have a problem with file permissions or security restrictions."
+msgstr ""
+
+#: core/database.class.php:37
+#: core/database.class.php:81
+#: core/database.class.php:107
+#: core/database.class.php:153
+#: core/database.class.php:197
+#: core/zip.class.php:112
+#: core/zip.class.php:173
+#: core/zip.class.php:192
+#: core/zip.class.php:228
+#: core/zip.class.php:338
+#: core/zip.class.php:392
+#: core/zip.class.php:397
+#: core/zip.class.php:405
+#: core/zip.class.php:410
+#@ SL_framework
+msgid "The file %s cannot be deleted. You should have a problem with file permissions or security restrictions."
+msgstr ""
+
+#: core/database.class.php:45
+#: core/zip.class.php:120
+#@ SL_framework
+msgid "The folder %s cannot be opened. You should have a problem with folder permissions or security restrictions."
+msgstr ""
+
+#: core/database.class.php:77
+#: core/zip.class.php:169
+#@ SL_framework
+msgid "An other process is still running (it runs for %s seconds)"
+msgstr ""
+
+#: core/database.class.php:89
+#: core/database.class.php:144
+#: core/database.class.php:191
+#: core/zip.class.php:180
+#: core/zip.class.php:215
+#: core/zip.class.php:324
+#: core/zip.class.php:328
+#: core/zip.class.php:361
+#: core/zip.class.php:387
+#@ SL_framework
+msgid "The file %s cannot be modified/created. You should have a problem with file permissions or security restrictions."
+msgstr ""
+
+#: core/database.class.php:126
+#: core/zip.class.php:199
+#: core/zip.class.php:223
+#@ SL_framework
+msgid "The file %s cannot be created. You should have a problem with file permissions or security restrictions."
+msgstr ""
+
+#: core/database.class.php:148
+#: core/zip.class.php:219
+#@ SL_framework
+msgid "The file %s cannot be modified. You should have a problem with file permissions or security restrictions."
+msgstr ""
+
+#: core/database.class.php:201
+#@ SL_framework
+msgid "The file %s cannot be renamed. You should have a problem with file permissions or security restrictions."
+msgstr ""
+
 #: core/zip.class.php:25
 #@ SL_framework
 msgid "Error: %s function is not found"
 msgstr ""
 
-#: core/zip.class.php:155
+#: core/zip.class.php:246
 #@ SL_framework
-msgid "An other process is still running (it runs for %s seconds)"
+msgid "The file %s cannot be compressed."
 msgstr ""
 
 #: core/utils.class.php:123
