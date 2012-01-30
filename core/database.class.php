@@ -15,6 +15,25 @@ if (!class_exists("SL_Database")) {
 		}
 		
 		/** ====================================================================================================================================================
+		* Return the progression ratio
+		* 
+		* @param $file the sql file that is being created
+		* @return string the progress nb_table_extracted/nb_table
+		*/
+		
+		function progress($file) {
+			
+			if (is_file($file.".tmp")) {
+				// We retrieve the process
+				$content = @file_get_contents($file.".tmp") ; 
+				list($list_table, $current_index, $current_offset) = unserialize($content) ;
+				return $current_index."/".count($list_table) ; 
+			} 
+			
+			return "" ; 
+		}	
+		
+		/** ====================================================================================================================================================
 		* Tells whether a database extraction is in progress
 		* 
 		* @param $path the path in which the database sql file should be created
@@ -32,9 +51,8 @@ if (!class_exists("SL_Database")) {
 				if ($timeprocess<200) {
 					return array("step"=>"in progress", "for"=>$timeprocess) ; 
 				} else {
-					$r = @unlink($path."/sql_in_progress") ; 
-					if ($r===FALSE) {
-						return array("step"=>"error", "msg"=>sprintf(__('The file %s cannot be deleted. You should have a problem with file permissions or security restrictions.', 'SL_framework'),"<code>".$path."/sql_in_progress</code>")) ; 
+					if (!Utils::rm_rec($path."/sql_in_progress")) {
+						return array("step"=>"error", "msg"=>sprintf(__('The file %s cannot be deleted. You should have a problem with file permissions or security restrictions.', $this->pluginID),"<code>".$path."/sql_in_progress"."</code>")) ; 
 					}
 				}
 			} 
@@ -52,6 +70,7 @@ if (!class_exists("SL_Database")) {
 			}
 			return array("step"=>"nothing") ; 
 		}	
+
 		
 		/** ====================================================================================================================================================
 		* Create the sql file
@@ -65,20 +84,21 @@ if (!class_exists("SL_Database")) {
 		function createSQL($sqlfilename, $maxExecutionTime=150, $maxAllocatedMemory=4000000) {
 			global $wpdb ; 
 			
+			$path = dirname($sqlfilename) ; 
+			
 			// We check that no process is running
-			if (is_file(dirname($sqlfilename)."/sql_in_progress")) {
-				$timestart = @file_get_contents(dirname($sqlfilename)."/sql_in_progress")  ;
+			if (is_file($path."/sql_in_progress")) {
+				$timestart = @file_get_contents($path."/sql_in_progress")  ;
 				if ($timestart===FALSE) {
-					return array('finished'=>false, "error"=>sprintf(__('The file %s cannot be read. You should have a problem with file permissions or security restrictions.', 'SL_framework'),"<code>".dirname($sqlfilename)."/sql_in_progress</code>")) ; 
+					return array('finished'=>false, "error"=>sprintf(__('The file %s cannot be read. You should have a problem with file permissions or security restrictions.', 'SL_framework'),"<code>".$path."/sql_in_progress</code>")) ; 
 				}
 				$timeprocess = time() - (int)$timestart ; 
 				// We ensure that the process has not been started a too long time ago
 				if ($timeprocess<200) {
 					return array('finished'=>false, 'error' => sprintf(__("An other process is still running (it runs for %s seconds)", "SL_framework"), $timeprocess)) ; 
 				} else {
-					$r = @unlink(dirname($sqlfilename)."/sql_in_progress") ; 
-					if ($r===FALSE) {
-						return array('finished'=>false, "error"=>sprintf(__('The file %s cannot be deleted. You should have a problem with file permissions or security restrictions.', 'SL_framework'),"<code>".dirname($sqlfilename)."/sql_in_progress</code>")) ; 
+					if (!Utils::rm_rec($path."/sql_in_progress")) {
+						return array('finished'=>false, "step"=>"error", "msg"=>sprintf(__('The file %s cannot be deleted. You should have a problem with file permissions or security restrictions.', $this->pluginID),"<code>".$path."/sql_in_progress"."</code>")) ; 
 					}
 				}
 			}
@@ -86,14 +106,14 @@ if (!class_exists("SL_Database")) {
 			// We create a file with the time inside to indicate that this process is doing something
 			$r = @file_put_contents(dirname($sqlfilename)."/sql_in_progress", time()) ; 
 			if ($r===FALSE) {
-				return array('finished'=>false, "error"=>sprintf(__('The file %s cannot be modified/created. You should have a problem with file permissions or security restrictions.', 'SL_framework'),"<code>".dirname($sqlfilename)."/sql_in_progress</code>")) ; 
+				return array('finished'=>false, "error"=>sprintf(__('The file %s cannot be modified/created. You should have a problem with file permissions or security restrictions.', 'SL_framework'),"<code>".$path."/sql_in_progress</code>")) ; 
 			}
 			
 			// Default value
 			$current_index = 0 ; 
 			$current_offset = 0 ; 
 			$max_size = 1000 ; 
-			$contentOfTable = "\n-- MEMORY OR TIME LIMIT ------------------------------------------------\n" ; 
+			$contentOfTable = "" ; 
 				
 			// We look if the .tmp file exists, if so, it means that we have to restart the zip process where it stopped
 			if (is_file($sqlfilename.".tmp")) {
@@ -101,10 +121,6 @@ if (!class_exists("SL_Database")) {
 				$content = @file_get_contents($sqlfilename.".tmp") ; 
 				if ($content===FALSE) {
 					return array('finished'=>false, "error"=>sprintf(__('The file %s cannot be read. You should have a problem with file permissions or security restrictions.', 'SL_framework'),"<code>".$sqlfilename.".tmp</code>")) ; 
-				}
-				$r = @unlink($sqlfilename.".tmp") ; 
-				if ($r===FALSE) {
-					return array('finished'=>false, "error"=>sprintf(__('The file %s cannot be deleted. You should have a problem with file permissions or security restrictions.', 'SL_framework'),"<code>".$sqlfilename.".tmp</code>")) ; 
 				}
 				list($list_table, $current_index, $current_offset) = unserialize($content) ; 
 			}
@@ -119,7 +135,7 @@ if (!class_exists("SL_Database")) {
 					$entete .= "-- -----------------------------\n";
 					$entete .= "-- CREATE ".$table[0]."\n";
 					$entete .= "-- -----------------------------\n";
-					$entete .= $wpdb->get_var("show create table ".$table[0], 1);
+					$entete .= $wpdb->get_var("show create table ".$table[0], 1).";";
 				}
 				$r = @file_put_contents($sqlfilename.".content.tmp" ,$entete) ; 
 				if ($r===FALSE) {
@@ -148,9 +164,8 @@ if (!class_exists("SL_Database")) {
 								return array('finished'=>false, "error"=>sprintf(__('The file %s cannot be modified. You should have a problem with file permissions or security restrictions.', 'SL_framework'),"<code>".$sqlfilename.".content.tmp</code>")) ; 
 							}
 							// we inform that the process is finished
-							$r = @unlink(dirname($sqlfilename)."/sql_in_progress") ; 
-							if ($r===FALSE) {
-								return array('finished'=>false, "error"=>sprintf(__('The file %s cannot be deleted. You should have a problem with file permissions or security restrictions.', 'SL_framework'),"<code>".dirname($sqlfilename)."/sql_in_progress</code>")) ; 
+							if (!Utils::rm_rec($path."/sql_in_progress")) {
+								return array('finished'=>false, "step"=>"error", "msg"=>sprintf(__('The file %s cannot be deleted. You should have a problem with file permissions or security restrictions.', $this->pluginID),"<code>".$path."/sql_in_progress"."</code>")) ; 
 							}
 							return  array('finished'=>false, 'nb_to_finished' => count($list_table)-($i-1), 'nb_finished' => ($i-1)) ; 
 						}
@@ -172,11 +187,15 @@ if (!class_exists("SL_Database")) {
 						for($ii=0; $ii < count($ligne); $ii++) {
 							if($ii != 0) 
 								$contentOfTable .=  ", ";
-							if ( ($wpdb->get_col_info('type', $ii) == "string") || ($wpdb->get_col_info('type', $ii) == "blob") )
-								$contentOfTable .=  "'";
-							$contentOfTable .= addslashes($ligne[$ii]);
-							if ( ($wpdb->get_col_info('type', $ii) == "string") || ($wpdb->get_col_info('type', $ii) == "blob") )
-								$contentOfTable .=  "'";
+							//DATE, TIMESTAMP, TIMESTAMP
+							$delimit = "" ; 
+							if ( ($wpdb->get_col_info('type', $ii) == "string") || ($wpdb->get_col_info('type', $ii) == "blob") || ($wpdb->get_col_info('type', $ii) == "datetime") || ($wpdb->get_col_info('type', $ii) == "date") || ($wpdb->get_col_info('type', $ii) == "timestamp") || ($wpdb->get_col_info('type', $ii) == "time") || ($wpdb->get_col_info('type', $ii) == "year") )
+								$delimit .=  "'";
+							if ($ligne[$ii]==NULL) {
+								$ligne[$ii]="NULL" ; 
+							}
+							$contentOfTable .= $delimit.addslashes($ligne[$ii]).$delimit;
+							
 				
 						}
 						$contentOfTable .=  ");\n";
@@ -192,16 +211,18 @@ if (!class_exists("SL_Database")) {
 			}
 					
 			// we inform that the process is finished
-			$r = @unlink(dirname($sqlfilename)."/sql_in_progress") ; 
-			if ($r===FALSE) {
-				return array('finished'=>false, "error"=>sprintf(__('The file %s cannot be deleted. You should have a problem with file permissions or security restrictions.', 'SL_framework'),"<code>".dirname($sqlfilename)."/sql_in_progress</code>")) ; 
+			if (!Utils::rm_rec($path."/sql_in_progress")) {
+				return array('finished'=>false, "step"=>"error", "msg"=>sprintf(__('The file %s cannot be deleted. You should have a problem with file permissions or security restrictions.', $this->pluginID),"<code>".$path."/sql_in_progress"."</code>")) ; 
+			}
+			if (!Utils::rm_rec($sqlfilename.".tmp")) {
+				return array('finished'=>false, "step"=>"error", "msg"=>sprintf(__('The file %s cannot be deleted. You should have a problem with file permissions or security restrictions.', $this->pluginID),"<code>".$sqlfilename.".tmp"."</code>")) ; 
 			}
 			$r = @rename($sqlfilename.".content.tmp", $sqlfilename) ; 
 			if ($r===FALSE) {
-				return array('finished'=>false, "error"=>sprintf(__('The file %s cannot be renamed. You should have a problem with file permissions or security restrictions.', 'SL_framework'),"<code>".$sqlfilename.".tmp</code>")) ; 
+				return array('finished'=>false, "error"=>sprintf(__('The file %s cannot be renamed. You should have a problem with file permissions or security restrictions.', 'SL_framework'),"<code>".$sqlfilename.".content.tmp</code>")) ; 
 			}
 			
-			return array('finished'=>true) ; 
+			return array('finished'=>true, 'nb_to_finished' => 0, 'nb_finished' => count($list_table) ) ; 
 			
 		}
 	} 

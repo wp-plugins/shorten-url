@@ -11,7 +11,6 @@ VersionInclude : 3.0
 if (!class_exists("phpDoc")) {
 	class phpDoc {
 	
-		var $file ;
 		var $content ;
 		
 		/** ====================================================================================================================================================
@@ -21,13 +20,20 @@ if (!class_exists("phpDoc")) {
 		* @param string $file the file to scan
 		* @return void
 		*/
-		function phpDoc($file) {
-			$this->file = $file ; 
-			
-			$handle = fopen($this->file, "r");
-			$length = filesize($this->file);
-			$this->content = fread($handle, $length);
-			fclose($handle);
+		function phpDoc() {
+			$this->content = array() ; 
+			$this->result = array() ; 
+		}
+		
+		/** ====================================================================================================================================================
+		* Add a file
+		* 
+		* @access private
+		* @param string $file the file to scan
+		* @return void
+		*/
+		function addFile($file) {
+			$this->content[] = @file_get_contents($file) ; 
 		}
 
 		/** ====================================================================================================================================================
@@ -38,51 +44,52 @@ if (!class_exists("phpDoc")) {
 		*/
 		public function parse() {
 		
-		
-			$matches = array() ; 
-			
-			$tokens = token_get_all($this->content);
-			$class_token = false;
-			foreach ($tokens as $token) {
-				if (is_array($token)) {
-					if ($token[0] == T_CLASS) {
-						$class_token = true;
-					} else if ($class_token && $token[0] == T_STRING) {
-						$class_token = false;
-						//FOUND
-						$matches[] = $token[1] ; 
-					}
-				}       
-			}
-			
 			$c = array() ; 
-
-			foreach($matches as $id => $cl){
+			
+			foreach ($this->content as $content) {
+				$matches = array() ; 
 				
-				$methods = get_class_methods($cl) ;  
-				$reflector = new ReflectionClass($cl);
-				
-				$desc = $reflector->getDocComment();
-				
-				$m = array() ; 
-				
-				foreach ($methods as $method) {
-					$gm = $reflector->getMethod($method) ; 
-					
-					$parameters = $gm->getParameters();
-					$comment = $gm->getDocComment();
-					
-					
-					$d = $this->parseComments($comment) ; 
-					$d = $this->parseParameters($d, $parameters) ; 
-					
-					$m = array_merge($m, array($method => $d)) ; 
+				$tokens = token_get_all($content);
+				$class_token = false;
+				foreach ($tokens as $token) {
+					if (is_array($token)) {
+						if ($token[0] == T_CLASS) {
+							$class_token = true;
+						} else if ($class_token && $token[0] == T_STRING) {
+							$class_token = false;
+							//FOUND
+							$matches[] = $token[1] ; 
+						}
+					}       
 				}
 				
-				$c = array_merge($c, array($cl => array('methods'=>$m, 'description' => $this->parseComments($desc) ))) ; 
+				foreach($matches as $id => $cl){
+					
+					$methods = get_class_methods($cl) ;  
+					$reflector = new ReflectionClass($cl);
+					
+					$desc = $reflector->getDocComment();
+					
+					$m = array() ; 
+					
+					foreach ($methods as $method) {
+						$gm = $reflector->getMethod($method) ; 
+						
+						$parameters = $gm->getParameters();
+						$comment = $gm->getDocComment();
+						
+						
+						$d = $this->parseComments($comment) ; 
+						$d = $this->parseParameters($d, $parameters) ; 
+						
+						$m = array_merge($m, array($method => $d)) ; 
+					}
+					
+					$c = array_merge($c, array($cl => array('methods'=>$m, 'description' => $this->parseComments($desc) ))) ; 
+				}
 			}
 			
-			return $c ;
+			$this->result = $c ;
 		}
 		
 		
@@ -209,7 +216,177 @@ if (!class_exists("phpDoc")) {
 			return $parsedComment ; 
 			
 		} 
+		
+		/** ====================================================================================================================================================
+		* Print the documentation of classes
+		* 
+		* @access private
+		* @param array $rc the array containing the phpDoc format 
+		* @return void
+		*/
+		
+		function flush()  {
+		
+			// We check if we have a cached file for the version of framework. If so we return the cached file. If not we create the cache file
+			$path = WP_PLUGIN_DIR.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) ; 
+			if (is_file($path.'../core.nfo')) {
+				$info = file_get_contents($path.'../core.nfo') ; 
+				$info = explode("#", $info) ; 
+				$md5 = $info[0] ; 
+				if (is_file($path.'data/phpdoc_'.$md5.'.html')) {
+					echo @file_get_contents($path.'data/phpdoc_'.$md5.'.html') ; 
+					echo "<p style='color:#CCCCCC'>".sprintf(__('Saved on %s', 'SL_framework'), date_i18n(get_option('date_format') , filemtime($path.'data/phpdoc_'.$md5.'.html')) ) ."<p>" ; 
+					return ; 
+				}
+			} 
+			echo "<p style='color:#CCCCCC'>".__('No cache file found... Regenerating one!', 'SL_framework') ."<p>" ; 
+
+			// We delete all phpdoc cache files
+			$dir = @opendir($path.'data/'); 
+			while(false !== ($item = readdir($dir))) {
+				if ('.' == $item || '..' == $item)
+					continue;
+				if (preg_match("/^phpdoc/", $item, $h)) {
+					unlink($path.'data/'.$item) ; 
+				}
+			}
+			
+			ob_start() ; 
+	
+				$rc = $this->result ; 
+				
+				$allowedtags = array('a' => array('href' => array()),'code' => array(), 'p' => array() ,'br' => array() ,'ul' => array() ,'li' => array() ,'strong' => array());
+			
+				// Print the summary of the method
+				echo "<h3>".__('PHP Doc for the SL Framework', 'SL_framework')."</h3>" ; 
+				echo "<p>".__('Here are the classes of the SL framework:', 'SL_framework')."</p>" ; 
+				
+				echo "<ul>" ; 
+				foreach ($rc as $name => $cl) {
+					if ($name!="coreSLframework") {
+						$descr = wp_kses($cl['description']['comment'], $allowedtags);
+						$descr = explode("\n", $descr ) ; 
+						
+						echo "<li class='li_class'><b><a href='#class_".$name."'>".$name."</a></b>: ".$descr[0]."</li>" ; 
+					}
+				}		
+				echo "</ul>" ; 
+	
+				foreach ($rc as $name => $cl) {
+					if ($name=="coreSLframework") {
+						continue ; 
+					}
+					
+					echo "<a name='class_".$name."'></a>" ; 
+					ob_start() ; 
+						
+						$cl['description']['comment'] = wp_kses($cl['description']['comment'], $allowedtags);
+						$cl['description']['comment'] = explode("\n", $cl['description']['comment'] ) ; 
+						foreach($cl['description']['comment'] as $c) {
+							if (trim($c)!="") 
+								echo "<p>".trim($c)."</p>" ; 
+						}
+						echo "<p>".__('Here is the method of the class:', 'SL_framework')."</p>" ; 
+						
+						// Print the summary of the method
+						echo "<ul>" ; 
+						foreach ($cl['methods'] as $name_m => $method) {
+							if (($method['access']!='private')&&($method['return']!="")) {
+								$descr = wp_kses($method['comment'], $allowedtags);
+								$descr = explode("\n", $descr) ; 
+								echo "<li class='li_class'><b><a href='#".$name."_".$name_m."'>".$name."::".$name_m."</a></b>: ".$descr[0]."</li>" ; 
+							}
+						}				
+						echo "</ul>" ; 
+						
+						$table = new adminTable() ; 
+						$table->title(array(__('Methods', 'SL_framework'), __('Details', 'SL_framework') ) ) ; 
+						
+						foreach ($cl['methods'] as $name_m => $method) {
+							
+							if (($method['access']!='private')&&($method['return']!="")) {
+								ob_start() ; 
+									echo "<a name='".$name."_".$name_m."'>" ; 
+									echo "<p><b>".$name_m ."</b><span class='desc_phpDoc'>".__('[METHOD]', 'SL_framework')."</span></p>" ; 
+									
+									$method['comment'] = wp_kses($method['comment'], $allowedtags);
+									$method['comment'] = explode("\n", $method['comment']) ; 
+									
+									foreach($method['comment'] as $c) {
+										if (trim($c)!="") {
+											echo "<p>".trim($c)."</p>" ; 
+										}
+									}
+								$cel1 = new adminCell(ob_get_clean()) ;
+								
+								ob_start() ;
+									$typical = " $name_m (" ; 
+									if (count($method['param'])>0) {
+										echo "<p><b>".__('Parameters:','SL_framework')."</b></p>" ; 
+										foreach ($method['param'] as $p) {
+											echo "<p style='padding-left:30px;'>" ; 
+											if (isset($p['default'])) {
+												if (is_array($p['default'])) 
+													$p['default'] = "[".implode(", ", $p['default'])."]" ; 
+												echo "<b>$".$p['name']."</b> ".__('[optional]', 'SL_framework')." (<i>".$p['type']."</i>) ".$p['description']." ".__('(by default, its value is:', 'SL_framework')." ".htmlentities($p['default']).") "; 
+											} else{
+												echo "<b>$".$p['name']."</b> (<i>".$p['type']."</i>) ".$p['description'] ; 
+											}
+											
+											echo "</p>" ; 
+											if ($p['position']>0)
+												$typical = $typical.', ' ; 
+											if (isset($p['default'])) {
+												$typical = $typical."[$".$p['name']."]" ; 
+											} else {
+												$typical = $typical."$".$p['name'] ; 
+											}
+										}
+									} else {
+										echo "<p><b>".__('Parameters:','SL_framework')." </b></p><p style='padding-left:30px;'>".__('No param','SL_framework')."</p>" ; 
+									}
+									$typical = $typical.") ; " ; 
+									
+									$return = explode(" ",$method['return']." ",2) ; 
+									echo "<p><b>".__('Return value:','SL_framework')."</b></p>" ; 
+									echo "<p style='padding-left:30px;'><b>".$return[0]."</b> ".trim($return[1])."</p>" ; 
+									
+									echo "<p><b>".__('Typical call:','SL_framework')."</b></p>" ; 
+									echo "<p style='padding-left:30px;'><code>".$return[0].$typical."</code></p>" ; 
+									
+									if ($method['see'] !="") {
+										echo "<p><b>".__('See also:','SL_framework')."</b></p>" ; 
+										if (is_array($method['see'] )) {
+											foreach ($method['see'] as $s) {
+												echo "<p style='padding-left:30px;'><a href='#".str_replace('::','_',$s)."'>".$s."</a></p>" ; 
+											}
+										} else {
+											echo "<p style='padding-left:30px;'><a href='#".str_replace('::','_',$method['see'] )."'>".$method['see'] ."</a></p>" ; 
+										}
+									}
+									
+								$cel2 = new adminCell(ob_get_clean()) ;
+								$table->add_line(array($cel1, $cel2), '1') ; 							
+							}
+						}
+						echo $table->flush() ; 
+					$box = new boxAdmin ($name."<span class='desc_phpDoc'>".__('[CLASS]', 'SL_framework')."</span>" , ob_get_clean()) ; 
+					echo $box->flush() ; 
+				}
+			$content = ob_get_clean() ; 
+			// We cache the result
+			if (is_file($path.'../core.nfo')) {
+				$info = file_get_contents($path.'../core.nfo') ; 
+				$info = explode("#", $info) ; 
+				$md5 = $info[0] ; 
+				@file_put_contents($path.'data/phpdoc_'.$md5.'.html', $content) ; 
+			}
+			// We print 			
+			echo $content ;
+		}
 	}
+	
+	
 }
 
 ?>

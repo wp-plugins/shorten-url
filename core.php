@@ -30,11 +30,14 @@ if (!class_exists('pluginSedLex')) {
 			}
 		}
 	}
-
+	
+	require_once($url.'core.php') ; 
+	
 	require_once($url.'core.class.php') ; 
 	require_once($url.'core/admin_table.class.php') ; 
 	require_once($url.'core/tabs.class.php') ; 
 	require_once($url.'core/box.class.php') ; 
+	require_once($url.'core/browser.class.php') ; 
 	require_once($url.'core/database.class.php') ; 
 	require_once($url.'core/feedback.class.php') ; 
 	require_once($url.'core/folder_diff.class.php') ; 

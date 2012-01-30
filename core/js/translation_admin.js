@@ -5,19 +5,25 @@
 *
 */
 
-function translate_add(plug_param,dom_param) {
-	var num = jQuery("#new_translation option:selected").val() ;
-	jQuery("#wait_translation_add").show();
-	
+function translate_add(plug_param,dom_param,is_framework) {
+	if (is_framework!="false") {
+		var num = jQuery("#new_translation_frame option:selected").val() ;
+		jQuery("#wait_translation_add_frame").show();
+	} else {
+		var num = jQuery("#new_translation option:selected").val() ;
+		jQuery("#wait_translation_add").show();
+	}	
 	var arguments = {
 		action: 'translate_add', 
 		idLink : num,
+		isFramework : is_framework,
 		plugin : plug_param, 
 		domain : dom_param
 	} 
 	//POST the data and append the results to the results div
 	jQuery.post(ajaxurl, arguments, function(response) {
 		jQuery("#wait_translation_add").fadeOut();
+		jQuery("#wait_translation_add_frame").fadeOut();
 		jQuery("#zone_edit").html(response);
 		window.location = String(window.location).replace(/\#.*$/, "") + "#edit_translation";
 	});    
@@ -29,8 +35,8 @@ function translate_add(plug_param,dom_param) {
 *
 */
 
-function translate_create (plug_param,dom_param,lang_param, nombre) {
-	var num = jQuery("#new_translation option:selected").val() ;
+function translate_create(plug_param,dom_param,is_framework, lang_param, nombre) {
+
 	jQuery("#wait_translation_create").show();
 	
 	var result = new Array() ; 
@@ -41,6 +47,7 @@ function translate_create (plug_param,dom_param,lang_param, nombre) {
 	var arguments = {
 		action: 'translate_create', 
 		idLink : result,
+		isFramework : is_framework,
 		name : jQuery("#nameAuthor").val(), 
 		email : jQuery("#emailAuthor").val(), 
 		lang : lang_param, 
@@ -52,7 +59,7 @@ function translate_create (plug_param,dom_param,lang_param, nombre) {
 		jQuery("#wait_translation_create").fadeOut();
 		jQuery("#zone_edit").html("");
 		jQuery("#summary_of_translations").html(response);
-		window.location = String(window.location).replace(/\#.*$/, "") + "#top_translation";
+		window.location = String(window.location).replace(/\#.*$/, "") + "#info";
 	});    
 }
 
@@ -62,11 +69,12 @@ function translate_create (plug_param,dom_param,lang_param, nombre) {
 *
 */
 
-function modify_trans(plug_param,dom_param,lang_param) {
+function modify_trans(plug_param,dom_param,is_framework,lang_param) {
 	jQuery("#wait_translation_create").show();
 	
 	var arguments = {
 		action: 'translate_modify', 
+		isFramework : is_framework,
 		lang : lang_param, 
 		plugin : plug_param, 
 		domain : dom_param
@@ -85,9 +93,8 @@ function modify_trans(plug_param,dom_param,lang_param) {
 *
 */
 
-function translate_save_after_modification (plug_param,dom_param,lang_param, nombre) {
+function translate_save_after_modification (plug_param,dom_param,is_framework,lang_param, nombre) {
 
-	var num = jQuery("#new_translation option:selected").val() ;
 	jQuery("#wait_translation_modify").show();
 	
 	var result = new Array() ; 
@@ -98,6 +105,7 @@ function translate_save_after_modification (plug_param,dom_param,lang_param, nom
 	var arguments = {
 		action: 'translate_create', 
 		idLink : result,
+		isFramework : is_framework,
 		name : jQuery("#nameAuthor").val(), 
 		email : jQuery("#emailAuthor").val(), 
 		lang : lang_param, 
@@ -109,7 +117,7 @@ function translate_save_after_modification (plug_param,dom_param,lang_param, nom
 		jQuery("#wait_translation_modify").fadeOut();
 		jQuery("#zone_edit").html("");
 		jQuery("#summary_of_translations").html(response);
-		window.location = String(window.location).replace(/\#.*$/, "") + "#top_translation";
+		window.location = String(window.location).replace(/\#.*$/, "") + "#info";
 	});    
 }
 
@@ -119,17 +127,18 @@ function translate_save_after_modification (plug_param,dom_param,lang_param, nom
 *
 */
 
-function send_trans(plug_param,dom_param,lang_param) {
+function send_trans(plug_param,dom_param, is_framework, lang_param) {
 
-	var num = jQuery("#new_translation option:selected").val() ;
 	jQuery("#wait_translation_modify").show();
 		
 	var arguments = {
 		action: 'send_translation', 
 		lang : lang_param, 
+		isFramework : is_framework,
 		plugin : plug_param, 
 		domain : dom_param
 	} 
+	
 	//POST the data and append the results to the results div
 	jQuery.post(ajaxurl, arguments, function(response) {
 		jQuery("#wait_translation_modify").fadeOut();
@@ -140,24 +149,118 @@ function send_trans(plug_param,dom_param,lang_param) {
 
 /* =====================================================================================
 *
-*  Update the summary
+*  Download a WP translation
 *
 */
 
-function update_summary(plug_param,dom_param) {
+function download_trans() {
 
-	jQuery("#wait_translation_modify").show();
+	var num = jQuery("#download_translation option:selected").val() ;
+	jQuery("#wait_translation_download").show();
 		
 	var arguments = {
-		action: 'update_summary', 
-		plugin : plug_param, 
-		domain : dom_param
+		action: 'download_translation', 
+		lang : num, 
 	} 
+	
 	//POST the data and append the results to the results div
 	jQuery.post(ajaxurl, arguments, function(response) {
-		jQuery("#wait_translation_modify").fadeOut();
-		jQuery("#zone_edit").html("");
-		jQuery("#summary_of_translations").html(response);
-		window.location = String(window.location).replace(/\#.*$/, "") + "#top_translation";
+		jQuery("#wait_translation_download").fadeOut();
+		jQuery("#download_zone").html(response);
+	});    
+}
+
+/* =====================================================================================
+*
+*  Download a WP translation
+*
+*/
+
+function download_trans_2(num) {
+	jQuery("#wait_translation_download").show();
+		
+	var arguments = {
+		action: 'download_translation', 
+		lang : num, 
+	} 
+	
+	//POST the data and append the results to the results div
+	jQuery.post(ajaxurl, arguments, function(response) {
+		jQuery("#wait_translation_download").fadeOut();
+		jQuery("#download_zone").html(response);
+	});    
+}
+
+/* =====================================================================================
+*
+*  Download a WP translation
+*
+*/
+
+function set_language() {
+	jQuery("#wait_translation_set").show();
+	var num = jQuery("#set_translation option:selected").val() ;
+
+	var arguments = {
+		action: 'set_translation', 
+		lang : num, 
+	} 
+	
+	//POST the data and append the results to the results div
+	jQuery.post(ajaxurl, arguments, function(response) {
+		if (response=="") {
+			location.reload();
+		} else {
+			jQuery("#wait_translation_set").fadeOut();
+			jQuery("#set_trans_error").html(response);		
+		}
+		
+	});    
+}
+
+/* =====================================================================================
+*
+*  Download a WP translation
+*
+*/
+
+function get_languages() {
+	jQuery("#wait_translation_get").show();
+
+	var arguments = {
+		action: 'update_languages_wp_init'
+	} 
+	
+	//POST the data and append the results to the results div
+	jQuery.post(ajaxurl, arguments, function(response) {
+			jQuery("#info_get_trans").html(response);
+			get_languages_2(0) ; 
+	});    
+}
+
+/* =====================================================================================
+*
+*  Download a WP translation
+*
+*/
+
+function get_languages_2(numero) {
+
+	var arguments = {
+		action: 'update_languages_wp_list', 
+		num: numero
+	} 
+	
+	//POST the data and append the results to the results div
+	jQuery.post(ajaxurl, arguments, function(response) {
+			res = response.split(",") ; 
+			progressBar_modifyProgression(Math.floor(res[1]/res[2]*100));
+			progressBar_modifyText(res[0]+ " ("+Math.floor(res[1]/res[2]*100)+"%)");
+			if (res[1]==res[2]) {
+				jQuery("#info_get_trans").html("");
+				download_trans_2("") ; // To refresh
+			} else {
+				get_languages_2(res[1]) ;
+			}
 	});    
 }

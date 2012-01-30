@@ -5,7 +5,7 @@ VersionInclude : 3.0
 */ 
 
 /** =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
-* This PHP class create a page with the other plugins of the author listed
+* This PHP class create a page with the other plugins of the author referenced
 */
 
 if (!class_exists("otherPlugins")) {
@@ -31,21 +31,94 @@ if (!class_exists("otherPlugins")) {
 		*/
 		
 		public function list_plugins() {
+			// On cherche 
+			if (!is_file(dirname(__FILE__)."/data/otherplugins_".date('Ym').".data")) {
+				// On efface les autres otherplugins s'ils existent
+				$path = dirname(__FILE__)."/data/" ; 
+				$files = @scandir($path) ;
+				if ($files!==FALSE) {
+					foreach ($files as $f) {
+						if (preg_match("/^otherplugins/i", $f)) {
+							@unlink($path.$f) ; 
+						} 
+					}
+				}
+				$this->get_list_plugins() ; 
+			}
+			$plugins = unserialize(@file_get_contents(dirname(__FILE__)."/data/otherplugins_".date('Ym').".data")) ;
+
+			$plugins_active = get_plugins() ; 
+
+			echo "<h3>".__("Plugins that you may install",'SL_framework')."</h3>" ; 
+			
+			echo "<p>".__("The following plugins have been developed by the author and are not yet installed:",  "SL_framework") ."</p>" ; 
+			$table = new adminTable() ; 
+			$table->title(array(__("Plugin not yet installed", "SL_framework"), __("Description and Screenshots", "SL_framework")) ) ;
+			$nb = 0 ; 
+			foreach ($plugins as $slug => $plug) {	
+				$found = false ; 
+				// We check if the plugin is installed
+				foreach ($plugins_active as $slug_active => $plug_activ) {
+					list($slug_active, $tmp) = explode("/", $slug_active,2) ;
+					if ($slug==$slug_active) {
+						$found = true ; 
+					}
+				}
+				if (!$found) {
+					$cel1 = new adminCell($plug[0]) ;
+					$cel2 = new adminCell($plug[1] ) ;
+					$table->add_line(array($cel1, $cel2), '1') ;
+					$nb++ ; 
+				}
+			}
+			if ($nb==0) {
+					$cel1 = new adminCell("<p>".__("All author's plugins have been installed. Thank you!",  "SL_framework") ."</p>") ;
+					$cel2 = new adminCell("") ;
+					$table->add_line(array($cel1, $cel2), '1') ;
+			}
+			echo $table->flush() ; 
+			
+			echo "<h3>".__("Installed plugins",'SL_framework')."</h3>" ; 
+			echo "<p>".__("You have already installed the following author's plugins:",  "SL_framework") ."</p>" ; 
+			$table = new adminTable() ; 
+			$table->title(array(__("Plugin already installed", "SL_framework"), __("Description and Screenshots", "SL_framework")) ) ;
+			$nb = 0 ; 
+			foreach ($plugins as $slug => $plug) {	
+				$found = false ; 
+				// We check if the plugin is installed
+				foreach ($plugins_active as $slug_active => $plug_activ) {
+					list($slug_active, $tmp) = explode("/", $slug_active,2) ;
+					if ($slug==$slug_active) {
+						$found = true ; 
+					}
+				}
+				if ($found) {
+					$cel1 = new adminCell($plug[0]) ;
+					$cel2 = new adminCell($plug[1] ) ;
+					$table->add_line(array($cel1, $cel2), '1') ;
+					$nb++ ; 
+				}
+			}
+			echo $table->flush() ; 
+		}
+
+		/** ====================================================================================================================================================
+		* Get the list of plugins and save it on the disk
+		* 
+		* @return void 
+		*/
+		
+		public function get_list_plugins() {
 			$action = "query_plugins" ; 
 			$req->author = $this->nameAuthor; 
 			$req->fields = array('sections') ; 
 			
+			$to_save = array() ; 
+			
 			$request = wp_remote_post('http://api.wordpress.org/plugins/info/1.0/', array( 'body' => array('action' => $action, 'request' => serialize($req))) );
-			if ( is_wp_error($request) ) {
-				echo  "<p>".__('An Unexpected HTTP Error occurred during the API request.', 'SL_framework' )."</p>";
-			} else {
+			if ( !is_wp_error($request) ) {
 				$res = unserialize($request['body']);
-				if ( ! $res ) {
-					echo  "<p>???</p>";
-				} else {
-					$table = new adminTable() ; 
-					$table->title(array(__("Plugin Information", "SL_framework"), __("Description and Screenshots", "SL_framework")) ) ;
-					
+				if ( $res ) {
 					$pV = array() ; 
 					foreach ($res->plugins as $plug) {
 						$pV = array_merge($pV, array($plug->name => $plug)) ;  
@@ -63,25 +136,17 @@ if (!class_exists("otherPlugins")) {
 						}
 						if (!$found_exclu) {
 							ob_start() ; 
-							
 								echo "<p><b>".$plug->name."</b></p>" ; 
 								echo "<p>".sprintf(__('The Wordpress page: %s', 'SL_framework'),"<a href='http://wordpress.org/extend/plugins/".$plug->slug."'>http://wordpress.org/extend/plugins/".$plug->slug."</a>")."</p>" ; 
 								$cells = $this->pluginInfo($plug->slug) ; 
 								echo $cells[0] ; 
-							
-							$cel1 = new adminCell(ob_get_clean()) ;
-							$cel2 = new adminCell($cells[1] ) ;
-							$table->add_line(array($cel1, $cel2), '1') ;
-	
+							$to_save [$plug->slug] = array(ob_get_clean(), $cells[1]) ; 
 						}
 					}
-					echo "<h3>".__("Other plugins",'SL_framework')."</h3>" ; 
-					echo "<p>".__('Here are other plugins developped by the author:',  "SL_framework") ."</p>" ; 
-					echo $table->flush() ; 
+					@file_put_contents(dirname(__FILE__)."/data/otherplugins_".date('Ym').".data", serialize($to_save)) ;
 				}
 			}
-		}
-		
+		}		
 		
 		/** ====================================================================================================================================================
 		* Display the plugin Info

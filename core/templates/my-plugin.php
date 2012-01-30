@@ -1,6 +1,7 @@
 <?php
 /**
 Plugin Name: My Plugin
+Plugin Tag: tag
 Description: <p>The description of the plugin on this line. </p>
 Version: 1.0.0
 Framework: SL_Framework
@@ -93,6 +94,19 @@ class my_plugin extends pluginSedLex {
 	 
 	public function _notify() {
 		return 0 ; 
+	}
+	
+	/** ====================================================================================================================================================
+	* Init javascript for the admin side
+	* If you want to load a script, please type :
+	* 	<code>wp_enqueue_script( 'jsapi', 'https://www.google.com/jsapi');</code> or 
+	*	<code>wp_enqueue_script('my_plugin_script', plugins_url('/script.js', __FILE__));</code>
+	*
+	* @return void
+	*/
+	
+	function _admin_js_load() {	
+		return ; 
 	}
 	
 	/**====================================================================================================================================================
@@ -219,7 +233,7 @@ class my_plugin extends pluginSedLex {
 				$plugin = str_replace("/","",str_replace(basename(__FILE__),"",plugin_basename( __FILE__))) ; 
 				$trans = new feedbackSL($plugin, $this->pluginID) ; 
 				$trans->enable_feedback() ; 
-			$tabs->add_tab(__('Give feedback',  $this->pluginID), ob_get_clean() , WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_mail.png")) ; 	
+			$tabs->add_tab(__('Give feedback',  $this->pluginID), ob_get_clean() , WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_mail.png") ; 	
 			
 			ob_start() ; 
 				// A liste of plugin slug to be excluded
@@ -227,7 +241,7 @@ class my_plugin extends pluginSedLex {
 				// Replace sedLex by your own author name
 				$trans = new otherPlugins("sedLex", $exlude) ; 
 				$trans->list_plugins() ; 
-			$tabs->add_tab(__('Other plugins',  $this->pluginID), ob_get_clean() , WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_plug.png")) ; 	
+			$tabs->add_tab(__('Other plugins',  $this->pluginID), ob_get_clean() , WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_plug.png") ; 	
 			
 			echo $tabs->flush() ; 
 			

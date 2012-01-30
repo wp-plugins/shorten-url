@@ -222,7 +222,7 @@ if (!class_exists("Utils")) {
 		* Delete a file or a directory (recursively)
 		* 
 		* @param string $path the path to delete
-		* @return void
+		* @return boolean true if the dir or file does not exists at the end of the rm process
 		*/
 
 		static function rm_rec($path) {
@@ -238,10 +238,17 @@ if (!class_exists("Utils")) {
 					}
 				}
 				reset($objects);
-				rmdir($path);
+				@rmdir($path);
+				if (is_dir($path)) {
+					return false ; 
+				}
 			} else {
 				@unlink($path) ; 
+				if (is_file($path)) {
+					return false ; 
+				}
 			}
+			return true ; 
 		}
 		
 		/** ====================================================================================================================================================

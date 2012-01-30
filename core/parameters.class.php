@@ -55,7 +55,7 @@ if (!class_exists("parametersSedLex")) {
 		/** ====================================================================================================================================================
 		* Add a textarea, input, checkbox, etc. in the form to enable the modification of parameter of the plugin
 		* 	
-		* Please note that the default value of the parameter (defined in the  <code>get_default_option</code> function) will define the type of input form. If the default  value is a: <br/>&nbsp; &nbsp; &nbsp; - string, the input form will be an input text <br/>&nbsp; &nbsp; &nbsp; - integer, the input form will be an input text accepting only integer <br/>&nbsp; &nbsp; &nbsp; - string beggining with a '*', the input form will be a textarea <br/>&nbsp; &nbsp; &nbsp; - string equals to '[file]$path', the input form will be a file input and the file will be stored at $path (relative to the upload folder)<br/>&nbsp; &nbsp; &nbsp; - boolean, the input form will be a checkbox 
+		* Please note that the default value of the parameter (defined in the  <code>get_default_option</code> function) will define the type of input form. If the default  value is a: <br/>&nbsp; &nbsp; &nbsp; - string, the input form will be an input text <br/>&nbsp; &nbsp; &nbsp; - integer, the input form will be an input text accepting only integer <br/>&nbsp; &nbsp; &nbsp; - string beggining with a '*', the input form will be a textarea <br/>&nbsp; &nbsp; &nbsp; - string equals to '[file]$path', the input form will be a file input and the file will be stored at $path (relative to the upload folder)<br/>&nbsp; &nbsp; &nbsp; - string equals to '[password]$password', the input form will be a password input ; <br/>&nbsp; &nbsp; &nbsp; - array of string, the input form will be a dropdown list<br/>&nbsp; &nbsp; &nbsp; - boolean, the input form will be a checkbox 
 		*
 		* @param string $param the name of the parameter/option as defined in your plugin and especially in the <code>get_default_option</code> of your plugin
 		* @param string $name the displayed name of the parameter in the form
@@ -163,6 +163,10 @@ if (!class_exists("parametersSedLex")) {
 					if (is_string($this->obj->get_default_option($param))) {
 						if (str_replace("[file]","",$this->obj->get_default_option($param)) != $this->obj->get_default_option($param)) $type = "file" ; 
 					}
+					// C'est un password si dans le texte par defaut est egal a [password]
+					if (is_string($this->obj->get_default_option($param))) {
+						if (str_replace("[password]","",$this->obj->get_default_option($param)) != $this->obj->get_default_option($param)) $type = "password" ; 
+					}
 					
 					// We update the param
 					//---------------------------------------
@@ -193,7 +197,7 @@ if (!class_exists("parametersSedLex")) {
 						} 
 						
 						// Est ce que c'est bien un string
-						if (($type=="string")||($type=="text")) {
+						if (($type=="string")||($type=="text")||($type=="password")) {
 							$tmp = $_POST[$param] ; 
 							if ($forbid!="") {
 								$tmp = preg_replace($forbid, '', $_POST[$param]) ; 
@@ -217,16 +221,33 @@ if (!class_exists("parametersSedLex")) {
 						// Is it a list ?
 						if ($type=="list") {
 							$selected = $_POST[$param] ; 
-							$array = $this->obj->get_default_option($param) ; 
+							$array = $this->obj->get_param($param) ; 
+							$mod = false ; 
 							for ($i=0 ; $i<count($array) ; $i++) {
-								$array[$i] = str_replace("*","",$array[$i]) ;
-								// On met une Žtoile si c'est celui qui est selectionne par defaut
-								if ($selected == Utils::create_identifier($array[$i])) {
-									$array[$i] = '*'.$array[$i] ; 
+								// if the array is a simple array of string
+								if (!is_array($array[$i])) {
+									$tmpa = $array[$i] ; 
+									$array[$i] = str_replace("*","",$array[$i]) ;
+									// On met une etoile si c'est celui qui est selectionne par defaut
+									if ($selected == Utils::create_identifier($array[$i])) {
+										$array[$i] = '*'.$array[$i] ; 
+									}
+									if ($tmpa != $array[$i]) {
+										$mod = true ; 
+									}
+								} else {
+									$tmpa = $array[$i][0] ; // The first is the title
+									$array[$i][0] = str_replace("*","",$array[$i][0]) ;
+									// On met une etoile si c'est celui qui est selectionne par defaut
+									if ($selected == $array[$i][1]) { // The second is the identifier
+										$array[$i][0] = '*'.$array[$i][0] ; 
+									}
+									if ($tmpa != $array[$i][0]) {
+										$mod = true ; 
+									}
 								}
 							}
-							$array2 = $this->obj->get_param($param) ; 
-							if ($array2 != $array) {
+							if ($mod) {
 								$this->obj->set_param($param, $array) ; 
 								$modified = true ; 
 							}
@@ -310,7 +331,7 @@ if (!class_exists("parametersSedLex")) {
 							$iii++ ; 
 						}
 						$cel_label = new adminCell($cl) ; 
-						$cel_value = new adminCell("<p class='paramLine'><input name='".$param."' id='".$param."' type='text' value='".$this->obj->get_param($param)."' size='".(strlen($this->obj->get_param($param).'')+1)."'> ".__('(integer)', 'SL_framework')."</p>") ; 
+						$cel_value = new adminCell("<p class='paramLine'><input name='".$param."' id='".$param."' type='text' value='".$this->obj->get_param($param)."' size='".min(30,max(6,(strlen($this->obj->get_param($param).'')+1)))."'> ".__('(integer)', 'SL_framework')."</p>") ; 
 						$currentTable->add_line(array($cel_label, $cel_value), '1') ; 
 					}
 					
@@ -330,10 +351,29 @@ if (!class_exists("parametersSedLex")) {
 							$iii++ ; 
 						}
 						$cel_label = new adminCell($cl) ; 
-						$cel_value = new adminCell("<p class='paramLine'><input name='".$param."' id='".$param."' type='text' value='".htmlentities($this->obj->get_param($param), ENT_QUOTES, "UTF-8")."' size='".(strlen($this->obj->get_param($param).'')+1)."'></p>") ; 
+						$cel_value = new adminCell("<p class='paramLine'><input name='".$param."' id='".$param."' type='text' value='".htmlentities($this->obj->get_param($param), ENT_QUOTES, "UTF-8")."' size='".min(30,max(6,(strlen($this->obj->get_param($param).'')+1)))."'></p>") ; 
 						$currentTable->add_line(array($cel_label, $cel_value), '1') ; 			
 					}
 					
+					if ($type=="password") {
+						$ew = "" ; 
+						if ($problem_e!="") {	
+							$ew .= "<div class='errorSedLex'>".$problem_e."</div>" ; 
+						}
+						if ($problem_w!="") {	
+							$ew .= "<div class='warningSedLex'>".$problem_w."</div>" ; 
+						}
+						$cl = "<p class='paramLine'><label for='".$param."'>".$name."</label></p>".$ew ; 
+						// We check if there is a comment just after it
+						while (isset($this->buffer[$iii+1])) {
+							if ($this->buffer[$iii+1][0]!="comment") break ; 
+							$cl .= "<p class='paramComment' style='color: #a4a4a4;'>".$this->buffer[$iii+1][1]."</p>" ; 
+							$iii++ ; 
+						}
+						$cel_label = new adminCell($cl) ; 
+						$cel_value = new adminCell("<p class='paramLine'><input name='".$param."' id='".$param."' type='password' value='".htmlentities($this->obj->get_param($param), ENT_QUOTES, "UTF-8")."' size='".min(30,max(6,(strlen($this->obj->get_param($param).'')+1)))."'></p>") ; 
+						$currentTable->add_line(array($cel_label, $cel_value), '1') ; 			
+					}					
 					if ($type=="text") {
 						$num = count(explode("\n", $this->obj->get_param($param))) + 1 ; 
 						$ew = "" ; 
@@ -372,13 +412,23 @@ if (!class_exists("parametersSedLex")) {
 							<?php 
 							$array = $this->obj->get_param($param);
 							foreach ($array as $a) {
-								$selected = "" ; 
-								if (str_replace("*", "", $a) != $a) {
-									$selected = "selected" ; 
+								if (!is_array($a)) {
+									$selected = "" ; 
+									if (str_replace("*", "", $a) != $a) {
+										$selected = "selected" ; 
+									}
+									?>
+										<option value="<?php echo Utils::create_identifier($a) ; ?>" <?php echo $selected ; ?>><?php echo str_replace("*", "", $a) ; ?></option>
+									<?php
+								} else {
+									$selected = "" ; 
+									if (str_replace("*", "", $a[0]) != $a[0]) {
+										$selected = "selected" ; 
+									}
+									?>
+										<option value="<?php echo $a[1] ; ?>" <?php echo $selected ; ?>><?php echo str_replace("*", "", $a[0]) ; ?></option>
+									<?php
 								}
-							?>
-									<option value="<?php echo Utils::create_identifier($a) ; ?>" <?php echo $selected ; ?>><?php echo str_replace("*", "", $a) ; ?></option>
-							<?php
 							}
 							?>
 							</select>

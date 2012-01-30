@@ -1,49 +1,52 @@
 === Short URL ===
 
-Contributors: SedLex
 Author: SedLex
+Contributors: SedLex
 Author URI: http://www.sedlex.fr/
 Plugin URI: http://wordpress.org/extend/plugins/shorten-url/
-Tags: plugin, short url, bitly
+Tags: shorttag, shortag, bitly, url, short
 Requires at least: 3.0
-Tested up to: 3.2
+Tested up to: 3.3.1
 Stable tag: trunk
 
-Shorten url for internal posts/pages, and for external link too.
+Your pages/posts may have a short url hosted by your own domain.
 
 == Description ==
 
-Create short links which are like the bit.ly (TM) link.
+Your pages/posts may have a short url hosted by your own domain.
 
-Instead of having a short link like http://www.yourdomain.com/?p=3564, your short link will be http://www.yourdomain.com/NgH5z (for instance).
+Replace the internal function of wordpress get_short_link() by a bit.ly like url. 
+
+Instead of having a short link like http://www.yourdomain.com/?p=3564, your short link will be http://www.yourdomain.com/NgH5z (for instance). 
 
 You can configure: 
 
-* the length of the short link,
-* if the link is prefixed with a static word,
+* the length of the short link, 
+* if the link is prefixed with a static word, 
 * the characters used for the short link.
 
-Moreover, you can add external links. These links will be automatiocally replace by the short link in your posts.
+Moreover, you can manage external links with this plugin. The links in your posts will be automatically replace by the short one if available.
 
-= Localizations =
+This plugin is under GPL licence. 
 
-* Russian translation (by Pacifik)
-* French translation (by me)
+= Localization =
 
-= Features of the framework = 
+* English (United States), default language
+* French (France) translation provided by SedLex
+* Russian (Russia) translation provided by Pacifik
 
-This plugin use SL framework.
+= Features of the framework =
 
-You may translate this plugin with an embedded feature which is very easy to use by any end-users (without any external tools / knowledge).
+This plugin uses the SL framework. This framework eases the creation of new plugins by providing incredible tools and frames.
 
-You may also create a new plugin. You will download, from the plugin, an "hello World" plugin: You just have to fill the blank and follow the comments.
+For instance, a new created plugin comes with
 
-Moreover, all the plugins developped with this framework is able to use astonishing tools, such as :
-
-* embedded SVN client (subversion) to easily commit/update the plugin in wordpress.org repository ; 
-* detailled documentation of all available classes and methodes ; 
-* updating the core with a single click ; 
+* A translation interface to simplify the localization of the text of the plugin ; 
+* An embedded SVN client (subversion) to easily commit/update the plugin in wordpress.org repository ; 
+* A detailled documentation of all available classes and methodes ; 
 * etc.
+
+Have fun !
 
 == Installation ==
 
@@ -59,6 +62,9 @@ Moreover, all the plugins developped with this framework is able to use astonish
 2. The configuration page of the plugin 
 
 == Changelog ==
+
+= 1.3.0 =
+* Major release of the framework
 
 = 1.2.3 =
 * Russian translation (by Pacifik)
@@ -101,4 +107,4 @@ Moreover, all the plugins developped with this framework is able to use astonish
 Visit http://www.sedlex.fr/cote_geek/
 
  
-InfoVersion:c4036b9a64983e04dbb31810331bfa64
+InfoVersion:37baa22a62d3f2705da90e4f3f55b327

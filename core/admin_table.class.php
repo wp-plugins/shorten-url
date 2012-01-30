@@ -261,11 +261,11 @@ if (!class_exists("adminCell")) {
 					$num ++ ;
 					if (strpos($l[1],"(")>0) {
 						$l[1] = str_replace('"', '\'', $l[1]) ; 
-?>										<span><a href="#" onclick="javascript: <?php echo $l[1] ;?> ; return false ; " id="<?php echo Utils::create_identifier($l[1]) ;?>_<?php echo $this->idLigne ;?>"><?php echo $l[0] ;?></a><?php if ($num!=count($this->action)) { echo " |" ; }?></span>
+?>										<span><a href="#" onclick="javascript: jQuery('#wait_<?php echo Utils::create_identifier($l[1]) ;?>_<?php echo $this->idLigne ;?>').show() ; jQuery('body').bind('DOMSubtreeModified',function() {jQuery('#wait_<?php echo Utils::create_identifier($l[1]) ;?>_<?php echo $this->idLigne ;?>').hide() ; })  ; <?php echo $l[1] ;?> ; return false ; " id="<?php echo Utils::create_identifier($l[1]) ;?>_<?php echo $this->idLigne ;?>"><?php echo $l[0] ;?></a><img id='wait_<?php echo Utils::create_identifier($l[1]) ;?>_<?php echo $this->idLigne ;?>' src='<? echo WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__)); ?>img/ajax-loader.gif' style='display:none;'><?php if ($num!=count($this->action)) { echo " |" ; }?></span>
 <?php					
 					} else {
 					
-?>										<span><a href="#" onclick="javascript: <?php echo $l[1] ;?>(<?php echo $this->idLigne ; ?>) ; return false ; " id="<?php echo $l[1] ;?>_<?php echo $this->idLigne ;?>"><?php echo $l[0] ;?></a><?php if ($num!=count($this->action)) { echo " |" ; }?></span>
+?>										<span><a href="#" onclick="javascript: jQuery('#wait_<?php echo Utils::create_identifier($l[1]) ;?>_<?php echo $this->idLigne ;?>').show() ; jQuery('body').bind('DOMSubtreeModified',function() {jQuery('#wait_<?php echo Utils::create_identifier($l[1]) ;?>_<?php echo $this->idLigne ;?>').hide() ; }) ; <?php echo $l[1] ;?>(<?php echo $this->idLigne ; ?>) ; return false ; " id="<?php echo $l[1] ;?>_<?php echo $this->idLigne ;?>"><?php echo $l[0] ;?></a><img id='wait_<?php echo Utils::create_identifier($l[1]) ;?>_<?php echo $this->idLigne ;?>' src='<? echo WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__)); ?>img/ajax-loader.gif' style='display:none;'><?php if ($num!=count($this->action)) { echo " |" ; }?></span>
 <?php				}
 				}
 ?>									</div>

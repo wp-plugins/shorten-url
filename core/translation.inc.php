@@ -127,6 +127,8 @@ $flags = array('ae',
 				'za',
 				'zu') ; 
 
+
+
 $countries = array(
 	'af' => array('af_AF'),
 	'ar' => array('ar_AE','ar_BH','ar_DZ','ar_EG','ar_IQ','ar_JO','ar_KW','ar_LB','ar_LY','ar_MA','ar_OM','ar_QA','ar_SA','ar_SY','ar_TN','ar_YE'),
@@ -187,6 +189,241 @@ $countries = array(
 	'xh' => array('xh_XH'),
 	'zh' => array('zh_CN','zh-MO','zh_HK','zh_SG','zh_TW'),
 	'zu' => array('zu_ZU'),
+);
+
+$language_names = array(
+	'af' => array(
+		'lang-native' => 'Afrikaans',
+		'country-www' => 'af'
+	),
+	'ar' => array(
+		'lang-native' => 'العربية/الإمارات',
+		'country-www' => 'ar'
+	),
+	'az' => array (
+		'lang-native' => 'Azərbaycan',
+		'country-www' => 'az'
+	),
+	'be' => array(
+		'lang-native' => 'Беларускі',
+		'country-www' => 'be'
+	),
+	'bg' => array(
+		'lang-native' => 'Български',
+		'country-www' => 'bg'
+	),
+	'by' => array(
+		'lang-native' => 'Беларускі',
+		'country-www' => 'by'
+	),
+	'ca' => array(
+		'lang-native' => 'Сatalà',
+		'country-www' => 'ca'
+	),
+	'ckb' => array(
+		'lang-native' => 'Kurdi',
+		'country-www' => ''
+	),
+	'cs' => array(
+		'lang-native' => 'Čeština',
+		'country-www' => 'cs'
+	),
+	'da' => array(
+		'lang-native' => 'Dansk',
+		'country-www' => 'da'
+	),
+	'de' => array(
+		'lang-native' => 'Deutsch',
+		'country-www' => 'de'
+	),
+	'el' => array(
+		'lang-native' => 'Ελληνικά',
+		'country-www' => 'el'
+	),
+	'en' => array(
+		'lang-native' => 'English',
+		'country-www' => 'en'
+	),
+	'eo' => array(
+		'lang-native' => 'Esperanto',
+		'country-www' => 'eo'
+	),
+	'es' => array(
+		'lang-native' => 'Español',
+		'country-www' => 'es'
+	),
+	'et' => array(
+		'lang-native' => 'Eesti',
+		'country-www' => 'et'
+	),
+	'eu' => array(	
+		'lang-native' => 'Euskara',
+		'country-www' => 'eu'
+	),
+	'fa' => array(
+		'lang-native' => 'فارسی',
+		'country-www' => 'fa'
+	),
+	'fi' => array(
+		'lang-native' => 'Suomi',
+		'country-www' => 'fi'
+	),
+	'fo' => array(
+		'lang-native' => 'Føroyskt',
+		'country-www' => 'fo'
+	),
+	'fr' => array(
+		'lang-native' => 'Français',
+		'country-www' => 'fr'
+	),
+	'fy' => array(
+		'lang-native' => 'Frysk',
+		'country-www' => 'fy'
+	),
+	'ga' => array(
+		'lang-native' => 'Gaeilge',
+		'country-www' => 'ga'
+	),
+	'he' => array(
+		'lang-native' => 'עברית',
+		'country-www' => 'he'
+	),
+	'hi' => array(
+		'lang-native' => 'हिन्दी',
+		'country-www' => 'hi'
+	),
+	'hr' => array(
+		'lang-native' => 'Hrvatski',
+		'country-www' => 'hr'
+	),
+	'hu' => array(
+		'lang-native' => 'Magyar',
+		'country-www' => 'hu'
+	),
+	'id' => array(
+		'lang-native' => 'Bahasa',
+		'country-www' => 'id'
+	),
+	'in' => array(
+		'lang-native' => 'Bahasa',
+		'country-www' => 'in'
+	),
+	'is' => array(	
+		'lang-native' => 'Íslenska',
+		'country-www' => 'is'
+	),
+	'it' => array(
+		'lang-native' => 'Italiano',
+		'country-www' => 'it'
+	),
+	'ja' => array(
+		'lang-native' => '日本語',
+		'country-www' => 'ja'
+	),
+	'kk' => array(
+		'lang-native' => 'Қазақша',
+		'country-www' => 'kk'
+	),
+	'ko' => array(
+		'lang-native' => '한국어',
+		'country-www' => 'ko'
+	),
+	'ky' => array(
+		'lang-native' => 'Кыргызча',
+		'country-www' => 'ky'
+	),
+	'lb' => array(
+		'lang-native' => 'Lëtzebuergesch',
+		'country-www' => 'lb'
+	),
+	'lt' => array(
+		'lang-native' => 'Lietuvių',
+		'country-www' => 'lt'
+	),
+	'lv' => array(
+		'lang-native' => 'Latviešu',
+		'country-www' => 'lv'
+	),
+	'mk' => array(
+		'lang-native' => 'Македонски',
+		'country-www' => 'mk'
+	),
+	'nb' => array(
+		'lang-native' => '‪Norsk Bokmål‬',
+		'country-www' => 'nb'
+	),
+	'nl' => array(
+		'lang-native' => 'Nederlands',
+		'country-www' => 'nl'
+	),
+	'nn' => array(
+		'lang-native' => 'Norsk',
+		'country-www' => 'nn'
+	),
+	'pl' => array(
+		'lang-native' => 'Polski',
+		'country-www' => 'pl'
+	),
+	'pt' => array(
+		'lang-native' => 'Português',
+		'country-www' => 'pt'
+	),
+	'ro' => array(
+		'lang-native' => 'Română',
+		'country-www' => 'ro'
+	),
+	'ru' => array(
+		'lang-native' => 'Русский',
+		'country-www' => 'ru'
+	),
+	'sk' => array(
+		'lang-native' => 'Slovenčina',
+		'country-www' => 'sk'
+	),
+	'sl' => array(
+		'lang-native' => 'Slovenščina',
+		'country-www' => 'sl'
+	),
+	'sr' => array(
+		'lang-native' => 'Српски',
+		'country-www' => 'sr'
+	),
+	'sv' => array(
+		'lang-native' => 'Svenska',
+		'country-www' => 'sv'
+	),
+	'th' => array(
+		'lang-native' => 'ไทย/ประเทศไทย',
+		'country-www' => 'th'
+	),
+	'tl' => array(
+		'lang-native' => 'Tagalog',
+		'country-www' => 'tl'
+	),
+	'tr' => array(
+		'lang-native' => 'Türkçe',
+		'country-www' => 'tr'
+	),
+	'uk' => array(
+		'lang-native' => 'Українська',
+		'country-www' => 'uk'
+	),
+	'vi' => array(
+		'lang-native' => 'Tiếng Việt',
+		'country-www' => 'vi'
+	),
+	'xh' => array(
+		'lang-native' => 'isiXhosa',
+		'country-www' => 'xh'
+	),
+	'zh' => array(
+		'lang-native' => '中文',
+		'country-www' => 'zh'
+	),
+	'zu' => array(
+		'lang-native' => 'isiZulu', 
+		'country-www' => 'zu'
+	)
 );
 
 //based on http://translate.sourceforge.net/wiki/l10n/pluralforms
@@ -928,7 +1165,7 @@ $code_locales = array(
 		'country' => "Iran",
 		'country-www' => 'ir',
 		'lang' => 'Farsi',
-		'lang-native' => "فارسی",
+		'lang-native' => 'فارسی',
 		'lang-www' => 'fa-IR',
 		'dir' => 'rtl',
 		'ms-loc' => 'far',
