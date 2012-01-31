@@ -4,7 +4,8 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2011-12-27T09:52:26+00:00\n"
+"PO-Revision-Date: 2012-01-31T08:09:54+00:00\n"
+"Last-Translator: Pacifik <http://www.androiddeveloper.ru>\n"
 "Last-Translator: Slawka <http://eth0.org.ru>\n"
 "Last-Translator: alexmv <>\n"
 "Language-Team: \n"
@@ -22,7 +23,7 @@ msgstr ""
 "X-Textdomain-Support: yes\n"
 
 msgid "About..."
-msgstr "О..."
+msgstr "О программе..."
 
 msgid "Settings"
 msgstr "Настройки"
@@ -59,6 +60,12 @@ msgstr "Каково Ваше Имя автора:"
 
 msgid "Your author name is the name that is displayed in your plugin."
 msgstr "Ваше имя автора есть имя, которое отображается в вашем плагине."
+
+msgid "Do you want to udate the translations files when the plugin page is called:"
+msgstr ""
+
+msgid "This is useful if you develop a plugin, thus you will see when new sentences need to be translated."
+msgstr ""
 
 msgid "Summary page for the plugins developped with the SL framework"
 msgstr "Основная информация страница для плагинов разработанных с рамками SL"
@@ -106,55 +113,55 @@ msgid "This plugin does not seem to be hosted on the wordpress repository."
 msgstr "Этот плагин, кажется, не быть размещен на репозитории WordPress."
 
 msgid "The Wordpress page: %s"
-msgstr ""
+msgstr "страница Wordpress: %s."
 
 msgid "Last update:"
 msgstr "Последнее обновление:"
 
 msgid "Rating: %s"
-msgstr ""
+msgstr "Рейтинг: %s"
 
 msgid "by %s persons"
-msgstr ""
+msgstr "лицами %s"
 
 msgid "Number of download:"
-msgstr ""
+msgstr "Количество скачивание:"
 
 msgid "Update with the core of the %s plugin (only if you definitely know what you do)"
-msgstr ""
+msgstr "Обновление с ядра плагина %s. (только если вы точно знаете, что вы делаете)"
 
 msgid "SVN management"
-msgstr ""
+msgstr "SVN управление"
 
 msgid "The SVN repository: %s"
-msgstr ""
+msgstr "репозиторий SVN: %s"
 
 msgid "An error occurs when requesting %s"
-msgstr ""
+msgstr "ошибка при запросе %s"
 
 msgid "You do not seem to have a repository for Wordpress because %s returns a 404 error. Thus, ask for one here: %s"
-msgstr ""
+msgstr "Если  хранилище для Wordpress возвращает ошибку (почему %s) 404. Попробуйте посмотреть его тут %s"
 
 msgid "The SVN repository is identical to your local plugin! You do not need to update..."
-msgstr ""
+msgstr "Ваш локальный файл идентичен файлу в репозитории SVN. Обновлений нет!"
 
 msgid "(Cannot check the version of the plugin due to HTTP Error occurred during the API request)"
-msgstr ""
+msgstr "Во время запроса API произошла HTTP ошибка. Обновления проверить не удалось."
 
 msgid "(If you update, a new version will be released, i.e. %s instead of %s)"
-msgstr ""
+msgstr "Доступна новая версия. Новая версия %s, Ваша версия %s"
 
 msgid "The SVN repository is not identical to your local plugin!"
-msgstr ""
+msgstr "Ваш плагин модифицирован или не совпадает с репозитарием SVN"
 
 msgid "General modifications:"
-msgstr ""
+msgstr "Основные модификации:"
 
 msgid "Modify the version of the plugin and the readme.txt file"
-msgstr ""
+msgstr "Изменить версию плагина и файл readme.txt"
 
 msgid "Overwrite the local plugin files with files stored the SVN repository"
-msgstr ""
+msgstr "Заменить ваши файлы файлами с репозитария SVN"
 
 msgid "Quick"
 msgstr "Быстро"
@@ -170,42 +177,6 @@ msgstr ""
 
 msgid "The slow version may be useful if you have issues with the quick version."
 msgstr ""
-
-msgid "Please find hearafter all the possible classes and methods for the development with this framework"
-msgstr ""
-
-msgid "[CLASS]"
-msgstr ""
-
-msgid "Here is the method of the class:"
-msgstr ""
-
-msgid "[METHOD]"
-msgstr ""
-
-msgid "Description:"
-msgstr "Описание:"
-
-msgid "Parameters:"
-msgstr "Параметры:"
-
-msgid "[optional]"
-msgstr ""
-
-msgid "(by default, its value is:"
-msgstr "(значение по умолчанию:"
-
-msgid "No param"
-msgstr "Нет параметров"
-
-msgid "Return value:"
-msgstr "Возвращаемое значение:"
-
-msgid "Typical call:"
-msgstr ""
-
-msgid "See also:"
-msgstr "См. также:"
 
 msgid "Last update of the core: %s at %s"
 msgstr ""
@@ -307,7 +278,7 @@ msgid "Change the plugin version for %s"
 msgstr ""
 
 msgid "Version number"
-msgstr ""
+msgstr "Номер версии"
 
 msgid "The current version of the plugin %s is %s."
 msgstr ""
@@ -324,17 +295,20 @@ msgstr ""
 msgid "Save these data"
 msgstr "Сохранить эти данные"
 
+msgid "The current text"
+msgstr ""
+
+msgid "The proposed text"
+msgstr ""
+
 msgid "There is a problem with the header of %s. It appears that there is no Version header."
 msgstr ""
 
 msgid "The data has been saved. You may close this window."
 msgstr ""
 
-msgid "Your credentials do not seem to be correct. Please check them!"
-msgstr ""
-
-msgid "This file have not been written in the repository due to server problem. Nevertheless, you should retry as it often works better with a second try !"
-msgstr ""
+msgid "Error: %s function is not found"
+msgstr "Ошибка: %s функция не найдена"
 
 msgid "The file %s cannot be read. You should have a problem with file permissions or security restrictions."
 msgstr ""
@@ -357,23 +331,8 @@ msgstr ""
 msgid "The file %s cannot be modified. You should have a problem with file permissions or security restrictions."
 msgstr ""
 
-msgid "The file %s cannot be renamed. You should have a problem with file permissions or security restrictions."
-msgstr ""
-
-msgid "(SQL extraction)"
-msgstr "(извлечение SQL)"
-
-msgid "(ZIP creation)"
-msgstr "(создание ZIP)"
-
-msgid "KB"
-msgstr "КБ"
-
-msgid "MB"
-msgstr "МБ"
-
-msgid "GB"
-msgstr "ГБ"
+msgid "The file %s cannot be compressed."
+msgstr "Файы %s не могут быть сжаты."
 
 msgid "Parameters"
 msgstr "Параметры"
@@ -420,59 +379,23 @@ msgstr ""
 msgid "Parameters have been updated successfully!"
 msgstr ""
 
-msgid "Select all"
-msgstr "Выбрать всё"
+msgid "Close popup"
+msgstr "Закрыть всплывающее окно"
 
-msgid "Un-select all"
-msgstr "Снять все выделения"
-
-msgid "The available translations for the SL framework (contained in the '%s' folder)"
+msgid "Here, you may configure three levels of translations: at the plugin level, at the framework level, and at the dashboard level."
 msgstr ""
 
-msgid "There is %d languages supported for the 'SL framework'."
+msgid "Please be informed that your current language is %s. Text will be translated if a translation is available."
 msgstr ""
 
-msgid "There is %d sentence to be translated in the framework."
+msgid "Translations available for this plugin (i.e. %s)"
 msgstr ""
 
-msgid "The available translations for this plugin"
+msgid "Translations available for the SL framework (stored in %s)"
 msgstr ""
 
-msgid "This plugin is available in %d languages."
+msgid "Translations installed for Wordpress"
 msgstr ""
-
-msgid "There are %d sentences to be translated in this plugin."
-msgstr ""
-
-msgid "Please note that the translation for the framework is available in the %s submenu (see the %s tab)."
-msgstr ""
-
-msgid "Language"
-msgstr "Язык"
-
-msgid "Ratio %"
-msgstr ""
-
-msgid "Translators"
-msgstr ""
-
-msgid "Modify"
-msgstr ""
-
-msgid "Send to the author of the framework"
-msgstr ""
-
-msgid "Send to the author of the plugin"
-msgstr "Отправить автору плагина"
-
-msgid "Add a new translation"
-msgstr "Добавить новый перевод"
-
-msgid "You may add a new translation hereafter (Please note that it is recommended to send your translation to the author so that he would be able to add your translation to the future release of the plugin !)"
-msgstr ""
-
-msgid "Add"
-msgstr "Добавить"
 
 msgid "Adding a new translation for this language: %s"
 msgstr ""
@@ -504,6 +427,9 @@ msgstr "Изменить файлы перевода"
 msgid "%s sentences have been translated (i.e. %s)."
 msgstr ""
 
+msgid "%s sentences have been translated (i.e. %s) %s %s sentences have to be checked because they are close (but not identical) to those to translate.%s"
+msgstr ""
+
 msgid "The translation %s have been sent"
 msgstr ""
 
@@ -531,17 +457,179 @@ msgstr ""
 msgid "If you do not want to loose your translations on the next upgrading of this plugin, please save them on your hard disk before upgrading and then restore them after the upgrade !"
 msgstr ""
 
-msgid "Feedback form"
+msgid "The following languages may be used by your Wordpress installation."
 msgstr ""
 
-msgid "This form is an easy way to contact the author and to discuss issues/incompatibilities/etc. with him"
+msgid "Language"
+msgstr "Язык"
+
+msgid "Information"
+msgstr "Информация"
+
+msgid "There is a need to update the list of available translation at the Wordpress repository because no information are available for the version of Wordpress (i.e. %s)."
 msgstr ""
+
+msgid "Update the list of translations"
+msgstr "Обновить список переводов"
+
+msgid "This is the default language of the plugin. It cannot be modified."
+msgstr "Это язык по умолчанию. Он не может быть изменен."
+
+msgid "Re-download"
+msgstr "Скачать снова"
+
+msgid "Last update: %s"
+msgstr "Последнее обновление: %s ."
+
+msgid "Download a new translation"
+msgstr "Скачать новый перевод"
+
+msgid "You may download a new translation from Wordpress.org"
+msgstr "Вы можете скачать новый перевод с Wordpress.org"
+
+msgid "Download"
+msgstr "Скачать"
+
+msgid "Change the default language used"
+msgstr ""
+
+msgid "If you want to modify the default language of the dashboad, and thus of the plugin, please select your language here:"
+msgstr ""
+
+msgid "Set the language"
+msgstr " Установка языка"
+
+msgid "The file %s has been downloaded (version %s)"
+msgstr ""
+
+msgid "The file %s cannot be stored in %s. Check permissions."
+msgstr ""
+
+msgid "The translations files do not exists ... it is strange!"
+msgstr ""
+
+msgid "The sentences used in this plugin are in English. Help the others users using the same language as you by translating this plugin."
+msgstr ""
+
+msgid "This plugin is available in %d languages."
+msgstr ""
+
+msgid "There are %d sentences to be translated in this plugin."
+msgstr ""
+
+msgid "Ratio %"
+msgstr ""
+
+msgid "Translators"
+msgstr "Переводчики"
+
+msgid "Modify"
+msgstr "Изменить"
+
+msgid "Send to the author of the plugin"
+msgstr "Отправить автору плагина"
+
+msgid "Add a new translation"
+msgstr "Добавить новый перевод"
+
+msgid "You may add a new translation hereafter (Please note that it is recommended to send your translation to the author so that he would be able to add your translation to the future release of the plugin !)"
+msgstr ""
+
+msgid "Add"
+msgstr "Добавить"
+
+msgid "The 'SL framework' is a framework used for developping many plugins like this one. Thus, if you participate translating the framework, it will be very helpful for a bunch of plugins."
+msgstr ""
+
+msgid "There is %d languages supported for the 'SL framework'."
+msgstr ""
+
+msgid "There is %d sentence to be translated in the framework."
+msgstr ""
+
+msgid "This is the default language of the plugin framework. It cannot be modified."
+msgstr ""
+
+msgid "Send to the author of the framework"
+msgstr ""
+
+msgid "Select all"
+msgstr "Выбрать всё"
+
+msgid "Un-select all"
+msgstr "Снять все выделения"
+
+msgid "The file %s cannot be renamed. You should have a problem with file permissions or security restrictions."
+msgstr "Файл %s нельзя переименовать. У вас не достаточно прав для этого."
+
+msgid "Saved on %s"
+msgstr "Сохранено %s."
+
+msgid "No cache file found... Regenerating one!"
+msgstr "Не найдет кэш-файл. Восстановите его."
+
+msgid "PHP Doc for the SL Framework"
+msgstr "Документация PHP для SL Framework"
+
+msgid "Here are the classes of the SL framework:"
+msgstr "Классы SL framework&#039;a"
+
+msgid "Here is the method of the class:"
+msgstr "Метод класса"
+
+msgid "Methods"
+msgstr "Методы"
+
+msgid "Details"
+msgstr "Подробнее"
+
+msgid "[METHOD]"
+msgstr "[Метод]"
+
+msgid "Parameters:"
+msgstr "Параметры:"
+
+msgid "[optional]"
+msgstr "[не обязательно]"
+
+msgid "(by default, its value is:"
+msgstr "(значение по умолчанию:"
+
+msgid "No param"
+msgstr "Нет параметров"
+
+msgid "Return value:"
+msgstr "Возвращаемое значение:"
+
+msgid "Typical call:"
+msgstr ""
+
+msgid "See also:"
+msgstr "См. также:"
+
+msgid "[CLASS]"
+msgstr " [Class]"
+
+msgid "KB"
+msgstr "КБ"
+
+msgid "MB"
+msgstr "МБ"
+
+msgid "GB"
+msgstr "ГБ"
+
+msgid "Feedback form"
+msgstr "Форма обратной связи"
+
+msgid "This form is an easy way to contact the author and to discuss issues/incompatibilities/etc. with him"
+msgstr "Эта форма простой способ связаться с автором и обсудить вопросы / несовместимости / т.д. "
 
 msgid "Contact the author"
 msgstr "Связаться с автором"
 
 msgid "Your email:"
-msgstr "Ваш e-mail^"
+msgstr "Ваш e-mail:"
 
 msgid "Useful... so that the author will be able to anwser you."
 msgstr ""
@@ -550,35 +638,44 @@ msgid "Your comments:"
 msgstr "Ваши комментарии:"
 
 msgid "Please note that additional information on your wordpress installation will be sent to the author in order to help the debugging if needed (such as : the wordpress version, the installed plugins, etc.)"
-msgstr ""
+msgstr " Обратите внимание, что дополнительная информация о вашей установке WordPress будет отправлена автору для того, чтобы помочь в отладке, если это необходимо (например: WordPress версии, установленные плагины и т.д.)"
 
 msgid "Send feedback"
-msgstr ""
+msgstr "Отправить отзыв"
 
 msgid "No email have been provided for the author of this plugin. Therefore, the feedback is impossible"
-msgstr ""
+msgstr "Адрес почты не был предоставлен. Обратная связь не возможна."
 
 msgid "The feedback has been sent"
-msgstr ""
+msgstr "Сообщение было отправлено"
 
-msgid "Error: %s function is not found"
-msgstr "Ошибка: %s функция не найдена"
+msgid "Plugins that you may install"
+msgstr "Плагины, которые можно установить"
 
-msgid "The file %s cannot be compressed."
-msgstr "Файы %s не могут быть сжаты."
+msgid "The following plugins have been developed by the author and are not yet installed:"
+msgstr "Дополнительные плагины автора, которые у вас не установлены:"
 
-msgid "Close popup"
-msgstr "Закрыть всплывающее окно"
-
-msgid "Plugin Information"
-msgstr ""
+msgid "Plugin not yet installed"
+msgstr "Плагин не установлен"
 
 msgid "Description and Screenshots"
 msgstr "Описание и скриншоты"
 
-msgid "Other plugins"
-msgstr "Другие плагины"
+msgid "All author's plugins have been installed. Thank you!"
+msgstr "Все плагины автора были установлены. Спасибо!"
 
-msgid "Here are other plugins developped by the author:"
-msgstr "Другие плагины автора:"
+msgid "Installed plugins"
+msgstr "Установленные плагины"
+
+msgid "You have already installed the following author's plugins:"
+msgstr "У вас уже установлены следующие плагины:"
+
+msgid "Plugin already installed"
+msgstr "Плагин уже установлен"
+
+msgid "Your credentials do not seem to be correct. Please check them!"
+msgstr "Не верные учетные данные. Проверьте корректность введенных данных."
+
+msgid "This file have not been written in the repository due to server problem. Nevertheless, you should retry as it often works better with a second try !"
+msgstr "Файл не был записан в хранилище из-за проблем сервера. Со второй попытки все получиться, главное верить..."
 

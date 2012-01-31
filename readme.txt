@@ -63,6 +63,9 @@ Have fun !
 
 == Changelog ==
 
+= 1.3.1 =
+* Update of Russian translation
+
 = 1.3.0 =
 * Major release of the framework
 
@@ -107,4 +110,4 @@ Have fun !
 Visit http://www.sedlex.fr/cote_geek/
 
  
-InfoVersion:37baa22a62d3f2705da90e4f3f55b327
+InfoVersion:f5ccb062ed9ba0cfb53c226a943b1fcc

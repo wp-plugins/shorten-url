@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2011-12-19T09:55:31+00:00\n"
+"PO-Revision-Date: 2012-01-30T20:40:47+00:00\n"
 "Last-Translator: Pacifik <4888880@gmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -21,13 +21,13 @@ msgstr ""
 "X-Textdomain-Support: yes\n"
 
 msgid "This plugin helps you sharing your post with short-links."
-msgstr "Этот плагин позволяет обмениваться сообщение с коротким ссылкам."
+msgstr "Этот плагин позволяет обмениваться сообщениями с коротким ссылкам."
 
 msgid "Title of your posts"
-msgstr "Название свои сообщения"
+msgstr "Название ваших постов"
 
 msgid "Short URL"
-msgstr "Short URL"
+msgstr "Короткий URL"
 
 msgid "Reset"
 msgstr "Сброс"
@@ -36,19 +36,19 @@ msgid "Edit"
 msgstr "Редактировать"
 
 msgid "Results for Posts URL"
-msgstr "Результаты URL сообщения"
+msgstr "URL ваших сообщений"
 
 msgid "External URL"
-msgstr "Внешний URL"
+msgstr "Внешние URL"
 
 msgid "Delete"
-msgstr "Удалять"
+msgstr "Удалить"
 
 msgid "External URL:"
 msgstr "Внешний URL:"
 
 msgid "Add a new URL to shorten"
-msgstr "Добавить новый URL, чтобы сократить"
+msgstr "Добавить URL для соращения"
 
 msgid "Results for External URL"
 msgstr "Результаты по внешним URL"
@@ -84,10 +84,10 @@ msgid "Length:"
 msgstr "Длительность:"
 
 msgid "Manage translations"
-msgstr "Управление переводы"
+msgstr "Управление переводом"
 
 msgid "Give feedback"
-msgstr "Дайте обратную связь"
+msgstr "Написать автору"
 
 msgid "Other plugins"
 msgstr "Другие плагины"
