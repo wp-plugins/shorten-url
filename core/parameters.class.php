@@ -70,6 +70,197 @@ if (!class_exists("parametersSedLex")) {
 		}
 		
 		/** ====================================================================================================================================================
+		* Get the new value of the parameter after its update (with happen upon calling <code>flush</code>)
+		*
+		* @param string $param the name of the parameter/option as defined in your plugin and especially in the <code>get_default_option</code> of your plugin
+		* @return mixed the value of the param (array if there is an error or null if there is no new value)
+		*/
+
+		function get_new_value($param)  {
+			global $_POST ; 
+			global $_FILES ; 
+			
+			// We find the correspondance in the array to find the allow and forbid tag
+			//---------------------------------------
+			
+			$name = "" ; 
+			$forbid = "" ; 
+			$allow = "" ; 
+			$related = "" ; 
+			for($iii=0; $iii<count($this->buffer); $iii++) {
+				$ligne = $this->buffer[$iii] ; 
+				if ($ligne[0]=="param") {	
+					if ($param == $ligne[1]) { 
+						$name = $ligne[2] ; 
+						$forbid = $ligne[3] ; 
+						$allow = $ligne[4] ; 
+						$related = $ligne[5] ; 
+						break;
+					}
+				}
+			}
+			
+			// What is the type of the parameter ?
+			//---------------------------------------
+			$type = "string" ; 
+			if (is_bool($this->obj->get_default_option($param))) $type = "boolean" ; 
+			if (is_int($this->obj->get_default_option($param))) $type = "int" ; 
+			if (is_array($this->obj->get_default_option($param))) $type = "list" ; 
+			// C'est un text si dans le texte par defaut, il y a une etoile
+			if (is_string($this->obj->get_default_option($param))) {
+				if (str_replace("*","",$this->obj->get_default_option($param)) != $this->obj->get_default_option($param)) $type = "text" ; 
+			}
+			// C'est un file si dans le texte par defaut est egal a [file]
+			if (is_string($this->obj->get_default_option($param))) {
+				if (str_replace("[file]","",$this->obj->get_default_option($param)) != $this->obj->get_default_option($param)) $type = "file" ; 
+			}
+			// C'est un password si dans le texte par defaut est egal a [password]
+			if (is_string($this->obj->get_default_option($param))) {
+				if (str_replace("[password]","",$this->obj->get_default_option($param)) != $this->obj->get_default_option($param)) $type = "password" ; 
+			}
+			
+			// We format the param
+			//---------------------------------------
+			$problem_e = "" ; 
+			$problem_w = "" ; 
+			if (isset($_POST['submitOptions'])) {
+								
+				// Is it a boolean ?
+				
+				if ($type=="boolean") {
+					if ($_POST[$param]) {
+						return true ; 
+					} else {
+						return false ; 
+					}
+				} 
+				
+				// Is it an integer ?
+				
+				if ($type=="int") {
+					if (Utils::is_really_int($_POST[$param])) {
+						return (int)$_POST[$param] ; 
+					} else {
+						if ($_POST[$param]=="") {
+							return 0 ; 
+						} else {
+							return array("error", "<p>".__('Error: the submitted value is not an integer and thus, the parameter has not been updated!', 'SL_framework')."</p>\n") ; 
+						}
+					}
+				} 
+				
+				// Is it a string ?
+				
+				if (($type=="string")||($type=="text")||($type=="password")) {
+					$tmp = $_POST[$param] ; 
+					if ($forbid!="") {
+						$tmp = preg_replace($forbid, '', $_POST[$param]) ; 
+					}
+					if (($allow!="")&&(!preg_match($allow, $_POST[$param]))) {
+						return array("error","<p>".__('Error: the submitted string does not match the constrains', 'SL_framework')." (".$allow.")!</p>\n") ; 
+					} else {
+						return stripslashes($tmp) ; 
+					}
+				} 
+				
+				// Is it a list ?
+				
+				if ($type=="list") {
+					$selected = $_POST[$param] ; 
+					$array = $this->obj->get_param($param) ; 
+					$mod = false ; 
+					for ($i=0 ; $i<count($array) ; $i++) {
+						// if the array is a simple array of string
+						if (!is_array($array[$i])) {
+							$tmpa = $array[$i] ; 
+							$array[$i] = str_replace("*","",$array[$i]) ;
+							// On met une etoile si c'est celui qui est selectionne par defaut
+							if ($selected == Utils::create_identifier($array[$i])) {
+								$array[$i] = '*'.$array[$i] ; 
+							}
+						} else {
+							$tmpa = $array[$i][0] ; // The first is the title
+							$array[$i][0] = str_replace("*","",$array[$i][0]) ;
+							// On met une etoile si c'est celui qui est selectionne par defaut
+							if ($selected == $array[$i][1]) { // The second is the identifier
+								$array[$i][0] = '*'.$array[$i][0] ; 
+							}
+						}
+					}
+					return $array ; 
+				} 
+				
+				// Is it a file ?
+				
+				if ($type=="file") {
+					// deleted ?
+					$upload_dir = wp_upload_dir();
+					$deleted = $_POST["delete_".$param] ; 
+					if ($deleted=="1") {
+						if (file_exists($upload_dir["basedir"].$this->obj->get_param($param))){
+							@unlink($upload_dir["basedir"].$this->obj->get_param($param)) ; 
+						}
+						return $this->obj->get_default_option($param) ; 
+					}
+					
+					$tmp = $_FILES[$param]['tmp_name'] ; 
+					if ($tmp != "") {
+						if ($_FILES[$param]["error"] > 0) {
+							return 	array("error", "<p>".__('Error: the submitted file can not be uploaded!', 'SL_framework')."</p>\n") ; 
+						} else {
+							$upload_dir = wp_upload_dir();
+							$path = $upload_dir["basedir"].str_replace("[file]","", $this->obj->get_default_option($param)) ; 
+								
+							if (is_uploaded_file($_FILES[$param]['tmp_name'])) {
+								@mkdir($path, 0777, true) ; 
+								if (file_exists($path . $_FILES[$param]["name"])) {
+									@unlink($path . $_FILES[$param]["name"]) ; 
+								} 
+								move_uploaded_file($_FILES[$param]["tmp_name"], $path . $_FILES[$param]["name"]);
+								return str_replace("[file]","", $this->obj->get_default_option($param).  $_FILES[$param]["name"]) ; 
+							} else if (is_file($path . $_FILES[$param]["name"])) {
+								return str_replace("[file]","", $this->obj->get_default_option($param).  $_FILES[$param]["name"]) ; 
+							} else {
+								return 	array("error", "<p>".__('Error: security issue!'.$path . $_FILES[$param]["name"], 'SL_framework')."</p>\n") ; 
+							}
+						}
+					} else {
+						return $this->obj->get_param($param) ; 
+					}
+				} 
+			}
+			return null ; 
+		}
+		
+		/** ====================================================================================================================================================
+		* Remove a parameter of the plugin which has been previously added through add_param (then it can be useful if you want to update a parameter without printing the form)
+		*
+		* It will also remove any comment for the same
+		*
+		* @param string $param the name of the parameter/option as defined in your plugin and especially in the <code>get_default_option</code> of your plugin
+		* @return void
+		*/
+
+		function remove_param($param)  {
+			$search_comment = false ; 
+			foreach($this->buffer as $j=>$i){
+				if (!$search_comment) {
+					if($i[0] == $param){
+						unset($this->buffer[$j]) ; 
+						$search_comment = true ; 
+					}
+				} else {
+					if ($i[0] == "comment"){
+						unset($this->buffer[$j]) ; 
+					} else {
+						return ; 
+					}
+				}		
+			}
+			$this->buffer = array_values($this->buffer) ; 
+		}
+		
+		/** ====================================================================================================================================================
 		* Print the form with parameters
 		* 	
 		* @return void
@@ -170,124 +361,37 @@ if (!class_exists("parametersSedLex")) {
 					
 					// We update the param
 					//---------------------------------------
+					
 					$problem_e = "" ; 
 					$problem_w = "" ; 
 					if (isset($_POST['submitOptions'])) {
 						$maj = true ; 
-						// Is it a boolean ?
-						if ($type=="boolean") {
-							if ($_POST[$param]) {
-								$this->obj->set_param($param, true) ; 
-								$modified = true ; 
-							} else {
-								$this->obj->set_param($param, false) ; 
-								$modified = true ; 
-							}
-						} 
+
+						$new_param = $this->get_new_value($param) ; 
+						$old_param = $this->obj->get_param($param) ; 
 						
-						// Is it an integer ?
-						if ($type=="int") {
-							if (Utils::is_really_int($_POST[$param])) {
-								$this->obj->set_param($param, (int)$_POST[$param]) ; 
-								$modified = true ; 
-							} else {
-								$problem_e .= "<p>".__('Error: the submitted value is not an integer and thus, the parameter has not been updated!', 'SL_framework')."</p>\n" ; 
-								$error = true ; 
-							}
-						} 
+						if (is_array($new_param) && ($new_param[0]=='error')) {
+							$problem_e .= $new_param[1] ; 
+							$error = true ; 
+						} else {
 						
-						// Est ce que c'est bien un string
-						if (($type=="string")||($type=="text")||($type=="password")) {
-							$tmp = $_POST[$param] ; 
-							if ($forbid!="") {
-								$tmp = preg_replace($forbid, '', $_POST[$param]) ; 
+							// Warning management
+							
+							if (($type=="string")||($type=="text")||($type=="password")) {
+								if ($new_param!=stripslashes($_POST[$param])) {
+									$problem_w .= "<p>".__('Warning: some characters have been removed because they are not allowed here', 'SL_framework')." (".$forbid.")!</p>\n" ; 
+									$warning = true ; 
+								}
 							} 
-		
-							if ($tmp!=$_POST[$param]) {
-								$problem_w .= "<p>".__('Warning: some characters have been removed because they are not allowed here', 'SL_framework')." (".$forbid.")!</p>\n" ; 
-								$warning = true ; 
-							}
 							
-							if (($allow!="")&&(!preg_match($allow, $_POST[$param]))) {
-								$problem_e .= "<p>".__('Error: the submitted string does not match the constrains', 'SL_framework')." (".$allow.")!</p>\n" ; 
-								$error = true ; 
-							} else {
-								$this->obj->set_param($param, stripslashes($tmp)) ; 
-								$modified = true ; 
-							}
-							$_POST[$param] = $tmp  ; 
-						} 
-						
-						// Is it a list ?
-						if ($type=="list") {
-							$selected = $_POST[$param] ; 
-							$array = $this->obj->get_param($param) ; 
-							$mod = false ; 
-							for ($i=0 ; $i<count($array) ; $i++) {
-								// if the array is a simple array of string
-								if (!is_array($array[$i])) {
-									$tmpa = $array[$i] ; 
-									$array[$i] = str_replace("*","",$array[$i]) ;
-									// On met une etoile si c'est celui qui est selectionne par defaut
-									if ($selected == Utils::create_identifier($array[$i])) {
-										$array[$i] = '*'.$array[$i] ; 
-									}
-									if ($tmpa != $array[$i]) {
-										$mod = true ; 
-									}
-								} else {
-									$tmpa = $array[$i][0] ; // The first is the title
-									$array[$i][0] = str_replace("*","",$array[$i][0]) ;
-									// On met une etoile si c'est celui qui est selectionne par defaut
-									if ($selected == $array[$i][1]) { // The second is the identifier
-										$array[$i][0] = '*'.$array[$i][0] ; 
-									}
-									if ($tmpa != $array[$i][0]) {
-										$mod = true ; 
-									}
-								}
-							}
-							if ($mod) {
-								$this->obj->set_param($param, $array) ; 
-								$modified = true ; 
-							}
-						} 
-						
-						// Is it a file ?
-						if ($type=="file") {
-							// deleted ?
-							$upload_dir = wp_upload_dir();
-							$deleted = $_POST["delete_".$param] ; 
-							if ($deleted=="1") {
-								if (file_exists($upload_dir["basedir"].$this->obj->get_param($param))){
-									@unlink($upload_dir["basedir"].$this->obj->get_param($param)) ; 
-								}
-								$this->obj->set_param($param, $this->obj->get_default_option($param)) ; 
-								$modified = true ; 
-							}
+							// Update of the value
 							
-							$tmp = $_FILES[$param]['tmp_name'] ; 
-							if ($tmp != "") {
-								if ($_FILES[$param]["error"] > 0) {
-									$problem_e .= "<p>".__('Error: the submitted file can not be uploaded!', 'SL_framework')."</p>\n" ; 
-									$error = true ; 
-								} else {
-									if (is_uploaded_file($_FILES[$param]['tmp_name'])) {
-										$upload_dir = wp_upload_dir();
-										$path = $upload_dir["basedir"].str_replace("[file]","", $this->obj->get_default_option($param)) ; 
-										@mkdir($path, 0777, true) ; 
-										if (file_exists($path . $_FILES[$param]["name"])){
-											$problem_e .= "<p>".sprintf(__('Error: %s file already exists', 'SL_framework'), "<em>".$_FILES[$param]["name"]."</em>")."</p>\n" ; 
-											$error = true ; 
-										} else {
-											move_uploaded_file($_FILES[$param]["tmp_name"], $path . $_FILES[$param]["name"]);
-											$this->obj->set_param($param, str_replace("[file]","", $this->obj->get_default_option($param).  $_FILES[$param]["name"])) ; 
-											$modified = true ; 
-										}
-									}
-								}
+							if ($new_param != $old_param) {
+								$modified = true ; 
+								$this->obj->set_param($param, $new_param) ; 
+								SL_Debug::log(get_class(), "The parameter ".$param." of the plugin ".$this->obj->getPluginID()." have been modified", 4) ; 
 							}
-						} 
+						}
 					}
 					
 					// We built a new line for the table

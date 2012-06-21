@@ -1,55 +1,26 @@
 <?php
 /*
 Load scripts for sedlex plugins
-	adapted from tre load-scripts.php file in wordpress
-
 */ 
 
 error_reporting(0);
 
 define( 'WP_PLUGIN_DIR', dirname(dirname(__FILE__)) . '/../' );
+define( 'WP_CONTENT_DIR', dirname(dirname(__FILE__)) . '/../../' );
 
-function get_file($path) {
-	if ( function_exists('realpath') )
-		$path = realpath($path);
-	if ( ! $path || ! @is_file($path) )
-		return '';
-	return @file_get_contents($path);
-}
-
-$load = preg_replace( '/[^a-z0-9,_-]+/i', '', $_GET['load'] );
-$load = explode(',', $load);
+$load = preg_replace( '/[^A-Za-z0-9]+/i', '', $_GET['load'] );
 
 if ( empty($load) )
 	exit;
+if (!is_file(WP_CONTENT_DIR."/sedlex/inline_scripts/".$load.".js"))
+	exit ; 
 
 $compress = ( isset($_GET['c']) && $_GET['c'] );
 $force_gzip = ( $compress && 'gzip' == $_GET['c'] );
 
 $expires_offset = 31536000;
-$out = '';
 
-foreach( $load as $handle ) {
-	$path = WP_PLUGIN_DIR . str_replace('__',"/",$handle) . ".js";
-	
-
-	if (is_file($path)) {
-		$out .=  "\n/*====================================================*/\n";
-		$out .=  "/* FICHIER ".str_replace('__',"/",$handle) . ".js"."*/\n";
-		$out .=  "/*====================================================*/\n";
-		$out .= get_file($path) . "\n";
-	} else {
-		$md5 = preg_replace( '/[^a-z0-9]+/i', '', $handle);
-		$out .=  "\n/*====================================================*/\n";
-		$out .=  "/* INLINE ".$md5. ".css"."*/\n";
-		$out .=  "/*====================================================*/\n";
-
-		$path = WP_PLUGIN_DIR ."../sedlex/inline_scripts/". $md5 . '.js' ; 
-		if (is_file($path)) {
-			$out .=  get_file($path) . "\n";
-		}
-	}
-}
+$out = @file_get_contents(WP_CONTENT_DIR."/sedlex/inline_scripts/".$load.".js") ; 
 
 header('Content-Type: application/x-javascript; charset=UTF-8');
 header('Expires: ' . gmdate( "D, d M Y H:i:s", time() + $expires_offset ) . ' GMT');

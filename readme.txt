@@ -6,7 +6,7 @@ Author URI: http://www.sedlex.fr/
 Plugin URI: http://wordpress.org/extend/plugins/shorten-url/
 Tags: shorttag, shortag, bitly, url, short
 Requires at least: 3.0
-Tested up to: 3.3.1
+Tested up to: 3.4
 Stable tag: trunk
 
 Your pages/posts may have a short url hosted by your own domain.
@@ -29,11 +29,19 @@ Moreover, you can manage external links with this plugin. The links in your post
 
 This plugin is under GPL licence. 
 
+= Multisite - Wordpress MU =
+
+This plugin is compatible with multisite installation. Each blog may manage their own list of links.
+
 = Localization =
 
+* German (Austria) translation provided by AndreasK.
+* German (Germany) translation provided by reitermarkus, navelbrush
 * English (United States), default language
 * French (France) translation provided by SedLex
+* Portuguese (Brazil) translation provided by Blinky
 * Russian (Russia) translation provided by Pacifik
+* Chinese (People's Republic of China) translation provided by OWenT
 
 = Features of the framework =
 
@@ -63,44 +71,34 @@ Have fun !
 
 == Changelog ==
 
+= 1.3.2 =
+* Add a counter of the number of clicks on links
+* The links may be ordered
+
 = 1.3.1 =
 * Update of Russian translation
 
 = 1.3.0 =
 * Major release of the framework
 
-= 1.2.3 =
+= 1.2.0 -&gt; 1.2.3 =
 * Russian translation (by Pacifik)
-
-= 1.2.2 =
 * Improve English text thanks to Rene
 * Correct a bug since home_url is different from site_url (thanks to Julian)
-
-= 1.2.1 =
 * Update of the core and translations
-
-= 1.2.0 =
 * SVN support
 
-= 1.1.3 =
+= 1.1.0 -&gt; 1.1.3 =
 * Updating the core plugin
-
-= 1.1.2 =
 * Replacing the word "force" into "edit" (trevor's suggestion)
 * When forcing an url, you may use a-zA-Z0-9.-_ characters (trevor's suggestion)
 * ZipArchive class has been suppressed and pclzip is used instead
-
-= 1.1.1 =
 * Ensure that folders and files permissions are correct for an adequate behavior
-
-= 1.1.0 =
 * You can add any shortlink you want (i.e. with external links)
 * Add translation for French
 
-= 1.0.2 =
+= 1.0.0 -&gt; 1.0.2 =
 * Upgrade of the framework (version 3.0)
-
-= 1.0.1 =
 * First release in the wild web (enjoy)
 
 == Frequently Asked Questions ==
@@ -110,4 +108,4 @@ Have fun !
 Visit http://www.sedlex.fr/cote_geek/
 
  
-InfoVersion:f5ccb062ed9ba0cfb53c226a943b1fcc
+InfoVersion:2be5c3bef23eb667d635254c5b4ba31e

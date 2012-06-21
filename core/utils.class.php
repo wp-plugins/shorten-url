@@ -12,6 +12,28 @@ if (!class_exists("Utils")) {
 	class Utils {
 	
 		/** ====================================================================================================================================================
+		* To convert into UTF8
+		* 
+		* @param string $content the string to convert into UTF8
+		* @return string the converted string
+		*/
+
+		function convertUTF8($content) {
+		    if(!mb_check_encoding($content, 'UTF-8')
+			OR !($content === mb_convert_encoding(mb_convert_encoding($content, 'UTF-32', 'UTF-8' ), 'UTF-8', 'UTF-32'))) {
+
+			$content = mb_convert_encoding($content, 'UTF-8');
+
+			if (mb_check_encoding($content, 'UTF-8')) {
+			    // log('Converted to UTF-8');
+			} else {
+			    // log('Could not converted to UTF-8');
+			}
+		    }
+		    return $content;
+		} 
+
+		/** ====================================================================================================================================================
 		* Compute the size of a directory (reccursively or not)
 		* 
 		* @param string $path the path of the directory to scan 
@@ -138,52 +160,25 @@ if (!class_exists("Utils")) {
 		* 
 		* @param array $data the table (i.e. array of array) to be sorted
 		* @param integer $num the n-th column to be considered in order to sort the table 
+		* @param boolean $asc the order will be ascendant if true and descendant otherwise
 		* @return array the sorted table
 		*/
 
-		static function multicolumn_sort($data,$num){
+		static function multicolumn_sort($data,$num,$asc=true){
  			$col_uniq = array() ; 
  			
-			// List As Columns
-  			foreach ($data as $row) {
-				$ligne = $row[$num] ;
-				$cnt = 0 ; 
-				foreach ($row as $c) {
-					if ($cnt!=$num) {
-						$ligne .= ",".$row[$cnt] ; 
-					}
-					$cnt ++ ; 
-				}
-				$col_uniq[] = $ligne ; 
+ 			foreach ($data as $val) {
+    			$col_uniq[] = $val[$num];
+  			}
+  			
+ 			// We sort
+			if ($asc) {
+			 	array_multisort($col_uniq, SORT_ASC, $data);
+			} else {
+				array_multisort($col_uniq, SORT_DESC, $data);
 			}
 			
-			// We sort
-			asort($col_uniq) ; 
-			
-			$result = array() ; 
-			foreach ($col_uniq as $l) {
-				$tmp = explode(",",$l) ; 
-				if ($num!=0) {
-					// We recreate a string in the correct order
-					$cnt = 0 ; 
-					$ligne = "####azertyuiop####" ; 
-					foreach ($tmp as $c) {
-						if ($cnt!=0) {
-							$ligne .= ",".$tmp[$cnt] ; 
-							if ($cnt==$num) {
-								$ligne .= ",".$tmp[0] ; 
-							}
-						}
-						$cnt ++ ; 
-					}
-					$ligne = str_replace( "####azertyuiop####,", "", $ligne) ;
-					$result[] = explode(",",$ligne) ; 
-				} else {
-					$result[] = explode(",",$l) ; 
-				}
-			}
-			
-			return $result;
+			return $data;
 		} 
 		
 		/** ====================================================================================================================================================
@@ -293,9 +288,55 @@ if (!class_exists("Utils")) {
 				$md5 = md5(file_get_contents($path)) ; 
 			}
 			return $md5 ; 
+		}	
+		
+		
+		/** ====================================================================================================================================================
+		* Check if a folder or a file is writable
+		* 
+		* @param string $path the path to the folder or the file
+		* @return boolean true if the folder or the file is writable
+		*/
+		
+		function is_writable($path) {
+			if ($path{strlen($path)-1}=='/') // recursively return a temporary file path
+				return Utils::is_writable($path.uniqid(mt_rand()).'.tmp');
+			else if (is_dir($path))
+				return Utils::is_writable($path.'/'.uniqid(mt_rand()).'.tmp');
+			
+			// check tmp file for read/write capabilities
+			$rm = file_exists($path);
+			$f = @fopen($path, 'a');
+			if ($f===false)
+				return false;
+			@fclose($f);
+			if (!$rm)
+				@unlink($path);
+			return true;
 		}
 		
-
+		/** ====================================================================================================================================================
+		* Check if a folder or a file is readable
+		* 
+		* @param string $path the path to the folder or the file
+		* @return boolean true if the folder or the file is writable
+		*/
+		
+		function is_readable($path) {
+			if (is_dir($path))  {
+				if (@scandir($path) === FALSE) {
+					return false ; 
+				}
+				return true ; 
+			}
+			if (is_file($path))  {
+				if (@fopen($path, 'r')=== FALSE) {
+					return false ; 
+				}
+				return true ; 
+			}
+			return false ; 
+		}
 	} 
 }
 

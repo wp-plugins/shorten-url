@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2011-12-12T14:34:22+00:00\n"
+"PO-Revision-Date: 2012-06-21T19:04:50+00:00\n"
 "Last-Translator: SedLex <http://www.sedlex.fr/>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -23,11 +23,17 @@ msgstr ""
 msgid "This plugin helps you sharing your post with short-links."
 msgstr "Ce plugin vous permet de partager vos articles avec des liens courts."
 
-msgid "Title of your posts"
-msgstr "Titre de vos articles"
+msgid "Title of your posts/pages"
+msgstr "Titre de vos articles/pages"
 
 msgid "Short URL"
 msgstr "Lien court"
+
+msgid "Type"
+msgstr "Type"
+
+msgid "Number of clicks"
+msgstr "Nombre de clics"
 
 msgid "Reset"
 msgstr "Réinitialiser"
@@ -35,8 +41,8 @@ msgstr "Réinitialiser"
 msgid "Edit"
 msgstr "Editer"
 
-msgid "Results for Posts URL"
-msgstr "Résultats pour les articles"
+msgid "Internal Redirections"
+msgstr "Redirections internes"
 
 msgid "External URL"
 msgstr "URL externes"
@@ -45,13 +51,13 @@ msgid "Delete"
 msgstr "Effacer"
 
 msgid "External URL:"
-msgstr "URL externes : "
+msgstr "URL externes :"
 
 msgid "Add a new URL to shorten"
 msgstr "Ajouter une nouvelle URL à raccourcir"
 
-msgid "Results for External URL"
-msgstr "Résultats pour les URL externes"
+msgid "External Redirections"
+msgstr "Redirection externes"
 
 msgid "Parameters"
 msgstr "Paramètres"
@@ -72,13 +78,13 @@ msgid "Numeric characters ([0-9]):"
 msgstr "Caractères numériques ([0-9]) :"
 
 msgid "Do you want to use a prefix before your short URL?"
-msgstr "Voulez-vous un préfixe avant le lien court ? "
+msgstr "Voulez-vous un préfixe avant le lien court ?"
 
 msgid "Prefix:"
 msgstr "Préfixe :"
 
 msgid "What is the length of your short URL (without the prefix)?"
-msgstr "Quelle est la longueur de votre lien court (sans le préfixe) ? "
+msgstr "Quelle est la longueur de votre lien court (sans le préfixe) ?"
 
 msgid "Length:"
 msgstr "Longueur :"

@@ -39,6 +39,7 @@ if (!class_exists('pluginSedLex')) {
 	require_once($url.'core/box.class.php') ; 
 	require_once($url.'core/browser.class.php') ; 
 	require_once($url.'core/database.class.php') ; 
+	require_once($url.'core/debug.class.php') ; 
 	require_once($url.'core/feedback.class.php') ; 
 	require_once($url.'core/folder_diff.class.php') ; 
 	require_once($url.'core/otherplugins.class.php') ; 
@@ -48,6 +49,7 @@ if (!class_exists('pluginSedLex')) {
 	require_once($url.'core/progress_bar.class.php') ; 
 	require_once($url.'core/translation.class.php') ; 
 	require_once($url.'core/text_diff.class.php') ; 
+	require_once($url.'core/tree.class.php') ; 
 	require_once($url.'core/svn.class.php') ; 
 	require_once($url.'core/utils.class.php') ; 
 	require_once($url.'core/zip.class.php') ; 

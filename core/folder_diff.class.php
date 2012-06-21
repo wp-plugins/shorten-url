@@ -11,6 +11,7 @@ if (!class_exists("foldDiff")) {
 	class foldDiff {
 		
 		var $folder = array() ; 
+		var $folder_show = array() ; 
 		var $rep1 = "" ; 
 		var $rep2 = "" ; 
 		
@@ -22,6 +23,7 @@ if (!class_exists("foldDiff")) {
 		*/
 		function foldDiff() {
 			$this->folder = array() ; 
+			$this->folder_show = array() ; 
 		}
 		
 		/** ====================================================================================================================================================
@@ -44,76 +46,79 @@ if (!class_exists("foldDiff")) {
 				$this->rep2 = $path2."/" ; 
 			}
 			
+			$result = array() ; 
 			
 			// On liste les fichiers qui existe dans le $path1 mais pas dans le $path2
 			if (is_dir($path1)) {
-				$d1 = @opendir( $path1 );		
-				while(($file = readdir( $d1 )) !== false){ 
+				$d1 = @scandir( $path1 );		
+				foreach ($d1 as $file) {
 					if (!preg_match("@^\..*@",$file)) {
 						if ((!is_file($path2."/".$file))&&(!is_dir($path2."/".$file))) {
 							if (is_file($path1."/".$file)) {
 								if (!$this->isBinary($path1."/".$file)) {
-									$this->folder[] = array($file,2,"text_file", str_replace($this->rep2,"",$path2."/".$file)) ; 
+									$result[] = array($file,2,"text_file", str_replace($this->rep2,"",$path2."/".$file)) ; 
 								} else {
-									$this->folder[] = array($file,2,"binary_file", str_replace($this->rep2,"",$path2."/".$file)) ; 
+									$result[] = array($file,2,"binary_file", str_replace($this->rep2,"",$path2."/".$file)) ; 
 								}
 							} else {
-								$this->folder[] = array($file."/",2,"directory", str_replace($this->rep2,"",$path2."/".$file."/")) ; 
 								//Recursive
-								$this->diff($path1."/".$file, $path2."/".$file, false) ;  
+								$sub_result = $this->diff($path1."/".$file, $path2."/".$file, false) ; 
+								$result[] = array($file."/",2,"directory", str_replace($this->rep2,"",$path2."/".$file."/"), $sub_result) ; 
 							}
 						}
 					}
 				}
-				closedir( $d1 ); 
 			}
 			
 			
 			// On liste les fichiers qui existe dans le $path2 mais pas dans le $path1
 			if (is_dir($path2)) {
-				$d2 = @opendir( $path2 );
-				while(($file = readdir( $d2 )) !== false){ 
+				$d2 = @scandir( $path2 );		
+				foreach ($d2 as $file) {
 					if (!preg_match("@^\..*@",$file)) {
 						if ((!is_file($path1."/".$file))&&(!is_dir($path1."/".$file))) {
 							if (is_file($path2."/".$file)) {
 								if (!$this->isBinary($path2."/".$file)) {
-									 $this->folder[] = array($file,1,"text_file", str_replace($this->rep2,"",$path2."/".$file)) ; 
+									 $result[] = array($file,1,"text_file", str_replace($this->rep2,"",$path2."/".$file)) ; 
 								} else {
-									 $this->folder[] = array($file,1,"binary_file", str_replace($this->rep2,"",$path2."/".$file)) ; 
+									 $result[] = array($file,1,"binary_file", str_replace($this->rep2,"",$path2."/".$file)) ; 
 								}
 							} else {
-								 $this->folder[] = array($file."/",1,"directory", str_replace($this->rep2,"",$path2."/".$file."/")) ; 
 								//Recursive
-								$this->diff($path1."/".$file, $path2."/".$file, false) ;  
+								$sub_result = $this->diff($path1."/".$file, $path2."/".$file, false) ;  
+								$result[] = array($file."/",1,"directory", str_replace($this->rep2,"",$path2."/".$file."/"), $sub_result) ; 
 							}
 						} else {
 							if (is_file($path2."/".$file)) {
 								// on regarde si les fichiers sont identiques
 								if (md5_file($path2."/".$file)==md5_file($path1."/".$file)) {
 									if (!$this->isBinary($path2."/".$file)) {
-										 $this->folder[] = array($file,0,"text_file", str_replace($this->rep2,"",$path2."/".$file)) ; 
+										 $result[] = array($file,0,"text_file", str_replace($this->rep2,"",$path2."/".$file)) ; 
 									} else {
-										 $this->folder[] = array($file,0,"binary_file", str_replace($this->rep2,"",$path2."/".$file)) ; 
+										 $result[] = array($file,0,"binary_file", str_replace($this->rep2,"",$path2."/".$file)) ; 
 									}
 								} else {
 									if (!$this->isBinary($path2."/".$file)) {
-										 $this->folder[] = array($file,3,"text_file", str_replace($this->rep2,"",$path2."/".$file)) ; 
+										 $result[] = array($file,3,"text_file", str_replace($this->rep2,"",$path2."/".$file)) ; 
 									} else {
-										 $this->folder[] = array($file,3,"binary_file", str_replace($this->rep2,"",$path2."/".$file)) ; 
+										 $result[] = array($file,3,"binary_file", str_replace($this->rep2,"",$path2."/".$file)) ; 
 									}
 								}
 							} else {
-								 $this->folder[] = array($file."/",0,"directory", str_replace($this->rep2,"",$path2."/".$file."/")) ; 
-								//Reccursive
-								$this->diff($path1."/".$file, $path2."/".$file, false) ;  
+								//Recursive
+								$sub_result = $this->diff($path1."/".$file, $path2."/".$file, false) ;  
+								$result[] = array($file."/",0,"directory", str_replace($this->rep2,"",$path2."/".$file."/"),$sub_result) ; 
 							}
 						}
 					}
 				}
-				closedir( $d2 ); 
 			}
-			
-			return $this->folder ; 
+			if ($racine==true) {
+				$this->folder = $result ; 
+				return ;
+			} else {
+				return $result ; 
+			}
 			
 		}
 		
@@ -121,137 +126,182 @@ if (!class_exists("foldDiff")) {
 		* Display the difference
 		* 
 		* @param boolean $withTick display ticks 
-		* @param bollean $closeNotModifiedFolders close folders if their contents have not been modified
-		* @return void
+		* @param boolean $closeNotModifiedFolders close folders if their contents have not been modified
+		* @param boolean $withRandom set to true if there are a plurality of rendering
+		* @return string the random number that should be used to know which button has been clicked
 		*/
 		
-		function render($closeNotModifiedFolders=true, $withTick=false) {
-			
+		function render($closeNotModifiedFolders=true, $withTick=false, $withRandom=false) {
+			$random = "" ; 
+			if ($withRandom) {
+				$random = md5(microtime()) ; 
+			}
+		
 			// On affiche les repertoires
-			$rep_current = Utils::multicolumn_sort($this->folder, 3) ; 
+			$rep_current = $this->folder ; 
 			$prev_fold = "" ; 
 			$reduire = "<script>\r\n" ; 
 			$hasmodif = array() ; 
 			$foldlist = array() ; 
-			$niveau = 1 ; 
+			$niveau = 0 ; 
 			
 			if ($withTick) {
-				echo "<p><input class='button-secondary action' onClick='allTick(true)' value='".__('Select all', 'SL_framework')."'>"  ; 
-				echo "&nbsp; <input class='button-secondary action' onClick='allTick(false)' value='".__('Un-select all', 'SL_framework')."'></p>"  ; 
-				echo "<script>\r\n";
-				echo "function allTick(val) {\r\n" ;
-				echo "     jQuery('.toDelete').attr('checked', val);\r\n" ; 
-				echo "     jQuery('.toDeleteFolder').attr('checked', val);\r\n" ; 
-				echo "     jQuery('.toPut').attr('checked', val);\r\n" ; 
-				echo "     jQuery('.toPutFolder').attr('checked', val);\r\n" ; 
-				echo "     jQuery('.toModify').attr('checked', val);\r\n" ; 
-				echo "		return false ; " ; 
-				echo "}\r\n" ; 
-				echo "</script>\r\n" ; 
+				echo "<p>" ; 
+				echo "<input class='button-secondary action' onClick='allTick".$random."(true)' value='".__('Select all', 'SL_framework')."'>"  ; 
+				echo "&nbsp; <input class='button-secondary action' onClick='allTick".$random."(false)' value='".__('Un-select all', 'SL_framework')."'>" ; 
+				echo "</p>"  ; 
+				?>
+				<script>
+				function allTick<?php echo $random ; ?>(val) {
+					jQuery('.toDelete<?php echo $random ; ?>').attr('checked', val);
+					jQuery('.toDeleteFolder<?php echo $random ; ?>').attr('checked', val);
+					jQuery('.toPut<?php echo $random ; ?>').attr('checked', val);
+					jQuery('.toPutFolder<?php echo $random ; ?>').attr('checked', val);
+					jQuery('.toModify<?php echo $random ; ?>').attr('checked', val);
+					return false ; 
+				}
+				</script>
+				<?php
 			}
-				
-			foreach ($rep_current as $rc) {
-				$color = "" ; 
-				$binary = "" ;
-				$loupe = "" ; 
-				$plus="<img style='border:0px' src='".WP_PLUGIN_URL.'/'.str_replace(basename(  __FILE__),"",plugin_basename( __FILE__))."img/vide-8.png' />\n" ; 
-				$icone = "<img style='border:0px' src='".WP_PLUGIN_URL.'/'.str_replace(basename(  __FILE__),"",plugin_basename( __FILE__))."img/default.png'/>\n" ; 
-				
-				$tick = "<span style='width:30px;display:block;float:left;'>&nbsp;</span>" ; 
-				
-				if (($rc[1]==1)) {
-					$color = "color:red;text-decoration:line-through;" ; 
-					$tick = "<span style='width:30px;display:block;float:left;'><input class='toDelete' type='checkbox' name='toDelete' value='".$rc[3]."' checked /></span>" ; 
-					if ($rc[2]=="directory") 
-						$tick = "<span style='width:30px;display:block;float:left;'><input class='toDeleteFolder' type='checkbox' name='toDeleteFolder' value='".$rc[3]."' checked /></span>" ; 
-				}
-				if (($rc[1]==2)) {
-					$color = "color:green;" ; 
-					$tick = "<span style='width:30px;display:block;float:left;'><input class='toPut' type='checkbox' name='toPut' value='".$rc[3]."' checked ></span>" ; 
-					if ($rc[2]=="directory") 
-						$tick = "<span style='width:30px;display:block;float:left;'><input class='toPutFolder' type='checkbox' name='toPutFolder' value='".$rc[3]."' checked /></span>" ; 
-				}
-				if (($rc[1]==3)) {
-					$color = "color:blue;" ; 
-					$tick = "<span style='width:30px;display:block;float:left;'><input class='toModify' type='checkbox' name='toModify' value='".$rc[3]."' checked ></span>" ; 
-				}
-				
-				if ($rc[2]=="binary_file") {
-					$binary = "*" ; 
-					$icone = "<img style='border:0px' src='".WP_PLUGIN_URL.'/'.str_replace(basename(  __FILE__),"",plugin_basename( __FILE__))."img/binary.png'/>\n" ; 
-				}
-				
-				if (preg_match("/\.php$/i", $rc[0]))
-					$icone = "<img style='border:0px' src='".WP_PLUGIN_URL.'/'.str_replace(basename(  __FILE__),"",plugin_basename( __FILE__))."img/php.png'/>\n" ; 
-				if (preg_match("/\.(gif|png|jpg|jpeg)$/i", $rc[0])) 
-					$icone = "<img style='border:0px' src='".WP_PLUGIN_URL.'/'.str_replace(basename(  __FILE__),"",plugin_basename( __FILE__))."img/img.png'/>\n" ; 
-
-				if ($rc[2]=="directory") {
-					$plus =  "<a href='#' onclick='folderToggle(\"".md5($rc[3])."\") ; return false ; '>\n" ; 
-					$plus .= "<img style='border:0px' src='".WP_PLUGIN_URL.'/'.str_replace(basename(  __FILE__),"",plugin_basename( __FILE__))."img/minus-8.png' id='minus_".md5($rc[3])."' />\n" ; 
-					$plus .= "<img style='display:none;border:0px' src='".WP_PLUGIN_URL.'/'.str_replace(basename(  __FILE__),"",plugin_basename( __FILE__))."img/plus-8.png' id='plus_".md5($rc[3])."' />\n" ; 
-					$plus .=  "</a>\n" ; 
-					$icone = "<img style='border:0px' src='".WP_PLUGIN_URL.'/'.str_replace(basename(  __FILE__),"",plugin_basename( __FILE__))."img/folder.png'/>\n" ;  ; 
-				}
-				
-				if ((($rc[1]==3)||($rc[1]==2)||($rc[1]==1))&&($rc[2]=="text_file")) {
-					$loupe =  "<a href='#' onclick='diffToggle(\"".md5($rc[3])."\") ; return false ; '>\n" ; 
-					$loupe .= " <img style='border:0px' src='".WP_PLUGIN_URL.'/'.str_replace(basename(  __FILE__),"",plugin_basename( __FILE__))."img/loupe.png'/>\n"  ; 
-					$loupe .=  "</a>\n" ; 
-				}
-				
-				$old_niv = $niveau  ; 
-				$niveau = substr_count(str_replace("/#", "", $rc[3]."#"), "/") ; 
-				if ($old_niv>$niveau) {
-					for ($i=0 ; $i<$old_niv-$niveau ; $i++) {
-						echo "</div>\n" ; 
-						if (!$hasmodif[$niveau+$i]) { 
-							$reduire .= "folderToggle(\"".md5($listfolder[$niveau+$i])."\") ; \r\n"; 
+			?>
+			<script>
+				function diffToggle<?php echo $random ; ?>(num) {
+					
+					jQuery.fn.fadeThenSlideToggle = function(speed, easing, callback) {
+						if (this.is(":hidden")) {
+							return this.slideDown(speed, easing).fadeTo(speed, 1, easing, callback);
+						} else {
+							return this.fadeTo(speed, 0, easing).slideUp(speed, easing, callback);
 						}
-						$hasmodif[$niveau+$i] = false ; 
-					}
-				}
-				if ($old_niv<$niveau) {
-					echo "<div id='folder_".md5($prevfolder)."'>\n" ; 
-					$hasmodif[$niveau] = false ;
-					$listfolder[$old_niv] = $prevfolder ;
-				}
-				$prevfolder = $rc[3] ; 
-				
-				if (!$withTick)
-					$tick = "" ; 
-				
-				echo "<p style='padding:0px;margin:0px;'>".$tick."<span style='padding:0px;margin:0px;padding-left:".(20*$niveau)."px;'>".$plus.$icone."<span style='".$color."'>".$rc[0].$binary."</span>".$loupe."</span></p>\n" ; 
-				
-				if ( ($rc[1]==3) || ($rc[1]==2) || ($rc[1]==1) ) {
-					for ($i=0 ; $i<=$niveau ; $i++) {
-						$hasmodif[$i] = true ;
-					}
-				}
-				
-				if ((($rc[1]==3)||($rc[1]==2)||($rc[1]==1))&&($rc[2]=="text_file")) {
-					echo "<div id='diff_".md5($rc[3])."' style='display:none;padding:0px;margin:0px;padding-left:".(20*$niveau+30)."px;'>\n" ; 
-					$text1 = @file_get_contents($this->rep1.$rc[3]) ; 
-					$text2 = @file_get_contents($this->rep2.$rc[3]) ; 
+					};
 					
-					$textdiff = new textDiff() ; 
-					$textdiff->diff($text2, $text1) ; 
-					echo $textdiff->show_only_difference() ; 
-					
-					echo "</div>\n" ; 
+					jQuery("#diff_"+num).fadeThenSlideToggle(500);
+
+					return false ; 
 				}
-			}				
-			
-			$reduire .= "</script>\r\n" ; 
-			if ($withTick) {
-				echo "<p><input class='button-secondary action' onClick='allTick(true)' value='".__('Select all', 'SL_framework')."'>"  ; 
-				echo "&nbsp; <input class='button-secondary action' onClick='allTick(false)' value='".__('Un-select all', 'SL_framework')."'></p>"  ; 
+			</script>
+			<?php
+			$result = array() ; 
+			foreach ($this->folder as $item) {
+				$result[] = $this->sub_render($item, $closeNotModifiedFolders, $withTick, $random) ; 
 			}
-			if ($closeNotModifiedFolders) {
-				echo $reduire ; 
+			
+			treeList::render($result, true) ;  	
+			
+			if ($withTick) {
+				echo "<p><input class='button-secondary action' onClick='allTick".$random."(true)' value='".__('Select all', 'SL_framework')."'>"  ; 
+				echo "&nbsp; <input class='button-secondary action' onClick='allTick".$random."(false)' value='".__('Un-select all', 'SL_framework')."'></p>"  ; 
+			}
+			
+			return $random ; 
+		}
+		
+		/** ====================================================================================================================================================
+		* Display the difference (sub-recursive function)
+		* 
+		* @access private
+		* @param boolean $withTick display ticks 
+		* @param boolean $closeNotModifiedFolders close folders if their contents have not been modified
+		* @param boolean $random the random number used for a plurality of displaying
+		* @return array to be used with treeList class
+		*/
+		
+		function sub_render($item, $closeNotModifiedFolders=true, $withTick=false, $random="") {
+			$color = "" ; 
+			$binary = "" ;
+			$loupe = "" ; 
+			$tick = "" ;
+			$icone = "<img style='border:0px' src='".WP_PLUGIN_URL.'/'.str_replace(basename(  __FILE__),"",plugin_basename( __FILE__))."img/default.png'/>\n" ; 
+			
+			// Test modification
+			//----------------------
+			if (($item[1]==1)) {
+				$color = "color:red;text-decoration:line-through;" ; 
+				if ($withTick)
+					$tick = "<input class='toDelete".$random."' type='checkbox' name='toDelete".$random."' value='".$item[3]."' checked />" ; 
+				if ($item[2]=="directory") 
+					$tick = "<input class='toDeleteFolder".$random."' type='checkbox' name='toDeleteFolder".$random."' value='".$item[3]."' checked />" ; 
+			}
+			if (($item[1]==2)) {
+				$color = "color:green;" ; 
+				if ($withTick)
+					$tick = "<input class='toPut".$random."' type='checkbox' name='toPut".$random."' value='".$item[3]."' checked >" ; 
+				if ($item[2]=="directory") 
+					$tick = "<input class='toPutFolder".$random."' type='checkbox' name='toPutFolder".$random."' value='".$item[3]."' checked />" ; 
+			}
+			if (($item[1]==3)) {
+				$color = "color:blue;" ; 
+				if ($withTick)
+					$tick = "<input class='toModify".$random."' type='checkbox' name='toModify".$random."' value='".$item[3]."' checked >" ; 
+			}
+
+			//Test type of files
+			//------------------------
+			if ($item[2]=="binary_file") {
+				$binary = "*" ; 
+				$icone = "<img style='border:0px' src='".WP_PLUGIN_URL.'/'.str_replace(basename(  __FILE__),"",plugin_basename( __FILE__))."img/binary.png'/>\n" ; 
+			}	
+			
+			if (preg_match("/\.php$/i", $item[0]))
+				$icone = "<img style='border:0px' src='".WP_PLUGIN_URL.'/'.str_replace(basename(  __FILE__),"",plugin_basename( __FILE__))."img/php.png'/>\n" ; 
+			
+			if (preg_match("/\.(gif|png|jpg|jpeg)$/i", $item[0])) 
+				$icone = "<img style='border:0px' src='".WP_PLUGIN_URL.'/'.str_replace(basename(  __FILE__),"",plugin_basename( __FILE__))."img/img.png'/>\n" ; 
+
+			if ($item[2]=="directory") {
+				$icone = "<img style='border:0px' src='".WP_PLUGIN_URL.'/'.str_replace(basename(  __FILE__),"",plugin_basename( __FILE__))."img/folder.png'/>\n" ;  ; 
+			}
+			
+			//Test whether the text diff should be displayed
+			//---------------------------------------------------
+			if ((($item[1]==3)||($item[1]==2)||($item[1]==1))&&($item[2]=="text_file")) {
+				$loupe =  "<a href='#' onclick='diffToggle".$random."(\"".md5($item[3].$random)."\") ; return false ; '>" ; 
+				$loupe .= "<img style='border:0px' src='".WP_PLUGIN_URL.'/'.str_replace(basename(  __FILE__),"",plugin_basename( __FILE__))."img/loupe.png'/>"  ; 
+				$loupe .=  "</a>\n" ; 
+				$text_diff = "<div id='diff_".md5($item[3].$random)."' style='display:none;padding:0px;margin:0px;'>\n" ; 
+				$text1 = @file_get_contents($this->rep1.$item[3]) ; 
+				$text2 = @file_get_contents($this->rep2.$item[3]) ; 
+				$textdiff = new textDiff() ; 
+				$textdiff->diff($text2, $text1) ; 
+				$text_diff .= $textdiff->show_only_difference() ; 
+				$text_diff .="</div>\n" ; 
+			}	
+			
+			// Construct the result array
+			$result_text = $icone.$tick."<span style='".$color."'>".$item[0].$binary."</span> ".$loupe.$text_diff ; 
+			$id = "id".md5($result_text) ; 
+			if (count($item)<=4) {
+				return array($result_text, $id) ; 
+			} else {
+				$child_result = array() ; 
+				$isModif = $this->isModifications($item[4]) ; 
+				foreach ($item[4] as $i) {
+					$child_result[] = $this->sub_render($i, $closeNotModifiedFolders, $withTick, $random) ; 
+				}
+				return array($result_text, $id, $child_result, $isModif) ; 
 			}
 		}
 
+		/** ====================================================================================================================================================
+		* Test if there is a modification in children
+		* 
+		* @param array $children the children node
+		* @access private
+		* @return boolean true if there is a modification
+		*/
+		
+		function isModifications($children) {
+			foreach ($children as $c) {
+				if ($c[1]!=0)
+					return true ; 
+				if ($c[2]=="directory") {
+					$resu = $this->isModifications($c[4]) ;
+					if ($resu)
+						return true ;  
+				}
+			}
+			return false ; 
+		}
 		/** ====================================================================================================================================================
 		* Test if a file is binary
 		* 
@@ -274,7 +324,6 @@ if (!class_exists("foldDiff")) {
 			}
 			return 0;
 		} 	
-
 	}
 }
 

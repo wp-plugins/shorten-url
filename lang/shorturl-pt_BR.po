@@ -1,0 +1,94 @@
+msgid ""
+msgstr ""
+"Generated: SL Framework (http://www.sedlex.fr)\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2012-05-12T21:19:22+00:00\n"
+"Last-Translator: Blinky <feghizzi@gmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Poedit-Language: Portuguese\n"
+"X-Poedit-Country: Brazil\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;\n"
+"X-Poedit-Basepath: \n"
+"X-Poedit-Bookmarks: \n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Textdomain-Support: yes\n"
+
+msgid "This plugin helps you sharing your post with short-links."
+msgstr "Esse plugin ajuda você a compartilhar seus posts com links encurtados"
+
+msgid "Title of your posts"
+msgstr "Título de suas postagens"
+
+msgid "Short URL"
+msgstr "Encurtar URL"
+
+msgid "Reset"
+msgstr "Resetar"
+
+msgid "Edit"
+msgstr "Editar"
+
+msgid "Results for Posts URL"
+msgstr "Resultados"
+
+msgid "External URL"
+msgstr "URL Externa"
+
+msgid "Delete"
+msgstr "Deletar"
+
+msgid "External URL:"
+msgstr "URL Externa:"
+
+msgid "Add a new URL to shorten"
+msgstr "Insira uma nora URL para ser encurtada"
+
+msgid "Lower-case characters ([a-z]):"
+msgstr "Caracteres Minúsculos ([a-z]):"
+
+msgid "Upper-case characters ([A-Z]):"
+msgstr "Caracteres Maiúsculos ([A-Z]):"
+
+msgid "Numeric characters ([0-9]):"
+msgstr "Caracteres Numéricos ([0-9]):"
+
+msgid "Do you want to use a prefix before your short URL?"
+msgstr "Você quer usar um prefixo antes de sua URL encurtada?"
+
+msgid "Prefix:"
+msgstr "Prefixo:"
+
+msgid "What is the length of your short URL (without the prefix)?"
+msgstr "Qual o tamanho do seu link encurtado ( Sem prefixo ) ?"
+
+msgid "Length:"
+msgstr "Tamanho:"
+
+msgid "Manage translations"
+msgstr "Gerenciar Traduções"
+
+msgid "Give feedback"
+msgstr "Enviar FeedBack"
+
+msgid "Other plugins"
+msgstr "Outro Plugins"
+
+msgid "Results for External URL"
+msgstr "URLs Externas:"
+
+msgid "Parameters"
+msgstr "Preferencias"
+
+msgid "Do you want to use the following characters?"
+msgstr "Você quer usar os seguintes caracteres?"
+
+msgid "These parameters will be taken in account only for generation of new links"
+msgstr "Essas configurações serão utilizadas apenas nos próximos links encurtados"
+

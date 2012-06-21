@@ -3,7 +3,7 @@
 Plugin Name: Short URL
 Plugin Tag: shorttag, shortag, bitly, url, short 
 Description: <p>Your pages/posts may have a short url hosted by your own domain.</p><p>Replace the internal function of wordpress <code>get_short_link()</code> by a bit.ly like url. </p><p>Instead of having a short link like http://www.yourdomain.com/?p=3564, your short link will be http://www.yourdomain.com/NgH5z (for instance). </p><p>You can configure: </p><ul><li>the length of the short link, </li><li>if the link is prefixed with a static word, </li><li>the characters used for the short link.</li></ul><p>Moreover, you can manage external links with this plugin. The links in your posts will be automatically replace by the short one if available.</p><p>This plugin is under GPL licence. </p>
-Version: 1.3.1
+Version: 1.3.2
 Author: SedLex
 Author Email: sedlex@sedlex.fr
 Framework Email: sedlex@sedlex.fr
@@ -27,14 +27,15 @@ class shorturl extends pluginSedLex {
 		global $wpdb ; 
 		// Configuration
 		$this->pluginName = 'Short URL' ; 
-		$this->tableSQL = "id_post mediumint(9) NOT NULL, short_url TEXT DEFAULT '', url_externe VARCHAR( 255 ) NOT NULL DEFAULT '',UNIQUE KEY id_post (id_post, url_externe)" ; 
+		$this->tableSQL = "id_post mediumint(9) NOT NULL, nb_hits mediumint(9), short_url TEXT DEFAULT '', url_externe VARCHAR( 255 ) NOT NULL DEFAULT '',UNIQUE KEY id_post (id_post, url_externe)" ; 
 		$this->path = __FILE__ ; 
 		$this->table_name = $wpdb->prefix . "pluginSL_" . get_class() ; 
 		$this->pluginID = get_class() ; 
 		
 		//Init et des-init
 		register_activation_hook(__FILE__, array($this,'install'));
-		register_deactivation_hook(__FILE__, array($this,'uninstall'));
+		register_deactivation_hook(__FILE__, array($this,'deactivate'));
+		register_uninstall_hook(__FILE__, array($this,'uninstall_removedata'));
 		
 		//Paramètres supplementaires
 		add_action('wp_ajax_reset_link', array($this,'reset_link'));
@@ -99,6 +100,11 @@ class shorturl extends pluginSedLex {
 			}
 		}
 		
+		// This update aims at adding the nb_hits fields 
+		if ( !$wpdb->get_var("SHOW COLUMNS FROM ".$table_name." LIKE 'nb_hits'")  ) {
+			$wpdb->query("ALTER TABLE ".$table_name." ADD nb_hits mediumint(9);");
+		}
+		
 	}
 
 	/** ====================================================================================================================================================
@@ -154,47 +160,66 @@ class shorturl extends pluginSedLex {
 			
 			$get = $_GET;
 			unset($get['paged']) ;			
+
 			ob_start() ; 
 				echo '<script language="javascript">var site="'.home_url().'"</script>' ; 
 				
-				$count = count(get_posts(array('post_status' => 'publish', 'posts_per_page' => -1))) ;
+				$count = count(get_posts('post_type=any&post_status=publish&posts_per_page=-1')) ;
 				$maxnb = 20 ; 
-				$table = new adminTable($count, $maxnb) ; 
+				$table = new adminTable($count, $maxnb, true) ; 
 				
-				$table->title(array(__('Title of your posts', $this->pluginID), __('Short URL', $this->pluginID)) ) ; 
+				$table->title(array(__('Title of your posts/pages', $this->pluginID), __('Short URL', $this->pluginID), __('Type', $this->pluginID), __('Number of clicks', $this->pluginID)) ) ; 
 
-				// lignes du tableau
-				// boucle sur les differents elements
-				query_posts('post_status=publish&paged='.$table->current_page().'&posts_per_page='.$maxnb);
+				// Get all posts / pages
+				query_posts('post_type=any&post_status=publish&posts_per_page=-1');
+				$result = array() ; 
 				while (have_posts()) {
 					the_post();
+					$result[] = array(get_the_ID(), get_the_title(), wp_get_shortlink(), get_post_type(), $wpdb->get_var("SELECT nb_hits FROM {$table_name} WHERE id_post='".get_the_ID()."'")) ; 
+				}
+				
+				// We order the posts page according to the choice of the user
+				if ($table->current_orderdir()=="ASC") {
+					$result = Utils::multicolumn_sort($result, $table->current_ordercolumn(), true) ;  
+				} else { 
+					$result = Utils::multicolumn_sort($result, $table->current_ordercolumn(), false) ;  
+				}
+				
+				// We limit the result to the requested zone
+				$result = array_slice($result,($table->current_page()-1)*$maxnb,$maxnb);
+				
+				// lignes du tableau
+				// boucle sur les differents elements
+				foreach ($result as $r) {
 					$ligne++ ; 
 					ob_start() ; 
 					?>
-					<b><?php echo the_title(); ?></b>
-					<img src="<?php echo WP_PLUGIN_URL.'/'.str_replace(basename( __FILE__),"",plugin_basename(__FILE__)) ?>img/ajax-loader.gif" id="wait<?php the_ID() ; ?>" style="display: none;" />
+					<b><?php echo $r[1]; ?></b>
+					<img src="<?php echo WP_PLUGIN_URL.'/'.str_replace(basename( __FILE__),"",plugin_basename(__FILE__)) ?>img/ajax-loader.gif" id="wait<?php echo $r[0] ; ?>" style="display: none;" />
 					<?php
 					$cel1 = new adminCell(ob_get_clean()) ; 	
 					ob_start() ; 
 					?>
-					<span id="lien<?php the_ID() ; ?>" ><a href="<?php echo wp_get_shortlink() ; ?>"><?php echo wp_get_shortlink() ; ?></a></span>
+					<span id="lien<?php echo $r[0] ; ?>" ><a href="<?php echo $r[2] ; ?>"><?php echo $r[2] ; ?></a></span>
 					<?php
 					$cel2 = new adminCell(ob_get_clean()) ; 	
 					$cel2->add_action(__("Reset", $this->pluginID), "resetLink") ; 
 					$cel2->add_action(__("Edit", $this->pluginID), "forceLink") ; 
 					
-					$table->add_line(array($cel1, $cel2), get_the_ID()) ; 
+					$cel3 = new adminCell($r[3]) ; 
+					
+					$select = "SELECT nb_hits FROM {$table_name} WHERE id_post='".$r[0]."'" ; 
+					$nb_hits = $wpdb->get_var( $select ) ;
+					$cel4 = new adminCell($nb_hits) ; 	
+					
+					$table->add_line(array($cel1, $cel2, $cel3, $cel4), $r[0]) ; 
 				}
 				echo $table->flush() ;
-			$tabs->add_tab(__('Results for Posts URL',  $this->pluginID), ob_get_clean() ) ; 
+			$tabs->add_tab(__('Internal Redirections',  $this->pluginID), ob_get_clean() ) ; 
 			
 			ob_start() ; 
 			
-				if ($_GET['table_id']=='2') {
-					$tabs->activate(2) ;
-				}
 				if (isset($_POST['add'])) {
-					$tabs->activate(2) ;
 					// We generate a new short Url
 					$car_minus = $this->get_param('low_char') ; 
 					$car_maxus = $this->get_param('upp_char') ; 
@@ -222,10 +247,18 @@ class shorturl extends pluginSedLex {
 				$maxnb = 20 ; 
 				
 				$count = $wpdb->get_var("SELECT COUNT(*) FROM ".$table_name." WHERE id_post=0 ; ") ; 
-				$table = new adminTable($count, $maxnb) ; 
-				$table->title(array(__('External URL', $this->pluginID), __('Short URL', $this->pluginID)) ) ; 
+				$table = new adminTable($count, $maxnb, true) ; 
+				$table->title(array(__('External URL', $this->pluginID), __('Short URL', $this->pluginID), __('Number of clicks', $this->pluginID)) ) ; 
+				
+				if ($table->current_ordercolumn()==1) {
+					$orderby = " ORDER BY url_externe ".$table->current_orderdir() ; 
+				} else if ($table->current_ordercolumn()==2) {
+					$orderby = " ORDER BY short_url ".$table->current_orderdir() ; 
+				} else if ($table->current_ordercolumn()==3) {
+					$orderby = " ORDER BY nb_hits ".$table->current_orderdir() ; 
+				} 
 
-				$res = $wpdb->get_results("SELECT * FROM ".$table_name." WHERE id_post=0 LIMIT ".($maxnb*($table->current_page()-1)).", ".$maxnb." ; ") ; 
+				$res = $wpdb->get_results("SELECT * FROM ".$table_name." WHERE id_post=0 ".$orderby." LIMIT ".($maxnb*($table->current_page()-1)).", ".$maxnb." ; ") ; 
 				
 				foreach($res as $r) {
 					$id_temp = md5($r->short_url) ; 
@@ -234,8 +267,9 @@ class shorturl extends pluginSedLex {
 					$cel2 = new adminCell("<span id='lien_external".$id_temp."'><a href='".home_url()."/".$r->short_url."'>".home_url()."/".$r->short_url."</a></span>") ; 
 					$cel2->add_action(__("Reset", $this->pluginID), "resetLink_external('".$id_temp."')") ; 
 					$cel2->add_action(__("Edit", $this->pluginID), "forceLink_external('".$id_temp."')") ; 
-					
-					$table->add_line(array($cel1, $cel2), $id_temp) ; 
+					$cel3 = new adminCell($r->nb_hits) ; 	
+
+					$table->add_line(array($cel1, $cel2, $cel3), $id_temp) ; 
 				}
 				echo $table->flush() ;
 				
@@ -252,7 +286,7 @@ class shorturl extends pluginSedLex {
 				$box = new boxAdmin (__('Add a new URL to shorten', $this->pluginID), ob_get_clean()) ; 
 				echo $box->flush() ; 
 
-			$tabs->add_tab(__('Results for External URL',  $this->pluginID), ob_get_clean() ) ; 	
+			$tabs->add_tab(__('External Redirections',  $this->pluginID), ob_get_clean() ) ; 	
 			
 			ob_start() ; 
 				?>
@@ -557,17 +591,19 @@ class shorturl extends pluginSedLex {
 		
 		if(is_404()) {
 			$param = explode("/", $_SERVER['REQUEST_URI']) ; 
-			if (preg_match("/^([a-zA-Z0-9_.-])*$/",$param[1],$matches)==1) {
-				$select = "SELECT id_post FROM {$table_name} WHERE short_url='".$param[1]."'" ; 
+			if (preg_match("/^([a-zA-Z0-9_.-])*$/",$param[count($param)-1],$matches)==1) {
+				$select = "SELECT id_post FROM {$table_name} WHERE short_url='".$param[count($param)-1]."'" ; 
 				$temp_id = $wpdb->get_var( $select ) ;
 				if (is_numeric($temp_id)) {
 					if ($temp_id==0) {
-						$select = "SELECT url_externe FROM {$table_name} WHERE short_url='".$param[1]."'" ; 
+						$select = "SELECT url_externe FROM {$table_name} WHERE short_url='".$param[count($param)-1]."'" ; 
 						$temp_url = $wpdb->get_var( $select ) ;
+						$wpdb->query("UPDATE {$table_name} SET nb_hits = IFNULL(nb_hits, 0) + 1 WHERE short_url='".$param[count($param)-1]."'") ;
 						header("HTTP/1.1 301 Moved Permanently");
 						header("Location: ".$temp_url );
 						exit();
 					} else {
+						$wpdb->query("UPDATE {$table_name} SET nb_hits = IFNULL(nb_hits, 0) + 1 WHERE id_post=".$temp_id) ;
 						header("HTTP/1.1 301 Moved Permanently");
 						header("Location: ".get_permalink($temp_id));
 						exit();

@@ -80,11 +80,12 @@ if (!class_exists("feedbackSL")) {
 			$mail = preg_replace("/[^:\/a-z0-9@A-Z_.-]/","",$_POST['mail']) ; 
 			$comment = strip_tags($_POST['comment']) ; 
 			
+			// If applicable, we select the log file
+			$logfile = SL_Debug::get_log_path() ; 
+			
 			$info_file = pluginSedLex::get_plugins_data(WP_PLUGIN_DIR."/".$plugin."/".$plugin.".php") ; 
 			
 			$to = $info_file['Email'] ; 
-			
-			
 			
 			$subject = "[".ucfirst($plugin)."] Feedback of ".$name ; 
 			
@@ -141,22 +142,23 @@ if (!class_exists("feedbackSL")) {
 						"Return-Path: $mail" ; 
 			}
 			
-			$attachments = array();
+			$attachments = array($logfile);
 			
 			// send the email
 			if (wp_mail( $to, $subject, $message, $headers, $attachments )) {
 				echo "<div class='updated  fade'>" ; 
 				echo "<p>".__("The feedback has been sent", 'SL_framework')."</p>" ; 
 				echo "</div>" ; 
+				SL_Debug::log(get_class(), "A feedback mail has been sent.", 4) ; 
 			} else {
 				echo "<div class='error  fade'>" ; 
 				echo "<p>".__("An error occured sending the email.", 'SL_framework')."</p><p>".__("Make sure that your wordpress is able to send email.", 'SL_framework')."</p>" ; 
-				echo "</div>" ; 			
+				echo "</div>" ; 	
+				SL_Debug::log(get_class(), "A feedback mail has failed to be sent.", 2) ; 
 			}
 
 			//Die in order to avoid the 0 character to be printed at the end
 			die() ;
-
 		}
 		
 	}

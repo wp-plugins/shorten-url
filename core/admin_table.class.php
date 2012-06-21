@@ -15,6 +15,7 @@ if (!class_exists("adminTable")) {
 		var $nbLigneTotal ; 
 		var $nbLignePerPage ; 
 		var $title ; 
+		var $order ; 
 		var $hasFooter ; 
 		var $content ; 
 		var $id ; 
@@ -24,16 +25,18 @@ if (!class_exists("adminTable")) {
 		* 
 		* @param integer $nb_all_Items the number of all items. If the number of submitted lines are less than this number, a navigation bar will be added at the top of the table
 		* @param integer $nb_max_per_page the number of item per page. This parameter is useful if you have submitted the previous parameter.
+		* @param boolean $order allow the ordering of the columns with small arrows 
 		* @return adminTable the table
 		*/
 		
-		function adminTable($nb_all_Items=0, $nb_max_per_page=0) {	
+		function adminTable($nb_all_Items=0, $nb_max_per_page=0, $order=false) {	
 			global $SLframework_id_table ; 
 			
 			$SLframework_id_table ++ ; 
 			
 			$this->id = $SLframework_id_table ; 
 			$this->title = array() ; 
+			$this->order = $order ; 
 			$this->nbLigneTotal = $nb_all_Items ; 
 			$this->nbLignePerPage = $nb_max_per_page ; 
 			$this->hasFooter = true ; 
@@ -64,6 +67,37 @@ if (!class_exists("adminTable")) {
 				$page_cur = 1 ; 
 			}
 			return $page_cur ; 
+		}
+		
+		/** ====================================================================================================================================================
+		* Get the current column order of the table.
+		* 
+		* @return integer the column number
+		*/
+		function current_ordercolumn() {
+			if (isset($_GET['ordercol_'.$this->id])) {
+				$col_cur = $_GET['ordercol_'.$this->id] ; 
+			} else {
+				$col_cur = 1 ; 
+			}
+			return $col_cur ; 
+		}
+		
+		/** ====================================================================================================================================================
+		* Get the current column direction of the table.
+		* 
+		* @return string the column direction "ASC" or "DESC"
+		*/
+		function current_orderdir() {
+			if (isset($_GET['orderdir_'.$this->id])) {
+				$dir_cur = $_GET['orderdir_'.$this->id] ; 
+				if ($dir_cur != "DESC") {
+					$dir_cur = "ASC" ; 
+				}
+			} else {
+				$dir_cur = "ASC" ; 
+			}
+			return $dir_cur ; 
 		}
 		
 		/** ====================================================================================================================================================
@@ -147,7 +181,25 @@ if (!class_exists("adminTable")) {
 							<tr>
 								<tr>
 <?php
+			$i_col = 1 ; 
 			foreach ($this->title as $name) {
+				if ($this->order) {
+					if ($this->current_ordercolumn()==$i_col) {
+						$name .= "&nbsp;" ; 
+						if  ($this->current_orderdir()=="DESC") {
+							$name .= "<a href='".add_query_arg( array ( 'orderdir_'.$this->id => 'ASC', 'ordercol_'.$this->id  => $i_col ) )."'><img src='".WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."img/arrow_up.png' style='border:0px; vertical-align:middle;'></a>" ; 
+							$name .= "<img src='".WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."img/arrow_down_s.png' style='border:0px; vertical-align:middle;'>" ; 							
+						} else {
+							$name .= "<img src='".WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."img/arrow_up_s.png' style='border:0px; vertical-align:middle;'>" ; 
+							$name .= "<a href='".add_query_arg( array ( 'orderdir_'.$this->id => 'DESC', 'ordercol_'.$this->id  => $i_col ) )."'><img src='".WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."img/arrow_down.png' style='border:0px; vertical-align:middle;'></a>" ; 						
+						}
+					} else {
+						$name .= "&nbsp;" ; 
+						$name .= "<a href='".add_query_arg( array ( 'orderdir_'.$this->id => 'ASC', 'ordercol_'.$this->id  => $i_col ) )."'><img src='".WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."img/arrow_up.png' style='border:0px; vertical-align:middle;'></a>" ; 
+						$name .= "<a href='".add_query_arg( array ( 'orderdir_'.$this->id => 'DESC', 'ordercol_'.$this->id  => $i_col ) )."'><img src='".WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."img/arrow_down.png' style='border:0px; vertical-align:middle;'></a>" ; 
+					}
+				}
+				$i_col++ ; 
 ?>									<th class="manage-column column-columnname" scope="col"><?php echo $name ; ?></th>
 <?php
 			}
@@ -261,11 +313,11 @@ if (!class_exists("adminCell")) {
 					$num ++ ;
 					if (strpos($l[1],"(")>0) {
 						$l[1] = str_replace('"', '\'', $l[1]) ; 
-?>										<span><a href="#" onclick="javascript: jQuery('#wait_<?php echo Utils::create_identifier($l[1]) ;?>_<?php echo $this->idLigne ;?>').show() ; jQuery('body').bind('DOMSubtreeModified',function() {jQuery('#wait_<?php echo Utils::create_identifier($l[1]) ;?>_<?php echo $this->idLigne ;?>').hide() ; })  ; <?php echo $l[1] ;?> ; return false ; " id="<?php echo Utils::create_identifier($l[1]) ;?>_<?php echo $this->idLigne ;?>"><?php echo $l[0] ;?></a><img id='wait_<?php echo Utils::create_identifier($l[1]) ;?>_<?php echo $this->idLigne ;?>' src='<? echo WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__)); ?>img/ajax-loader.gif' style='display:none;'><?php if ($num!=count($this->action)) { echo " |" ; }?></span>
+?>										<span><a href="#" onclick="javascript: jQuery('#wait_<?php echo Utils::create_identifier($l[1]) ;?>_<?php echo $this->idLigne ;?>').show() ; jQuery('body').bind('DOMSubtreeModified',function() {jQuery('#wait_<?php echo Utils::create_identifier($l[1]) ;?>_<?php echo $this->idLigne ;?>').hide() ; })  ; <?php echo $l[1] ;?> ; return false ; " id="<?php echo Utils::create_identifier($l[1]) ;?>_<?php echo $this->idLigne ;?>"><?php echo $l[0] ;?></a><img id='wait_<?php echo Utils::create_identifier($l[1]) ;?>_<?php echo $this->idLigne ;?>' src='<?php echo WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__)); ?>img/ajax-loader.gif' style='display:none;'><?php if ($num!=count($this->action)) { echo " |" ; }?></span>
 <?php					
 					} else {
 					
-?>										<span><a href="#" onclick="javascript: jQuery('#wait_<?php echo Utils::create_identifier($l[1]) ;?>_<?php echo $this->idLigne ;?>').show() ; jQuery('body').bind('DOMSubtreeModified',function() {jQuery('#wait_<?php echo Utils::create_identifier($l[1]) ;?>_<?php echo $this->idLigne ;?>').hide() ; }) ; <?php echo $l[1] ;?>(<?php echo $this->idLigne ; ?>) ; return false ; " id="<?php echo $l[1] ;?>_<?php echo $this->idLigne ;?>"><?php echo $l[0] ;?></a><img id='wait_<?php echo Utils::create_identifier($l[1]) ;?>_<?php echo $this->idLigne ;?>' src='<? echo WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__)); ?>img/ajax-loader.gif' style='display:none;'><?php if ($num!=count($this->action)) { echo " |" ; }?></span>
+?>										<span><a href="#" onclick="javascript: jQuery('#wait_<?php echo Utils::create_identifier($l[1]) ;?>_<?php echo $this->idLigne ;?>').show() ; jQuery('body').bind('DOMSubtreeModified',function() {jQuery('#wait_<?php echo Utils::create_identifier($l[1]) ;?>_<?php echo $this->idLigne ;?>').hide() ; }) ; <?php echo $l[1] ;?>(<?php echo $this->idLigne ; ?>) ; return false ; " id="<?php echo $l[1] ;?>_<?php echo $this->idLigne ;?>"><?php echo $l[0] ;?></a><img id='wait_<?php echo Utils::create_identifier($l[1]) ;?>_<?php echo $this->idLigne ;?>' src='<?php echo WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__)); ?>img/ajax-loader.gif' style='display:none;'><?php if ($num!=count($this->action)) { echo " |" ; }?></span>
 <?php				}
 				}
 ?>									</div>

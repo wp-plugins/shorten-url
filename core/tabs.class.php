@@ -98,30 +98,34 @@ if (!class_exists("adminTabs")) {
 					} else {
 					?>
 					if (getCookie("tabSL")!=null) {
-						idToGo = getCookie("tabSL").split("#") ; 
-						$tabs<?php echo $rnd ; ?>.tabs('select', "#"+idToGo[1] ) ; 
+						$tabs<?php echo $rnd ; ?>.tabs('select', "#"+getCookie("tabSL") ) ; 
 					} 
 					<?php
 					}
 					?>
-					$tabs<?php echo $rnd ; ?>.tabs({ select: function(event, ui) { setCookie("tabSL", ui.tab, 1 ) ; } });
+					$tabs<?php echo $rnd ; ?>.tabs({ select: function(event, ui) { 
+						idToGo = ui.tab.href.split("#") ; 
+						setCookie("tabSL", idToGo[1], 1 ) ; 
+					} });
 				}) ; 
 			</script>		
 			
 			<div id="tabs<?php echo $rnd ; ?>">
 				<ul class="hide-if-no-js">
 <?php
+			$all = implode("", $this->title) ; 
+			
 			for ($i=0 ; $i<count($this->title) ; $i++) {
 				if ($this->image[$i]=="") {
 					$this->image[$i] = WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."img/tab_empty.png" ; 
 				}
-?>					<li><a href="#tab-<? echo md5($_SERVER['REQUEST_URI'].$this->title[$i]) ?>"><img style='vertical-align:middle;' src='<? echo $this->image[$i] ?>'> <? echo $this->title[$i] ?></a></li>		
+?>					<li><a href="#tab-<?php echo md5($all.$this->title[$i]) ?>"><img style='vertical-align:middle;' src='<?php echo $this->image[$i] ?>'> <?php echo $this->title[$i] ?></a></li>		
 <?php
 			}
 ?>				</ul>
 <?php
 			for ($i=0 ; $i<count($this->title) ; $i++) {
-?>				<div id="tab-<? echo md5($_SERVER['REQUEST_URI'].$this->title[$i]) ?>" class="blc-section">
+?>				<div id="tab-<?php echo md5($all.$this->title[$i]) ?>" class="blc-section">
 					<?php echo $this->content[$i] ; ?>
 				</div>
 <?php

@@ -32,6 +32,7 @@ if (!class_exists("textDiff")) {
 		* @param string $text2 the text to compare with
 		* @return array
 		*/
+		
 		public function diff($text1, $text2) {
 			$this->text1 = $text1 ;
 			$this->text2 = $text2 ;
@@ -94,6 +95,24 @@ if (!class_exists("textDiff")) {
 			
 			return $return ; 
 		}
+		
+		/**====================================================================================================================================================
+		 * Displays a simple human readable HTML representation of ALL the text marked with  differences .
+		 *
+		 * @return string  HTML with differences.
+		 */
+		 
+		function show_simple_difference() {
+			$renderer = new Text_Diff_Renderer_inline() ; 
+			$result = $renderer->render($this->text_diff) ; 
+			
+			$result = str_replace("<del>", "<span class='diff_del'>", $result) ; 
+			$result = str_replace("<ins>", "<span class='diff_ins'>", $result) ; 
+			$result = str_replace("</ins>", "</span>", $result) ; 
+			$result = str_replace("</del>", "</span>", $result) ; 
+			
+			return $result ; 
+		}
 
 		/**====================================================================================================================================================
 		 * Displays a human readable HTML representation of ONLY the difference between two texts.
@@ -108,6 +127,9 @@ if (!class_exists("textDiff")) {
 			$lignes = explode("\n", $result) ; 
 			$del_continue = false ; 
 			$ins_continue = false ; 
+			
+			$first_trois_points = true ; 
+			$next_points = "" ; 
 			
 			$buffer = array() ; 
 			
@@ -160,19 +182,32 @@ if (!class_exists("textDiff")) {
 				$n7 = min(count($buffer)-1, $i+3) ; 
 				
 				if (($buffer[$n1][0])||($buffer[$n2][0])||($buffer[$n3][0])||($buffer[$n4][0])||($buffer[$n5][0])||($buffer[$n6][0])||($buffer[$n7][0])) {
-					$return .= "<li value='".($i+1)."'><pre> ".$buffer[$i][1]."</pre></li>\n" ; 
+					$return .= $next_points ; 
+					$next_points = "" ; 
+					$return .= "<li class='numbering_li' value='".($i+1)."'><pre> ".$buffer[$i][1]."</pre></li>\n" ; 
 					$troispoint = false ; 
 				} else {
 					if (!$troispoint) {
-						$return .= "</ol><p><pre> ...</pre></p>\n" ; 
-						$return .= "<hr class='diff_hr'/>\n" ; 
-						$return .= "<p><pre> ...</pre></p><ol class='numbering'>\n" ; 
-						$troispoint = true ; 
+						if ($first_trois_points) {
+							$return .= "</ol><pre> ...</pre>\n" ; 
+							$next_points .="<ol class='numbering'>\n" ; 
+							$troispoint = true ; 
+							$first_trois_points = false ; 
+						} else {
+							$return .= "</ol><pre> ...</pre>\n" ; 
+							
+							$next_points .= "<hr class='diff_hr'/>\n" ; 
+							$next_points .= "<pre> ...</pre>" ;
+							$next_points .="<ol class='numbering'>\n" ; 
+							$troispoint = true ; 
+						}
 					} 
 				}
 			}
-			
-			$return .= "</ol></div>\n"  ;
+			if ($next_points=="")
+				$return .= "</ol></div>\n"  ;
+			else 
+				$return .="</div>\n" ; 
 			
 			return $return ; 
 		}	

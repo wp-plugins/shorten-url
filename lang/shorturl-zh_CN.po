@@ -1,0 +1,94 @@
+msgid ""
+msgstr ""
+"Generated: SL Framework (http://www.sedlex.fr)\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2012-04-27T13:20:54+00:00\n"
+"Last-Translator: OWenT <http://www.owent.net>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Poedit-Language: Chinese\n"
+"X-Poedit-Country: People's Republic of China\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;\n"
+"X-Poedit-Basepath: \n"
+"X-Poedit-Bookmarks: \n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Textdomain-Support: yes\n"
+
+msgid "This plugin helps you sharing your post with short-links."
+msgstr "本插件能帮助您通过短链接分享日志"
+
+msgid "Title of your posts"
+msgstr "文章标题"
+
+msgid "Short URL"
+msgstr "短链接"
+
+msgid "Reset"
+msgstr "重置"
+
+msgid "Edit"
+msgstr "编辑"
+
+msgid "Results for Posts URL"
+msgstr "文章地址结果"
+
+msgid "External URL"
+msgstr "外部链接"
+
+msgid "Delete"
+msgstr "删除"
+
+msgid "External URL:"
+msgstr "外部链接:"
+
+msgid "Add a new URL to shorten"
+msgstr "添加新短链接"
+
+msgid "Results for External URL"
+msgstr "外部链接结果"
+
+msgid "Parameters"
+msgstr "参数"
+
+msgid "Do you want to use the following characters?"
+msgstr "您想用以下字符吗？"
+
+msgid "These parameters will be taken in account only for generation of new links"
+msgstr "这些参数仅在新生成的链接中有效"
+
+msgid "Lower-case characters ([a-z]):"
+msgstr "小写字母([a-z]):"
+
+msgid "Upper-case characters ([A-Z]):"
+msgstr "大写字母([A-Z]):"
+
+msgid "Numeric characters ([0-9]):"
+msgstr "数字([0-9]):"
+
+msgid "Do you want to use a prefix before your short URL?"
+msgstr "您需要使用短链接前缀吗？"
+
+msgid "Prefix:"
+msgstr "前缀："
+
+msgid "What is the length of your short URL (without the prefix)?"
+msgstr "短链接长度（不包括前缀）"
+
+msgid "Length:"
+msgstr "长度："
+
+msgid "Manage translations"
+msgstr "管理国际化配置"
+
+msgid "Give feedback"
+msgstr "反馈"
+
+msgid "Other plugins"
+msgstr "其他插件"
+

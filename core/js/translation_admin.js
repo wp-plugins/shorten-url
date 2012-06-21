@@ -264,3 +264,117 @@ function get_languages_2(numero) {
 			}
 	});    
 }
+
+/* =====================================================================================
+*
+*  Import a translation
+*
+*/
+
+function importTranslation(path1, path2) {
+	var arguments = {
+		action: 'importTranslation', 
+		path1: path1, 
+		path2: path2
+	} 
+	
+	//POST the data and append the results to the results div
+	jQuery.post(ajaxurl, arguments, function(response) {
+		window.location = String(window.location);
+	});    
+}
+
+
+/* =====================================================================================
+*
+*  Delete a translation
+*
+*/
+
+function deleteTranslation(path1) {
+	var arguments = {
+		action: 'deleteTranslation', 
+		path1: path1
+	} 
+	
+	//POST the data and append the results to the results div
+	jQuery.post(ajaxurl, arguments, function(response) {
+		window.location = String(window.location);
+	});    
+}
+
+/* =====================================================================================
+*
+*  See modification of a translation
+*
+*/
+
+function seeTranslation(path1, path2) {
+	var arguments = {
+		action: 'seeTranslation', 
+		path1: path1, 
+		path2: path2
+	} 
+	
+	//POST the data and append the results to the results div
+	jQuery.post(ajaxurl, arguments, function(response) {
+		jQuery("#console_trans").html(response);
+	});    
+}
+
+/* =====================================================================================
+*
+*  See modification of a translation
+*
+*/
+
+function mergeTranslationDifferences(path1, path2) {
+	var md5 = [] ; 
+	jQuery('input:checkbox:checked').each(function(){
+		if (this.name.indexOf("new_")==0) {
+    		md5.push( this.name );
+    	}
+	});
+
+
+	md5_to_replace = md5.join(',') ; 
+	var arguments = {
+		action: 'mergeTranslationDifferences', 
+		md5: md5_to_replace, 
+		path1: path1, 
+		path2: path2
+	} 
+	
+	//POST the data and append the results to the results div
+	jQuery.post(ajaxurl, arguments, function(response) {
+		if (response=="ok") 
+			window.location = String(window.location);
+		else
+			jQuery("#console_trans").html(response);
+	});    
+}
+
+/* =====================================================================================
+*
+*  Merge translation files
+*
+*/
+
+function mergeTranslation(path1, path2) {
+	var md5_to_replace = "" ; 
+	
+	var arguments = {
+		action: 'mergeTranslationDifferences', 
+		md5: md5_to_replace, 
+		path1: path1, 
+		path2: path2
+	} 
+	
+	//POST the data and append the results to the results div
+	jQuery.post(ajaxurl, arguments, function(response) {
+		if (response=="ok") 
+			window.location = String(window.location);
+		else
+			jQuery("#console_trans").html(response);
+	});    
+}

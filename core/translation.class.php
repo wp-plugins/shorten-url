@@ -21,6 +21,7 @@ if (!class_exists("translationSL")) {
 		* @param string $plugin the name of the plugin (probably <code>str_replace("/","",str_replace(basename(__FILE__),"",plugin_basename( __FILE__)))</code>)
 		* @return translationSL the translationSL object
 		*/
+		
 		function translationSL($domain, $plugin) {
 			$this->domain = $domain ; 
 			$this->plugin = $plugin ; 
@@ -51,7 +52,6 @@ if (!class_exists("translationSL")) {
     		
 			echo "</div><a name='edit_translation'></a><a name='info'></a>" ; 
 			echo "<div id='zone_edit'></div>" ; 
-
 		}
 
 		/** ====================================================================================================================================================
@@ -65,6 +65,7 @@ if (!class_exists("translationSL")) {
 			$lan = $frmk->get_param('lang') ; 
 			if (is_admin() && ($lan != "")) {
 				$loc = $lan ; 
+				SL_Debug::log(get_class(), "Set locale from ".$loc." to ".$lan."", 4) ; 
 			}
 			return $loc;
 		}
@@ -81,7 +82,6 @@ if (!class_exists("translationSL")) {
 		private function get_php_files($root, $other='') {
 			
 			@chmod($root."/".$other, 0755) ; 
-			
 			$dir=opendir($root."/".$other);
 			
 			$folder = array() ; 
@@ -133,10 +133,14 @@ if (!class_exists("translationSL")) {
 			$plugin = preg_replace("/[^a-zA-Z0-9_-]/","",$_POST['plugin']) ; 
 			require('translation.inc.php') ;
 			
+			translationSL::check_mail() ; 
+			
 			$language = get_locale() ; 
 			if ($language == "") 
 				$language = "en_US" ; 
 			echo "<p>".__("Here, you may configure three levels of translations: at the plugin level, at the framework level, and at the dashboard level.", "SL_framework")."</p>" ; 
+
+			echo "<div id='console_trans'></div>" ; 
 
 			if (isset($code_locales[$language])) {
 				$native = $code_locales[$language]['lang-native']." ($language)" ; 
@@ -407,16 +411,507 @@ if (!class_exists("translationSL")) {
 					}
 				}
 			}
-			if ($count_close==0) {
-				$return = sprintf(__("%s sentences have been translated (i.e. %s).",'SL_framework'), "<b>$count/$all_count</b>", "<b>".(floor($count/$all_count*1000)/10)."%</b>") ;  
-			} else { 
-				$return = sprintf(__("%s sentences have been translated (i.e. %s) %s %s sentences have to be checked because they are close (but not identical) to those to translate.%s",'SL_framework'), "<b>$count/$all_count</b>", "<b>".(floor($count/$all_count*1000)/10)."%</b>", "<span style='color:#CCCCCC'>", $count_close, "</span>") ;  
-			}
-			if ($translators != "")
-				$return .= "######$translators" ; 
+			$return['total'] = $all_count ; 
+			$return['translated'] = $count ; 
+			$return['close'] = $count_close ; 
+			$return['translators'] = $translators ; 
+			
 			return $return ; 
 		}
+		
+		/** ====================================================================================================================================================
+		* Compare two po file to get the relevant info
+		* 
+		* $param array $content_po1 array of line of the file new .po
+		* $param array $content_po2 array of line of the file old .po
+		* $param array $content_pot array of line of the file .pot
+		* @access private
+		* @return void
+		*/
+		
+		function compare_info($content_po1, $content_po2, $content_pot) {
+			// We search in the pot file to check if all sentences are translated
+			$new = 0 ; 
+			$modified = 0 ; 
+			$all_count = 0 ; 
+			$suivant_a_verifier = false ; 
+			
+			// We build an array with all the sentences for pot
+			$pot_array = array() ; 
+			foreach ($content_pot as $ligne_pot) {
+				if (preg_match("/^msgid \\\"(.*)\\\"$/", trim($ligne_pot), $match)) {
+					$pot_array[md5(trim($match[1]))] = trim($match[1]) ; 
+					$all_count ++ ; 
+				}
+			}	
 
+			// We build an array with all the sentences for old po
+			$po2_array = array() ; 
+			$msgid = "" ; 
+			foreach ($content_po2 as $ligne_po) {
+				if (preg_match("/^msgid \\\"(.*)\\\"$/", trim($ligne_po), $match)) {
+					$msgid = $match[1] ; 			
+				} else if (preg_match("/^msgstr \\\"(.*)\\\"$/", trim($ligne_po), $match)) {
+					if (trim($match[1])!="") {
+						$po2_array[md5(trim($msgid))] = array(trim($msgid),trim($match[1])) ; 
+					}
+				}
+			}
+			
+			// We build an array with all the sentences for new po
+			$po1_array = array() ; 
+			$msgid = "" ; 
+			foreach ($content_po1 as $ligne_po) {
+				if (preg_match("/^msgid \\\"(.*)\\\"$/", trim($ligne_po), $match)) {
+					$msgid = $match[1] ; 			
+				} else if (preg_match("/^msgstr \\\"(.*)\\\"$/", trim($ligne_po), $match)) {
+					if (trim($match[1])!="") {
+						$po1_array[md5(trim($msgid))] = array(trim($msgid),trim($match[1])) ; 
+						if (isset($pot_array[md5(trim($msgid))])) {
+							if (isset($po2_array[md5(trim($msgid))])) {
+								if ($po2_array[md5(trim($msgid))][1]!=$po1_array[md5(trim($msgid))][1]) {
+									$modified++ ; 
+								}
+							} else {
+								$new++ ; 
+							}
+						}
+					}
+				}
+			}
+						
+			$return['total'] = $all_count ; 
+			$return['new'] = $new ; 
+			$return['modified'] = $modified ; 
+			
+			return $return ; 
+		}
+		
+		/** ====================================================================================================================================================
+		* Check an imap inbox folder to check if translations should be imported
+		* 
+		* @access private
+		* @return void
+		*/
+		function check_mail() {
+			global $submenu ; 
+			
+			$frmk = new coreSLframework() ; 
+			
+			if ($frmk->get_param('adv_trans_server')=="")
+				return ; 
+			
+			$server = $frmk->get_param('adv_trans_server') ; 
+			$login = $frmk->get_param('adv_trans_login') ; 
+			$password = $frmk->get_param('adv_trans_pass') ; 
+			
+			$imap = imap_open($server, $login, $password);
+			
+			$plugin_lang = array() ; 
+			
+			// We identify which mails have .po file in it 
+			// and we import the file into the correct folders
+			//---------------------------------------------------------
+			
+			$result = imap_search($imap, 'UNSEEN');
+			$result_imported = "" ; 
+			if ($result!==FALSE) {
+				foreach ($result as $r) {
+					$struct = imap_fetchstructure ( $imap , $r ) ; 
+					if (isset($struct->parts)) {
+						$num_part = 1 ; 
+						foreach($struct->parts as $s) {
+							if ($s->disposition == "attachment") {
+								if (preg_match("/po$/", $s->parameters[0]->value)) {
+									if (preg_match("/(.*)-([a-z]{2}_[A-Z]{2})\.po/", $s->parameters[0]->value , $match)) {
+										// We identify the $path
+										$path_match = "" ;
+										if ($match[1]!="SL_framework") {
+											if (isset($submenu)) {
+												foreach ($submenu['sedlex.php'] as $i => $ov) {
+													$url = $ov[2] ; 
+													$plugin_name = explode("/",$url) ;
+													$plugin_name[count($plugin_name)-1] = "lang" ; 
+													if (is_file(WP_PLUGIN_DIR."/".implode("/", $plugin_name)."/".$match[1].".pot")) {
+														$path_match = WP_PLUGIN_DIR."/".implode("/", $plugin_name)."/" ; 
+													}
+												}
+											}
+										} else {
+											$path_match = WP_PLUGIN_DIR.'/'.str_replace(basename(  __FILE__),"",plugin_basename( __FILE__)).'lang/'; 
+										}
+										// We know the path, now we write the file in the folder
+										if ($path_match!="") {
+											$att = imap_fetchbody($imap, $r, $num_part);
+											if($s->encoding == 3) { // 3 = BASE64
+												$att = base64_decode($att);
+											}
+											elseif($s->encoding == 4) { // 4 = QUOTED-PRINTABLE
+												$att = quoted_printable_decode($att);
+											}
+											if ($att == "") {
+												echo "<div class='error fade'>".sprintf(__('The file %s cannot be extracted from mail attachments','SL_framework'),'<code>'.$match[0].'</code>')."</div>" ; 
+												return ; 
+											}
+											$r = @file_put_contents($path_match.$match[0].".tmp".$r, $att) ; 
+											if ($r===false) {
+												echo "<div class='error fade'><p>".sprintf(__('The file %s cannot be written in the %s folder','SL_framework'),'<code>'.$match[0].'</code>', '<code>'.$path_match.'</code>')."</p></div>" ; 
+												return ; 
+											}
+											$result_imported .= "<p>".sprintf(__('The file %s has been imported in the %s folder','SL_framework'),'<code>'.$match[0].".tmp".$r.'</code>', '<code>'.$path_match.'</code>')."</p>" ; 
+										}
+									}
+								}
+							}
+							$num_part++ ; 
+						}
+					}
+				}
+			}
+			if ($result_imported!="") {
+				echo "<div class='updated fade'>".$result_imported."</div>" ; 
+			}
+			
+			// We identify which folders contains .tmp files 
+			// and we identify the differences
+			//---------------------------------------------------------
+			
+			$table = new adminTable() ;
+			$table->title(array(__('Plugin', 'SL_framework'), __('Language', 'SL_framework'), __('Information', 'SL_framework')) ) ;
+			$table2 = new adminTable() ;
+			$table2->title(array(__('Plugin', 'SL_framework'), __('Language', 'SL_framework'), __('Information', 'SL_framework')) ) ;
+			
+			$nb_ligne = 0 ; 
+			$nb_ligne2 = 0 ; 
+			
+			if (isset($submenu)) {
+				foreach ($submenu['sedlex.php'] as $i => $ov) {
+					$url = $ov[2] ; 
+					$plugin_name = explode("/",$url) ;
+					$plugin_name[count($plugin_name)-1] = "lang" ; 
+					$dir = WP_PLUGIN_DIR."/".implode("/", $plugin_name)."/" ; 
+					if ($ov[2]=="sedlex.php") {
+						$dir = WP_PLUGIN_DIR.'/'.str_replace(basename(  __FILE__),"",plugin_basename( __FILE__)).'lang/'; 
+					}
+					// We scan the folder for new translations file
+					if (is_dir($dir)) {
+						$root = scandir($dir);
+						foreach($root as $value) {
+							if (preg_match("/(.*)-(.*)[.]tmp[0-9]*$/", $value, $match)) {
+								$cible_file = $match[1]."-".$match[2] ; 
+								if (!is_file($dir.$cible_file)) {
+									// The sent translation is new and can be imported without difficulties 
+									$info = translationSL::get_info(file($dir.$match[0]),file($dir.$match[1].".pot")) ; 
+									if ($info['translated']!=0) {
+										$cel1 = new adminCell("<p>".$match[1]."</p>") ;
+										$cel2 = new adminCell("<p>".str_replace(".po", "", $match[2])."</p>") ;
+										$cel3 = new adminCell("<p>".(sprintf(__("%s sentences have been translated (i.e. %s).",'SL_framework'), "<b>".$info['translated']."/".$info['total']."</b>", "<b>".(floor($info['translated']/$info['total']*1000)/10)."%</b>"))."</p>") ;
+										$cel1->add_action(__("Delete", 'SL_framework'), "deleteTranslation('".$dir.$value."')") ; 
+										$cel1->add_action(__("Import",'SL_framework') , "importTranslation('".$dir.$value."', '".$dir.$cible_file."')") ; 
+										$table->add_line(array($cel1, $cel2, $cel3), '1') ;
+										$nb_ligne ++ ; 
+									} else {
+										@unlink($dir.$value) ; 
+									}
+								} else {
+									// The sent translation is NOT new and it should be compare with the existing one before importing 
+									$info = translationSL::compare_info(file($dir.$value),file($dir.$cible_file),file($dir.$match[1].".pot")) ; 
+									$info2 = translationSL::get_info(file($dir.$cible_file),file($dir.$match[1].".pot")) ; 
+									if (($info['modified']!=0) || ($info['new']!=0)) {
+										$cel1 = new adminCell("<p>".$match[1]."</p>") ;
+										$cel2 = new adminCell("<p>".str_replace(".po", "", $match[2])."</p>") ;
+										$cel3 = new adminCell("<p>".(sprintf(__("%s sentences have been newly translated and %s sentences have been modified (the old file has %s translated sentences).",'SL_framework'), "<b>".$info['new']."</b>", "<b>".$info['modified']."</b>", "<b>".$info2['translated']."/".$info2['total']."</b>"))."</p>") ;
+										$cel1->add_action(__("Delete", 'SL_framework'), "deleteTranslation('".$dir.$value."')") ; 
+										if ($info['modified']!=0) {
+											$cel1->add_action(__("See modifications and Merge",'SL_framework') , "seeTranslation('".$dir.$value."', '".$dir.$cible_file."')") ; 
+										} else {
+											$cel1->add_action(__("Merge",'SL_framework') , "mergeTranslation('".$dir.$value."', '".$dir.$cible_file."')") ; 
+										}
+										$table2->add_line(array($cel1, $cel2, $cel3), '1') ;
+										$nb_ligne2 ++ ; 
+									} else {
+										@unlink($dir.$value) ; 
+									}
+								}
+							}
+						} 
+					}
+				}
+			}
+				
+			if ($nb_ligne!=0) {
+				echo "<h3>".__("New translations are available",'SL_framework')."</h3>" ; 
+				echo $table->flush() ;
+			}
+			if ($nb_ligne2!=0) {
+				echo "<h3>".__("Updates of translations are available",'SL_framework')."</h3>" ; 
+				echo $table2->flush() ;
+			}
+			
+			//Die in order to avoid the 0 character to be printed at the end
+			//die() ;
+		}
+		
+		/** ====================================================================================================================================================
+		* Callback for importing a translation file
+		* 
+		* @access private
+		* @return void
+		*/
+		
+		function importTranslation() {
+			$path1 = $_POST['path1'] ; 
+			$path2 = $_POST['path2'] ; 
+			
+			$r = @rename($path1, $path2) ; 
+			if ($r!==false) {
+				// We convert the file into a .mo file
+				$hash = array() ; 
+				$msgid = "" ; 
+				$content_po = file($path2) ; 
+				foreach ($content_po as $ligne_po) {
+					if (preg_match("/^msgid \\\"(.*)\\\"$/", trim($ligne_po), $match)) {
+						$msgid = $match[1] ; 			
+					} else if (preg_match("/^msgstr \\\"(.*)\\\"$/", trim($ligne_po), $match)) {
+						if (trim($match[1])!="") {
+							$hash[] = array('msgid' => $msgid, 'msgstr' => $match[1]) ; 
+						}
+					}
+				}
+				// We convert into a new MO file
+				echo preg_replace("/(.*)[.]po/", "$1.mo", $path2)."\n" ; 
+				translationSL::phpmo_write_mo_file($hash,preg_replace("/(.*)[.]po/", "$1.mo", $path2)) ; 
+			}
+			die() ; 
+		}
+		
+		/** ====================================================================================================================================================
+		* Callback for deleting a translation file
+		* 
+		* @access private
+		* @return void
+		*/
+		
+		function deleteTranslation() {
+			$path1 = $_POST['path1'] ; 
+			@unlink($path1) ; 	
+			SL_Debug::log(get_class(), "Delete the translation ".$path1, 4) ; 
+			die() ; 
+		}
+				
+				
+		/** ====================================================================================================================================================
+		* Callback for seeing differnces bewteen translation files
+		* 
+		* @access private
+		* @return void
+		*/
+		
+		function seeTranslation() {
+			$path1 = $_POST['path1'] ; 
+			$path2 = $_POST['path2'] ; 
+			
+			$title = __('What are the differences between these two files?', 'SL_framework') ;
+			
+			$pathpot = preg_replace("/(.*)-(.*)[.]po*$/", "$1.pot" , $path2) ; 
+
+			$content_pot = file($pathpot) ; 
+			$content_po2 = file($path2) ; 
+			$content_po1 = file($path1) ; 
+			
+			echo "<span id='info_translation_merge'>" ; 
+			ob_start() ;
+				// We build an array with all the sentences for pot
+				$pot_array = array() ; 
+				foreach ($content_pot as $ligne_pot) {
+					if (preg_match("/^msgid \\\"(.*)\\\"$/", trim($ligne_pot), $match)) {
+						$pot_array[md5(trim($match[1]))] = trim($match[1]) ; 
+						$all_count ++ ; 
+					}
+				}	
+	
+				// We build an array with all the sentences for old po
+				$po2_array = array() ; 
+				$msgid = "" ; 
+				foreach ($content_po2 as $ligne_po) {
+					if (preg_match("/^msgid \\\"(.*)\\\"$/", trim($ligne_po), $match)) {
+						$msgid = $match[1] ; 			
+					} else if (preg_match("/^msgstr \\\"(.*)\\\"$/", trim($ligne_po), $match)) {
+						if (trim($match[1])!="") {
+							$po2_array[md5(trim($msgid))] = array(trim($msgid),trim($match[1])) ; 
+						}
+					}
+				}
+				
+				$table = new adminTable() ; 
+				$table->title(array(__('Sentence to translate', 'SL_framework') , __('Old sentence', 'SL_framework'), __('New sentence', 'SL_framework'), __('To replace?', 'SL_framework')) ) ;
+								
+				// We build an array with all the sentences for new po
+				$po1_array = array() ; 
+				$msgid = "" ; 
+				foreach ($content_po1 as $ligne_po) {
+					if (preg_match("/^msgid \\\"(.*)\\\"$/", trim($ligne_po), $match)) {
+						$msgid = $match[1] ; 			
+					} else if (preg_match("/^msgstr \\\"(.*)\\\"$/", trim($ligne_po), $match)) {
+						if (trim($match[1])!="") {
+							$po1_array[md5(trim($msgid))] = array(trim($msgid),trim($match[1])) ; 
+							if (isset($pot_array[md5(trim($msgid))])) {
+								if (isset($po2_array[md5(trim($msgid))])) {
+									if ($po2_array[md5(trim($msgid))][1]!=$po1_array[md5(trim($msgid))][1]) {
+										$cel1 = new adminCell("<p>".$msgid."</p>") ;
+										$cel2 = new adminCell("<p>".$po2_array[md5(trim($msgid))][1]."</p>") ;
+										$diff = new textDiff() ; 
+										$diff->diff($po2_array[md5(trim($msgid))][1],$po1_array[md5(trim($msgid))][1]) ; 
+										$cel3 = new adminCell("<p>".$diff->show_simple_difference()."</p>") ;
+										$cel4 = new adminCell("<p><input type='CHECKBOX' name='new_".md5(trim($msgid))."' checked='yes' >Replace the old sentence with the new one?</input></p>") ;
+										$table->add_line(array($cel1, $cel2, $cel3, $cel4), '1') ; 
+									}
+								}
+							}
+						}
+					}
+				}
+				echo $table->flush() ; 
+				echo "<p><input type='submit' name='set' class='button-primary validButton' onclick='mergeTranslationDifferences(\"".$path1."\", \"".$path2."\");return false;' value='".__('Merge','SL_framework')."' />" ; 
+				$x = WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__)) ; 
+				echo "<img id='wait_translation_merge' src='".$x."/img/ajax-loader.gif' style='display:none;'><p/>" ; 	
+				echo "</span>" ; 
+			
+			$content = ob_get_clean() ; 	
+								
+			$popup = new popupAdmin($title, $content) ; 
+			$popup->render() ; 
+			die() ; 
+		}
+		
+		/** ====================================================================================================================================================
+		* Callback for importing a translation file with managing differences with the old one
+		* 
+		* @access private
+		* @return void
+		*/
+		
+		function mergeTranslationDifferences() {
+			$md5 = $_POST['md5'] ; 
+			$path1 = $_POST['path1'] ; 
+			$path2 = $_POST['path2'] ; 
+			
+			$pathpot = preg_replace("/(.*)-(.*)[.]po*$/", "$1.pot" , $path2) ; 
+			$lang = preg_replace("/(.*)-(.*)[.]po*$/", "$2" , $path2) ; 
+			$content_pot = file($pathpot) ; 
+			$content_po2 = file($path2) ; 
+			$content_po1 = file($path1) ; 
+			
+			$translators = array() ; 
+			
+			// We recreate a new po file according to the 2 files
+			
+			// We build an array with all the sentences for pot
+			$pot_array = array() ; 
+			foreach ($content_pot as $ligne_pot) {
+				if (preg_match("/^msgid \\\"(.*)\\\"$/", trim($ligne_pot), $match)) {
+					$pot_array[md5(trim($match[1]))] = trim($match[1]) ; 
+					$all_count ++ ; 
+				}
+			}	
+
+			// We build an array with all the sentences for old po
+			$po2_array = array() ; 
+			$msgid = "" ; 
+			foreach ($content_po2 as $ligne_po) {
+				if (preg_match("/^msgid \\\"(.*)\\\"$/", trim($ligne_po), $match)) {
+					$msgid = $match[1] ; 			
+				} else if (preg_match("/^msgstr \\\"(.*)\\\"$/", trim($ligne_po), $match)) {
+					if (trim($match[1])!="") {
+						$po2_array[md5(trim($msgid))] = array(trim($msgid),trim($match[1])) ; 
+					}
+				} else if (preg_match("/Last-Translator: (.*) \<(.*)\>/", trim($ligne_po), $match)) {
+					$translators[md5(trim($match[0]))] = $match[0] ; 
+				} else if (preg_match("/X-Poedit-Language:(.*)/", trim($ligne_po), $match)) {
+					$language = $match[0] ; 
+				} else if (preg_match("/X-Poedit-Country:(.*)/", trim($ligne_po), $match)) {
+					$country = $match[0] ; 
+				}
+			}
+							
+			// We build an array with all the sentences for new po
+			$po1_array = array() ; 
+			$msgid = "" ; 
+			foreach ($content_po1 as $ligne_po) {
+				if (preg_match("/^msgid \\\"(.*)\\\"$/", trim($ligne_po), $match)) {
+					$msgid = $match[1] ; 			
+				} else if (preg_match("/^msgstr \\\"(.*)\\\"$/", trim($ligne_po), $match)) {
+					if (trim($match[1])!="") {
+						$po1_array[md5(trim($msgid))] = array(trim($msgid),trim($match[1])) ; 
+						if (isset($pot_array[md5(trim($msgid))])) {
+							if (isset($po2_array[md5(trim($msgid))])) {
+								if ($po2_array[md5(trim($msgid))][1]!=$po1_array[md5(trim($msgid))][1]) {
+									// We check if we said that we want to replace it from the new file
+									if (strpos($md5,"new_".md5(trim($msgid)))!==false) {
+										$po2_array[md5(trim($msgid))] = array(trim($msgid),trim($match[1])) ;
+									}
+								}
+							} else {
+								$po2_array[md5(trim($msgid))] = array(trim($msgid),trim($match[1])) ;
+							}
+						}
+					}
+				} else if (preg_match("/Last-Translator: (.*) \<(.*)\>/", trim($ligne_po), $match)) {
+					$translators[md5(trim($match[0]))] = $match[0] ; 
+				}
+			}
+			
+			// We create the po file
+			
+			require('translation.inc.php') ;
+		
+			$content = "" ; 
+			$content .= "msgid \"\"\n" ; 
+			$content .= "msgstr \"\"\n" ; 
+			$content .= "\"Generated: SL Framework (http://www.sedlex.fr)\\n\"\n";
+			$content .= "\"Project-Id-Version: \\n\"\n";
+			$content .= "\"Report-Msgid-Bugs-To: \\n\"\n";
+			$content .= "\"POT-Creation-Date: \\n\"\n";
+			$content .= "\"PO-Revision-Date: ".date("c")."\\n\"\n";
+			foreach ($translators as $translator) {
+				$content .= "\"".$translator."\\n\"\n" ; 
+			}		
+			$content .= "\"Language-Team: \\n\"\n";
+			$content .= "\"MIME-Version: 1.0\\n\"\n";
+			$content .= "\"Content-Type: text/plain; charset=UTF-8\\n\"\n";
+			$content .= "\"Content-Transfer-Encoding: 8bit\\n\"\n";
+			$plurals = "" ; 
+			foreach($countries as $code => $array) {
+				if (array_search($lang, $array)!==false) {
+					$plurals = $csp_l10n_plurals[$code] ; 
+				}
+			}
+			$content .= "\"Plural-Forms: ".$plurals."\\n\"\n";
+			$content .= "\"".$language."\n" ; 
+			$content .= "\"".$country."\n" ; 
+			$content .= "\"X-Poedit-SourceCharset: utf-8\\n\"\n";
+			$content .= "\"X-Poedit-KeywordsList: __;\\n\"\n";
+			$content .= "\"X-Poedit-Basepath: \\n\"\n";
+			$content .= "\"X-Poedit-Bookmarks: \\n\"\n";
+			$content .= "\"X-Poedit-SearchPath-0: .\\n\"\n";
+			$content .= "\"X-Textdomain-Support: yes\\n\"\n\n" ; 
+			
+			$hash = array() ; 
+			foreach ($po2_array as $ligne) {
+				$content .= 'msgid "'.$ligne[0].'"'."\n" ; 
+				$content .= 'msgstr "'.$ligne[1].'"'."\n\n" ; 
+				$hash[] = array('msgid' => $ligne[0], 'msgstr' => $ligne[1]) ; 
+			}
+			
+			file_put_contents($path2,$content) ;
+			
+			SL_Debug::log(get_class(), "Write the mo file ".$path2, 4) ; 
+			translationSL::phpmo_write_mo_file($hash,preg_replace("/(.*)[.]po/", "$1.mo", $path2)) ; 
+								
+			echo "ok" ; 			
+			die() ; 
+		}
+				
 		/** ====================================================================================================================================================
 		* Send the translation to the author of the plugin
 		* 
@@ -442,17 +937,21 @@ if (!class_exists("translationSL")) {
 			}
 			if ($isFramework!='false') {
 				$subject = "[Framework] New translation (".$lang.")" ; 
-				$info = explode("######",translationSL::get_info(file(WP_PLUGIN_DIR."/".$isFramework."/core/lang/SL_framework-".$lang.".po"), file(WP_PLUGIN_DIR."/".$isFramework."/core/lang/SL_framework.pot")),2) ; 
+				$info = translationSL::get_info(file(WP_PLUGIN_DIR."/".$isFramework."/core/lang/SL_framework-".$lang.".po"), file(WP_PLUGIN_DIR."/".$isFramework."/core/lang/SL_framework.pot")) ; 
 			} else {
 				$subject = "[".ucfirst($plugin)."] New translation (".$lang.")" ; 
-				$info = explode("######",translationSL::get_info(file(WP_PLUGIN_DIR."/".$plugin."/lang/".$domain ."-".$lang.".po"), file(WP_PLUGIN_DIR."/".$plugin."/lang/".$domain.".pot")),2) ; 
+				$info = translationSL::get_info(file(WP_PLUGIN_DIR."/".$plugin."/lang/".$domain ."-".$lang.".po"), file(WP_PLUGIN_DIR."/".$plugin."/lang/".$domain.".pot")) ; 
 			}
-			
+						
 			$message = "" ; 
 			$message .= "<p>"."Dear sirs,"."</p><p>&nbsp;</p>" ; 
 			$message .= "<p>"."Here is attached a new translation ($native)"."</p><p>&nbsp;</p>" ; 
-			$message .= "<p>".strip_tags($info[0])."</p>" ; 
-			$message .= "<p>"."Translators: ".$info[1]."</p><p>&nbsp;</p>" ; 
+			if ($info['close']==0) {
+				$message .= "<p>".(sprintf(__("%s sentences have been translated (i.e. %s).",'SL_framework'), "<b>".$info['translated']."/".$info['total']."</b>", "<b>".(floor($info['translated']/$info['total']*1000)/10)."%</b>"))."</p>" ;  
+			} else { 
+				$message .= "<p>".(sprintf(__("%s sentences have been translated (i.e. %s) %s %s sentences have to be checked because they are close (but not identical) to those to translate.%s",'SL_framework'), "<b>".$info['translated']."/".$info['total']."</b>", "<b>".(floor($info['translated']/$info['total']*1000)/10)."%</b>", "<span style='color:#CCCCCC'>", $info['close'], "</span>"))."</p>" ;  
+			}
+			$message .= "<p>"."Translators: ".$info['translators']."</p><p>&nbsp;</p>" ; 
 			$message .= "<p>"."Best regards,"."</p><p>&nbsp;</p>" ; 
 			
 			
@@ -479,10 +978,12 @@ if (!class_exists("translationSL")) {
 			}
 			// send the email
 			if (wp_mail( $to, $subject, $message, $headers, $attachments )) {
+				SL_Debug::log(get_class(), "Send the translation ".$attachments[0]." to ".$to, 4) ; 
 				echo "<div class='updated  fade'>" ; 
 				echo "<p>".sprintf(__("The translation %s have been sent", 'SL_framework'), "$lang ($native)")."</p>" ; 
 				echo "</div>" ; 
 			} else {
+				SL_Debug::log(get_class(), "The translation ".$attachments[0]." cannot be send to ".$to, 2) ; 
 				echo "<div class='error  fade'>" ; 
 				echo "<p>".__("An error occured sending the email.", 'SL_framework')."</p><p>".__("Make sure that your wordpress is able to send email.", 'SL_framework')."</p>" ; 
 				echo "</div>" ; 			
@@ -1086,6 +1587,7 @@ if (!class_exists("translationSL")) {
 			$lang = preg_replace("/[^a-zA-Z_]/","",$_POST['lang']) ; 
 			$frmk = new coreSLframework() ;
 			$frmk->set_param('lang', $lang) ; 
+			SL_Debug::log(get_class(), "Set the local to ".$lang, 4) ; 
 			die() ;
 		}
 
@@ -1130,8 +1632,10 @@ if (!class_exists("translationSL")) {
 					if ($response_mo !== false){
 						$res = @file_put_contents(WP_LANG_DIR."/".$f, $response_mo) ; 
 						if ($res !== false) {
+							SL_Debug::log(get_class(), "The file ".$f." has been downloaded (version ".$tagged_version.")", 4) ; 
 							$info .= "<p>".sprintf(__("The file %s has been downloaded (version %s)", "SL_framework"), "<code>$f</code>", $tagged_version)."</p>" ; 
 						} else {
+							SL_Debug::log(get_class(), "The file ".$f." cannot be download (version ".$tagged_version.")", 2) ; 
 							$error .= "<p>".sprintf(__("The file %s cannot be stored in %s. Check permissions.", "SL_framework"), "<code>$f</code>", "<code>".WP_LANG_DIR."</code>")."</p>" ; 
 						}
 					} else {
@@ -1139,8 +1643,10 @@ if (!class_exists("translationSL")) {
 						if ($response_mo !== false){
 							$res = @file_put_contents(WP_LANG_DIR."/".$f, $response_mo) ; 
 							if ($res !== false) {
+								SL_Debug::log(get_class(), "The file ".$f." has been downloaded (version ".$root_tagged_version.")", 4) ; 
 								$info .= "<p>".sprintf(__("The file %s has been downloaded (version %s)", "SL_framework"), "<code>$f</code>", $root_tagged_version)."</p>" ; 
 							} else {
+								SL_Debug::log(get_class(), "The file ".$f." cannot be download (version ".$tagged_version.")", 2) ; 
 								$error .= "<p>".sprintf(__("The file %s cannot be stored in %s. Check permissions.", "SL_framework"), "<code>$f</code>", "<code>".WP_LANG_DIR."</code>")."</p>" ; 
 							}
 						}
@@ -1221,7 +1727,8 @@ if (!class_exists("translationSL")) {
 					}
 				}
 			}
-			file_put_contents($path."/lang/".$domain .".pot", $content) ; 
+			SL_Debug::log(get_class(), "The file ".$path."/lang/".$domain .".pot has been downloaded", 4) ; 
+			@file_put_contents($path."/lang/".$domain .".pot", $content) ; 
 		}
 
 		/** ====================================================================================================================================================
@@ -1325,9 +1832,12 @@ if (!class_exists("translationSL")) {
 					}
 				}
 				if ($f!="en_US") {
-					$info = explode("######", $info, 2) ; 
-					$cel_pour = new adminCell($info[0]) ;
-					$cel_tran = new adminCell($info[1]) ;
+					if ($info['close']==0) {
+						$cel_pour = new adminCell("<p>".(sprintf(__("%s sentences have been translated (i.e. %s).",'SL_framework'), "<b>".$info['translated']."/".$info['total']."</b>", "<b>".(floor($info['translated']/$info['total']*1000)/10)."%</b>"))."</p>") ;  
+					} else { 
+						$cel_pour = new adminCell("<p>".(sprintf(__("%s sentences have been translated (i.e. %s) %s %s sentences have to be checked because they are close (but not identical) to those to translate.%s",'SL_framework'), "<b>".$info['translated']."/".$info['total']."</b>", "<b>".(floor($info['translated']/$info['total']*1000)/10)."%</b>", "<span style='color:#CCCCCC'>", $info['close'], "</span>"))."</p>") ;  
+					}
+					$cel_tran = new adminCell($info['translators']) ;
 				} else {
 					$cel_pour = new adminCell("<p style='color:#CCCCCC'>".$info."</p>") ;
 					$cel_tran = new adminCell("") ;				
@@ -1585,9 +2095,12 @@ if (!class_exists("translationSL")) {
 					}
 				}
 				if ($f!="en_US") {
-					$info = explode("######", $info, 2) ; 
-					$cel_pour = new adminCell($info[0]) ;
-					$cel_tran = new adminCell($info[1]) ;
+					if ($info['close']==0) {
+						$cel_pour = new adminCell("<p>".(sprintf(__("%s sentences have been translated (i.e. %s).",'SL_framework'), "<b>".$info['translated']."/".$info['total']."</b>", "<b>".(floor($info['translated']/$info['total']*1000)/10)."%</b>"))."</p>") ;  
+					} else { 
+						$cel_pour = new adminCell("<p>".(sprintf(__("%s sentences have been translated (i.e. %s) %s %s sentences have to be checked because they are close (but not identical) to those to translate.%s",'SL_framework'), "<b>".$info['translated']."/".$info['total']."</b>", "<b>".(floor($info['translated']/$info['total']*1000)/10)."%</b>", "<span style='color:#CCCCCC'>", $info['close'], "</span>"))."</p>") ;  
+					}
+					$cel_tran = new adminCell($info['translators']) ;
 				} else {
 					$cel_pour = new adminCell("<p style='color:#CCCCCC'>".$info."</p>") ;
 					$cel_tran = new adminCell("") ;				
