@@ -71,6 +71,9 @@ Have fun !
 
 == Changelog ==
 
+= 1.3.3 =
+* Add http:// if missing
+
 = 1.3.2 =
 * Add a counter of the number of clicks on links
 * The links may be ordered
@@ -108,4 +111,4 @@ Have fun !
 Visit http://www.sedlex.fr/cote_geek/
 
  
-InfoVersion:2be5c3bef23eb667d635254c5b4ba31e
+InfoVersion:982d1f0f5e30a4482075e9f84080e682

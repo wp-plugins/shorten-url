@@ -3,7 +3,7 @@
 Plugin Name: Short URL
 Plugin Tag: shorttag, shortag, bitly, url, short 
 Description: <p>Your pages/posts may have a short url hosted by your own domain.</p><p>Replace the internal function of wordpress <code>get_short_link()</code> by a bit.ly like url. </p><p>Instead of having a short link like http://www.yourdomain.com/?p=3564, your short link will be http://www.yourdomain.com/NgH5z (for instance). </p><p>You can configure: </p><ul><li>the length of the short link, </li><li>if the link is prefixed with a static word, </li><li>the characters used for the short link.</li></ul><p>Moreover, you can manage external links with this plugin. The links in your posts will be automatically replace by the short one if available.</p><p>This plugin is under GPL licence. </p>
-Version: 1.3.2
+Version: 1.3.3
 Author: SedLex
 Author Email: sedlex@sedlex.fr
 Framework Email: sedlex@sedlex.fr
@@ -227,6 +227,11 @@ class shorturl extends pluginSedLex {
 					$car_longu = $this->get_param('length') ;
 					$temp_url = "" ; 
 					
+					$url_ext = str_replace("'", "", $_POST['url_externe']) ; 
+					if (!preg_match("/^http/i", $url_ext)) {
+						$url_ext = "http://".$url_ext  ; 
+					}
+					
 					$char = ($car_maxus ? "ABCDEFGHIJKLMNOPQRSTUVWXYZ" : "" ).($car_minus ? "abcdefghijklmnopqrstuvwxyz" : "" ).($car_nombr ? "1234567890" : "" ) ; 
 					$ok = false ; 
 					while (!$ok) {
@@ -235,9 +240,9 @@ class shorturl extends pluginSedLex {
 						$temp_id = $wpdb->get_var( $select ) ;
 						if (!is_numeric($temp_id)) {
 							$ok = true ; 
-							$sql = "DELETE FROM {$table_name} WHERE url_externe=".$_POST['url_externe'] ; 
+							$sql = "DELETE FROM {$table_name} WHERE url_externe=".$url_ext ; 
 							$wpdb->query( $sql ) ;
-							$sql = "INSERT INTO {$table_name} (id_post, short_url, url_externe) VALUES ('0', '" . $result . "', '".$_POST['url_externe']."')" ; 
+							$sql = "INSERT INTO {$table_name} (id_post, short_url, url_externe) VALUES ('0', '" . $result . "', '".$url_ext."')" ; 
 							$wpdb->query( $sql ) ;
 						}
 					}
