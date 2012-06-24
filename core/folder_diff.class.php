@@ -24,6 +24,8 @@ if (!class_exists("foldDiff")) {
 		function foldDiff() {
 			$this->folder = array() ; 
 			$this->folder_show = array() ; 
+			$this->maxnbfile = 30 ; 
+			$this->nbfile = 0 ; 
 		}
 		
 		/** ====================================================================================================================================================
@@ -259,11 +261,16 @@ if (!class_exists("foldDiff")) {
 				$loupe .= "<img style='border:0px' src='".WP_PLUGIN_URL.'/'.str_replace(basename(  __FILE__),"",plugin_basename( __FILE__))."img/loupe.png'/>"  ; 
 				$loupe .=  "</a>\n" ; 
 				$text_diff = "<div id='diff_".md5($item[3].$random)."' style='display:none;padding:0px;margin:0px;'>\n" ; 
-				$text1 = @file_get_contents($this->rep1.$item[3]) ; 
-				$text2 = @file_get_contents($this->rep2.$item[3]) ; 
-				$textdiff = new textDiff() ; 
-				$textdiff->diff($text2, $text1) ; 
-				$text_diff .= $textdiff->show_only_difference() ; 
+				if ($this->maxnbfile>$this->nbfile) {
+					$this->nbfile ++ ; 
+					$text1 = @file_get_contents($this->rep1.$item[3]) ; 
+					$text2 = @file_get_contents($this->rep2.$item[3]) ; 
+					$textdiff = new textDiff() ; 
+					$textdiff->diff($text2, $text1) ; 
+					$text_diff .= $textdiff->show_only_difference() ; 
+				} else {
+					$text_diff .= sprintf(__("Sorry, but only %s files can be diff at once, in order to avoid any memory saturation", "SL_framework"), $this->maxnbfile) ; 
+				}
 				$text_diff .="</div>\n" ; 
 			}	
 			
