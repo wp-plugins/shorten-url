@@ -4,8 +4,9 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-04-03T21:37:03+00:00\n"
+"PO-Revision-Date: 2012-06-25T15:11:29+00:00\n"
 "Last-Translator: reitermarkus <me@reitermark.us>\n"
+"Last-Translator: ThorstenKallnischkies <http://desastre.eu>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -72,7 +73,7 @@ msgid "No param"
 msgstr "Kein Parameter"
 
 msgid "See also:"
-msgstr "Weiters:"
+msgstr "Siehe auch:"
 
 msgid "KB"
 msgstr "KB"
@@ -99,7 +100,7 @@ msgid "This file have not been written in the repository due to server problem. 
 msgstr "Diese Datei wurde wegen Server-Problemen nicht ins Repository übertragen. Bitte versuchen Sie es noch einmal."
 
 msgid "Summary page for the plugins developped with the SL framework"
-msgstr "Zusammenfassung für"
+msgstr "Zusammenfassung für Plugins, die mit dem SL Framework entwickelt wurden"
 
 msgid "The core file used for the SedLex plugins is:"
 msgstr "Die Core-Datei, die für das SedLex Plugin benutzt wurde, ist:"
@@ -270,16 +271,16 @@ msgid "The file %s is not %s !"
 msgstr "Die Datei %s ist nicht %s"
 
 msgid "Please see below:"
-msgstr "Bitte unten lesen:"
+msgstr "Siehe unten:"
 
 msgid "Updating the local cache"
-msgstr "Aktualisierung des lokalen Caches"
+msgstr "Aktualisierung des lokalen Cache"
 
 msgid "folder created"
-msgstr "Ordner erstellt"
+msgstr "Verzeichnis erstellt"
 
 msgid "folder creation has failed !"
-msgstr "Ordner konnte nicht erstellt werden"
+msgstr "Verzeichnis konnte nicht erstellt werden"
 
 msgid "%s bytes transfered"
 msgstr "%s Bytes gesendet"
@@ -403,4 +404,184 @@ msgstr "Es wurde keine Email von diesem Autor hinterlegt. Es ist leider kein Fee
 
 msgid "The following plugins have been developed by the author and are not yet installed:"
 msgstr "Die folgenden Plugins von diesem Autor sind noch nicht installiert"
+
+msgid "Log options"
+msgstr "Log-Optionen"
+
+msgid "What is the debug level:"
+msgstr "Debug-Level"
+
+msgid "See the debug logs"
+msgstr "Debug-Logs ansehen"
+
+msgid "1=log only the critical errors;"
+msgstr "1 = nur kritische Fehler aufzeichnen"
+
+msgid "2=log only the critical errors and the standard errors;"
+msgstr "2 = nur kritische Fehler und Standardfehler aufzeichnen"
+
+msgid "3=log only the critical errors, the standard errors and the warnings;"
+msgstr "3 = nur kritische Fehler, Standardfehler und Warnungen aufzeichnen"
+
+msgid "4=log information;"
+msgstr "4 = Log-Information"
+
+msgid "5=log verbose;"
+msgstr "5 = Log aufzeichnen mit gleichzeitiger Ausgabe auf den Bildschirm"
+
+msgid "Multisite Management"
+msgstr "Mehrere Webseiten managen"
+
+msgid "Do you want to allow sub-blogs to modify the translations of the plugins:"
+msgstr "Möchten Sie, dass Unter-Blogs die Übersetzungen der Plugins verändern?"
+
+msgid "If this option is unchecked, the translation tab won't be displayed in the blog administration panel."
+msgstr "Wenn diese Option nicht aktiviert ist, wird der Übersetzungs-Tab auf der Blog-Administrations-Seite ausgeblendet."
+
+msgid "IMAP Login:"
+msgstr "IMAP-Login"
+
+msgid "IMAP Password:"
+msgstr "IMAP-Passwort"
+
+msgid "IMAP Server:"
+msgstr "IMAP-Server"
+
+msgid "Should be something like %s"
+msgstr "Sollte %s oder ähnlich sein"
+
+msgid "SVN Management"
+msgstr "SVN-Management"
+
+msgid "Update plugin information..."
+msgstr "Plugin-Information aktualisieren"
+
+msgid "There is a SQL database for this plugin"
+msgstr "SQL-Datenbank für dieses Plugin existiert"
+
+msgid "Getting SVN information..."
+msgstr "SVN-Information wird abgefragt"
+
+msgid "Number of download: %s"
+msgstr "Download Nr. %s"
+
+msgid "Refresh"
+msgstr "Aktualisieren"
+
+msgid "The current content of %s is:"
+msgstr "Der aktuelle Inhalt von %s ist:"
+
+msgid "The data has been saved. You may close this window."
+msgstr "Die Daten wurden gespeichert. Sie können das Fenster jetzt schließen."
+
+msgid "The folder %s does not exists and cannot be created !"
+msgstr "Das Verzeichnis %s existiert nicht und kann nicht angelegt werden!"
+
+msgid "The file %s does not exists and cannot be created !"
+msgstr "Die Datei %s existiert nicht und kann nicht angelegt werden!"
+
+msgid "There are some issues with folders rights. Please corret them as soon as possible as they could induce bugs and instabilities."
+msgstr "Es gibt probleme mit Berechtigungen von Verzeichnissen. Bitte beheben Sie sie schnellstmöglich, weil sie instabiles Verhalten Ihrer Webseite bewirken können."
+
+msgid "SVN client for %s"
+msgstr "SVN-Client für %s"
+
+msgid "Comparing %s with %s"
+msgstr "Vergleiche %s mit %s"
+
+msgid "Commit comment:"
+msgstr "Kommentar hinzufügen:"
+
+msgid "Error: the submitted string does not match the constrains"
+msgstr "Fehler: Die Eingabe stimmt nicht mit den Anforderungen überein"
+
+msgid "Error: the submitted file can not be uploaded!"
+msgstr "Fehler! Die abgeschickte Datei kann nicht hochgeladen werden"
+
+msgid "Error: security issue!"
+msgstr "Fehler! Sicherheitsproblem!"
+
+msgid "Here are the parameters of the plugin. Modify them at will to fit your needs."
+msgstr "Dies sind die Plugin-Parameter. Sie können sie nach belieben modifizieren, um sie Ihren Bedürfnissen anzupassen"
+
+msgid "Here are the parameters of the framework. Modify them at will to fit your needs."
+msgstr "Dies sind die Framework-Parameter. Sie können sie nach belieben modifizieren, um sie Ihren Bedürfnissen anzupassen"
+
+msgid "Warning: some characters have been removed because they are not allowed here"
+msgstr "Warnung: Einige Zeichen wurden entfernt weil sie bei dieser Eingabe nicht erlaubt sind.."
+
+msgid "Some parameters have not been updated due to errors (see below)!"
+msgstr "Einige Parameter wurden wegen Fehlern nicht aktualisiert (siehe unten)!"
+
+msgid "Parameters have been updated (but with some warnings)!"
+msgstr "Parameter wurden aktualisiert (mit Warnungen)"
+
+msgid "This form is an easy way to contact the author and to discuss issues/incompatibilities/etc. with him"
+msgstr "Dieses bFormular ist eine einfache Möglichkeit, Kontakt mit dem Autor aufzunehmen und Probleme, Inkompatibilitäten etc. mit ihm zu diskutieren"
+
+msgid "Please note that additional information on your wordpress installation will be sent to the author in order to help the debugging if needed (such as : the wordpress version, the installed plugins, etc.)"
+msgstr "Bitte nehmen Sie zur Kenntnis, dass zusätzliche Informationen an den Autor geschickt werden, wie z.B. WordPress-Version, installierte Plugins, etc. Diese Informationen werden benötigt, um Fehler zu finden."
+
+msgid "An error occured sending the email."
+msgstr "Ein Fehler trat beim Verschicken der Mail auf."
+
+msgid "Make sure that your wordpress is able to send email."
+msgstr "Bitte stellen Sie sicher, dass WordPress Mails verschicken kann."
+
+msgid "New translations are available"
+msgstr "Neue Übersetzungen sind verfügbar"
+
+msgid "Updates of translations are available"
+msgstr "Aktualisierte Übersetzungen sind verfügbar"
+
+msgid "What are the differences between these two files?"
+msgstr "Wie unterscheiden sich die beiden Dateien?"
+
+msgid "Old sentence"
+msgstr "Alter Satz"
+
+msgid "New sentence"
+msgstr "Neuer Satz"
+
+msgid "To replace?"
+msgstr "Ersetzen?"
+
+msgid "The translation %s have been sent"
+msgstr "Die Übersetzung %s wurde verschickt"
+
+msgid "%s file has been updated for %s"
+msgstr "Datei %s wurde durch %s aktualisiert"
+
+msgid "This is the default language of the plugin. It cannot be modified."
+msgstr "Dies ist die Standard-Sprache des Plugins. Sie kann nicht geändert werden."
+
+msgid "You may download a new translation from Wordpress.org"
+msgstr "Sie können eine neue Übersetzung von WordPress.org herunterladen"
+
+msgid "Change the default language used"
+msgstr "Standard-Sprache ändern"
+
+msgid "The file %s cannot be read. You should have a problem with file permissions or security restrictions."
+msgstr "Die Datei %s kann nicht gelesen werden. Überprüfen Sie die Datei-Berechtigungen."
+
+msgid "The file %s cannot be deleted. You should have a problem with file permissions or security restrictions."
+msgstr "Die Datei %s kann nicht umbenannt werden. Überprüfen Sie die Datei-Berechtigungen."
+
+msgid "The folder %s cannot be opened. You should have a problem with folder permissions or security restrictions."
+msgstr "Das Verzeichnis %s kann nicht umbenannt werden. Überprüfen Sie die Verzeichnis-Berechtigungen."
+
+msgid "An other process is still running (it runs for %s seconds)"
+msgstr "Ein anderer Prozess wird gerade ausgeführt (noch %s Sekunden)"
+
+msgid "The file %s cannot be modified/created. You should have a problem with file permissions or security restrictions."
+msgstr "Die Datei %s kann nicht erstellt/geändert werden. Überprüfen Sie die Datei-Berechtigungen."
+
+msgid "The file %s cannot be created. You should have a problem with file permissions or security restrictions."
+msgstr "Die Datei %s kann nicht erstellt werden. Überprüfen Sie die Datei-Berechtigungen."
+
+msgid "The file %s cannot be modified. You should have a problem with file permissions or security restrictions."
+msgstr "Die Datei %s kann nicht geändert werden. Überprüfen Sie die Datei-Berechtigungen."
+
+msgid "[CLASS]"
+msgstr "[CLASS]"
 
