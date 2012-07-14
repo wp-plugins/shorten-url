@@ -968,7 +968,7 @@ if (!class_exists("svnAdmin")) {
 							$nb_fichier ++ ; 
 						}
 					}
-					asort($newf) ; 
+					arsort($newf) ; // We order reverse because the javascript will take the last one (i.e. pop() method)
 					foreach ($newf as $f => $n) {
 						if (!$first) 
 							echo ", " ; 
@@ -1021,7 +1021,7 @@ if (!class_exists("svnAdmin")) {
 							$nb_fichier ++ ; 
 						}
 					}
-					arsort($newf) ; 
+					asort($newf) ; // We order non-reverse because the javascript will take the last one (i.e. pop() method)
 					foreach ($newf as $f => $n) {
 						if (!$first) 
 							echo ", " ; 

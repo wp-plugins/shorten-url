@@ -68,6 +68,9 @@ if (!class_exists("SL_Debug")) {
 			
 			// We get the old content
 			$old_content = @array_slice(@file($namelogfile), 0, 1999) ; 
+			if (!is_array($old_content )) {
+				$old_content = array("") ; 
+			}
 			
 			// Once the file is identified, we stored the new logfile
 			$error = "VERBOSE" ; 
