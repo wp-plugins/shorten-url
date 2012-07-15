@@ -110,6 +110,20 @@ class my_plugin extends pluginSedLex {
 		return ; 
 	}
 	
+	/** ====================================================================================================================================================
+	* Add a button in the TinyMCE Editor
+	*
+	* To add a new button, copy the commented lines a plurality of times (and uncomment them)
+	* 
+	* @return array of buttons
+	*/
+	
+	function add_tinymce_buttons() {
+		$buttons = array() ; 
+		//$buttons[] = array(__('title', $this->pluginID), '[tag]', '[/tag]', WP_PLUGIN_URL.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)).'img/img_button.png') ; 
+		return $buttons ; 
+	}
+	
 	/**====================================================================================================================================================
 	* Function to instantiate the class and make it a singleton
 	* This function is not supposed to be modified or called (the only call is declared at the end of this file)

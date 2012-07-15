@@ -36,6 +36,11 @@ if (!class_exists('pluginSedLex')) {
 			if ( is_callable( array($this, '_init') ) ) {
 				$this->_init();
 			}
+			
+			//Button for tinyMCE
+			add_action('init', array( $this, '_button_editor'));
+			add_action('parse_request', array($this,'create_js_for_tinymce') , 1);
+			
 			add_action('admin_menu',  array( $this, 'admin_menu'));
 			add_filter('plugin_row_meta', array( $this, 'plugin_actions'), 10, 2);
 			add_filter('plugin_action_links', array($this, 'plugin_action_links'), 10, 2);
@@ -421,6 +426,100 @@ if (!class_exists('pluginSedLex')) {
 		public function init_textdomain() {
 			load_plugin_textdomain($this->pluginID, false, dirname( plugin_basename( $this->path ) ). '/lang/') ;
 			load_plugin_textdomain('SL_framework', false, dirname( plugin_basename( $this->path ) ). '/core/lang/') ;
+		}
+		
+		/** ====================================================================================================================================================
+		* Functions to add a button in the TinyMCE Editor
+		*
+		* @access private
+		* @return void
+		*/
+		
+		function _button_editor() {
+			// Do not modify this function
+			if(is_admin()){
+				if ( ! current_user_can('edit_posts') && ! current_user_can('edit_pages') )
+					return;
+					
+				if (is_callable( array($this, 'add_tinymce_buttons') ) ) {
+					if (count($this->add_tinymce_buttons())>0) {
+						if ( get_user_option('rich_editing') == 'true') {
+							add_filter('mce_external_plugins', array($this, 'add_custom_button'));
+							add_filter('mce_buttons', array($this, 'register_custom_button'));
+							add_filter('tiny_mce_version', array($this, 'my_refresh_mce'));
+						}
+					}
+				}
+			}
+		}
+		
+		function register_custom_button($buttons) {
+			// Do not modify this function
+			if (is_callable( array($this, 'add_tinymce_buttons') ) ) {
+				if (count($this->add_tinymce_buttons())>0) {
+					array_push($buttons, "|");
+				}
+				$i = 0 ; 
+				foreach ($this->add_tinymce_buttons() as $button) {
+					$i++ ; 
+					array_push($buttons, "customButton_".$this->pluginID."_".$i) ;
+				}
+			}
+			
+			return $buttons;
+		}
+	
+		function add_custom_button($plugin_array) {
+			if (is_callable( array($this, 'add_tinymce_buttons') ) ) {
+				if (count($this->add_tinymce_buttons())>0) {
+					$plugin_array["customPluginButtons_".$this->pluginID] = plugin_dir_url(__FILE__)."show?output_js_tinymce=customPluginButtons_".$this->pluginID ; 
+				}
+			}
+			return $plugin_array;
+		}
+		
+		function my_refresh_mce($ver) {
+			if (is_callable( array($this, 'add_tinymce_buttons') ) ) {
+				if (count($this->add_tinymce_buttons())>0) {
+					$ver += 1;
+				}
+			}
+			return $ver;
+		}
+		
+		function create_js_for_tinymce() {
+			if ($_GET["output_js_tinymce"]=="customPluginButtons_".$this->pluginID) {
+				?>
+				(function(){
+					tinymce.create('tinymce.plugins.<?php echo "customPluginButtons_".$this->pluginID ; ?>', {
+				 
+						init : function(ed, url){
+						<?php 
+						$i = 0 ; 	
+						foreach ($this->add_tinymce_buttons() as $button) { 
+							$i++ ; 
+						?>
+							ed.addCommand('<?php echo "customButton_".$this->pluginID."_".$i ; ?>', function(){
+								selected_content = tinyMCE.activeEditor.selection.getContent();
+								tinyMCE.activeEditor.selection.setContent('<?php echo $button[1] ; ?>' + selected_content + '<?php echo $button[2] ; ?>');
+							});
+							
+							ed.addButton('<?php echo "customButton_".$this->pluginID."_".$i ; ?>', {
+								title: '<?php echo $button[0] ; ?>',
+								image: '<?php echo $button[3] ; ?>',
+								cmd: '<?php echo "customButton_".$this->pluginID."_".$i ; ?>'
+							});
+						<?php } ?>
+						},
+						createControl : function(n, cm){
+							return null;
+						}
+					});
+					tinymce.PluginManager.add('<?php echo "customPluginButtons_".$this->pluginID ; ?>', tinymce.plugins.<?php echo "customPluginButtons_".$this->pluginID ; ?>);
+				})();
+				<?php
+				die() ; 
+			}
 		}
 		
 		/** ====================================================================================================================================================
