@@ -1,8 +1,8 @@
 <?php
 /**
 * Core SedLex Plugin
-* VersionInclude : 3.0
-*/ 
+* VersionInclude : 3.0 
+*/  
 
 /* Prevent direct access to this file */
 if (!defined('ABSPATH')) {
