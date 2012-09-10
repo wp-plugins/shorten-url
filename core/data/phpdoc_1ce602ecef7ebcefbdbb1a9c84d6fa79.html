@@ -551,7 +551,7 @@
 							</tr> 
 							<tr class="" valign="top" id="ligne1"> 
 								<td class="column-columnname">
-									<span id="cell_1_1" ><a name='feedbackSL_enable_feedback'><p><b>enable_feedback</b><span class='desc_phpDoc'>[METHODE]</span></p><p>Display the feedback form</p><p>Please note that the users will send you their comments/feedback at the email used is in the header of the main file of your plugin <code>Author Email : xxx@xxx.com</code></p></span>
+									<span id="cell_1_1" ><a name='feedbackSL_enable_feedback'><p><b>enable_feedback</b><span class='desc_phpDoc'>[METHODE]</span></p><p>Display the feedback form</p><p>Please note that the users will send you their comments/feedback at the email used is in the header of the main file of your plugin <code>Author Email : name@domain.tld</code></p></span>
 								</td>
 								<td class="column-columnname">
 									<span id="cell_1_2" ><p><b>Paramètres : </b></p><p style='padding-left:30px;'>Pas de paramètre</p><p><b>Valeur de retour :</b></p><p style='padding-left:30px;'><b>void</b> </p><p><b>Exemple d&#039;appel :</b></p><p style='padding-left:30px;'><code>void enable_feedback () ; </code></p></span>
@@ -677,7 +677,7 @@
 					<div class="postbox">
 						<h3 class="hndle"><span>parametersSedLex<span class='desc_phpDoc'>[CLASSE]</span></span></h3>
 						<div class="inside" style="padding: 5px 10px 5px 20px;">
-							<p>This PHP class enable the creation of form to manage the parameter of your plugin</p><p>Voici les méthodes de la classe:</p><ul><li class='li_class'><b><a href='#parametersSedLex_parametersSedLex'>parametersSedLex::parametersSedLex</a></b>: Constructor of the object</li><li class='li_class'><b><a href='#parametersSedLex_add_title'>parametersSedLex::add_title</a></b>: Add title in the form</li><li class='li_class'><b><a href='#parametersSedLex_add_comment'>parametersSedLex::add_comment</a></b>: Add a comment in the form</li><li class='li_class'><b><a href='#parametersSedLex_add_param'>parametersSedLex::add_param</a></b>: Add a textarea, input, checkbox, etc. in the form to enable the modification of parameter of the plugin</li><li class='li_class'><b><a href='#parametersSedLex_get_new_value'>parametersSedLex::get_new_value</a></b>: Get the new value of the parameter after its update (with happen upon calling <code>flush</code>)</li><li class='li_class'><b><a href='#parametersSedLex_remove_param'>parametersSedLex::remove_param</a></b>: Remove a parameter of the plugin which has been previously added through add_param (then it can be useful if you want to update a parameter without printing the form)</li><li class='li_class'><b><a href='#parametersSedLex_flush'>parametersSedLex::flush</a></b>: Print the form with parameters</li></ul>					<table class="widefat fixed" cellspacing="0">
+							<p>This PHP class enable the creation of form to manage the parameter of your plugin</p><p>Voici les méthodes de la classe:</p><ul><li class='li_class'><b><a href='#parametersSedLex_parametersSedLex'>parametersSedLex::parametersSedLex</a></b>: Constructor of the object</li><li class='li_class'><b><a href='#parametersSedLex_add_title'>parametersSedLex::add_title</a></b>: Add title in the form</li><li class='li_class'><b><a href='#parametersSedLex_add_comment'>parametersSedLex::add_comment</a></b>: Add a comment in the form</li><li class='li_class'><b><a href='#parametersSedLex_add_comment_default_value'>parametersSedLex::add_comment_default_value</a></b>: Add a comment in the form which display the default value of the param</li><li class='li_class'><b><a href='#parametersSedLex_add_param'>parametersSedLex::add_param</a></b>: Add a textarea, input, checkbox, etc. in the form to enable the modification of parameter of the plugin</li><li class='li_class'><b><a href='#parametersSedLex_get_new_value'>parametersSedLex::get_new_value</a></b>: Get the new value of the parameter after its update (with happen upon calling <code>flush</code>)</li><li class='li_class'><b><a href='#parametersSedLex_remove_param'>parametersSedLex::remove_param</a></b>: Remove a parameter of the plugin which has been previously added through add_param (then it can be useful if you want to update a parameter without printing the form)</li><li class='li_class'><b><a href='#parametersSedLex_flush'>parametersSedLex::flush</a></b>: Print the form with parameters</li></ul>					<table class="widefat fixed" cellspacing="0">
 						<thead>
 							<tr>
 								<tr>
@@ -721,13 +721,21 @@
 							</tr> 
 							<tr class="" valign="top" id="ligne1"> 
 								<td class="column-columnname">
+									<span id="cell_1_1" ><a name='parametersSedLex_add_comment_default_value'><p><b>add_comment_default_value</b><span class='desc_phpDoc'>[METHODE]</span></p><p>Add a comment in the form which display the default value of the param</p></span>
+								</td>
+								<td class="column-columnname">
+									<span id="cell_1_2" ><p><b>Paramètres :</b></p><p style='padding-left:30px;'><b>$param</b> (<i>??</i>) ??</p><p><b>Valeur de retour :</b></p><p style='padding-left:30px;'><b>void</b> </p><p><b>Exemple d&#039;appel :</b></p><p style='padding-left:30px;'><code>void add_comment_default_value ($param) ; </code></p></span>
+								</td>
+							</tr> 
+							<tr class="alternate" valign="top" id="ligne1"> 
+								<td class="column-columnname">
 									<span id="cell_1_1" ><a name='parametersSedLex_add_param'><p><b>add_param</b><span class='desc_phpDoc'>[METHODE]</span></p><p>Add a textarea, input, checkbox, etc. in the form to enable the modification of parameter of the plugin</p><p>Please note that the default value of the parameter (defined in the  <code>get_default_option</code> function) will define the type of input form. If the default  value is a: <br />&nbsp; &nbsp; &nbsp; - string, the input form will be an input text <br />&nbsp; &nbsp; &nbsp; - integer, the input form will be an input text accepting only integer <br />&nbsp; &nbsp; &nbsp; - string beggining with a '*', the input form will be a textarea <br />&nbsp; &nbsp; &nbsp; - string equals to '[file]$path', the input form will be a file input and the file will be stored at $path (relative to the upload folder)<br />&nbsp; &nbsp; &nbsp; - string equals to '[password]$password', the input form will be a password input ; <br />&nbsp; &nbsp; &nbsp; - array of string, the input form will be a dropdown list<br />&nbsp; &nbsp; &nbsp; - boolean, the input form will be a checkbox</p></span>
 								</td>
 								<td class="column-columnname">
 									<span id="cell_1_2" ><p><b>Paramètres :</b></p><p style='padding-left:30px;'><b>$param</b> (<i>string</i>) the name of the parameter/option as defined in your plugin and especially in the &lt;code&gt;get_default_option&lt;/code&gt; of your plugin</p><p style='padding-left:30px;'><b>$name</b> (<i>string</i>) the displayed name of the parameter in the form</p><p style='padding-left:30px;'><b>$forbid</b> [optionnelle] (<i>string</i>) regexp which will delete some characters in the submitted string (only a warning is raised) : For instance &lt;code&gt;$forbid = &quot;/[^a-zA-Z0-9]/&quot;&lt;/code&gt; will remove all the non alphanumeric value (par défaut, sa valeur est : ) </p><p style='padding-left:30px;'><b>$allow</b> [optionnelle] (<i>string</i>) regexp which will verify that the submitted string will respect this rexexp, if not, the submitted value is not saved  and an erreor is raised : For instance, &lt;code&gt;$allow = &quot;/^[a-zA-Z]/&quot;&lt;/code&gt; require that the submitted string begin with a nalpha character (par défaut, sa valeur est : ) </p><p style='padding-left:30px;'><b>$related</b> [optionnelle] (<i>array</i>) a list of the other params that will be actived/deactivated when this parameter is set to true/false (thus, this param should be a boolean) (par défaut, sa valeur est : []) </p><p><b>Valeur de retour :</b></p><p style='padding-left:30px;'><b>void</b> </p><p><b>Exemple d&#039;appel :</b></p><p style='padding-left:30px;'><code>void add_param ($param, $name, [$forbid], [$allow], [$related]) ; </code></p></span>
 								</td>
 							</tr> 
-							<tr class="alternate" valign="top" id="ligne1"> 
+							<tr class="" valign="top" id="ligne1"> 
 								<td class="column-columnname">
 									<span id="cell_1_1" ><a name='parametersSedLex_get_new_value'><p><b>get_new_value</b><span class='desc_phpDoc'>[METHODE]</span></p><p>Get the new value of the parameter after its update (with happen upon calling <code>flush</code>)</p></span>
 								</td>
@@ -735,7 +743,7 @@
 									<span id="cell_1_2" ><p><b>Paramètres :</b></p><p style='padding-left:30px;'><b>$param</b> (<i>string</i>) the name of the parameter/option as defined in your plugin and especially in the &lt;code&gt;get_default_option&lt;/code&gt; of your plugin</p><p><b>Valeur de retour :</b></p><p style='padding-left:30px;'><b>mixed</b> the value of the param (array if there is an error or null if there is no new value)</p><p><b>Exemple d&#039;appel :</b></p><p style='padding-left:30px;'><code>mixed get_new_value ($param) ; </code></p></span>
 								</td>
 							</tr> 
-							<tr class="" valign="top" id="ligne1"> 
+							<tr class="alternate" valign="top" id="ligne1"> 
 								<td class="column-columnname">
 									<span id="cell_1_1" ><a name='parametersSedLex_remove_param'><p><b>remove_param</b><span class='desc_phpDoc'>[METHODE]</span></p><p>Remove a parameter of the plugin which has been previously added through add_param (then it can be useful if you want to update a parameter without printing the form)</p><p>It will also remove any comment for the same</p></span>
 								</td>
@@ -743,7 +751,7 @@
 									<span id="cell_1_2" ><p><b>Paramètres :</b></p><p style='padding-left:30px;'><b>$param</b> (<i>string</i>) the name of the parameter/option as defined in your plugin and especially in the &lt;code&gt;get_default_option&lt;/code&gt; of your plugin</p><p><b>Valeur de retour :</b></p><p style='padding-left:30px;'><b>void</b> </p><p><b>Exemple d&#039;appel :</b></p><p style='padding-left:30px;'><code>void remove_param ($param) ; </code></p></span>
 								</td>
 							</tr> 
-							<tr class="alternate" valign="top" id="ligne1"> 
+							<tr class="" valign="top" id="ligne1"> 
 								<td class="column-columnname">
 									<span id="cell_1_1" ><a name='parametersSedLex_flush'><p><b>flush</b><span class='desc_phpDoc'>[METHODE]</span></p><p>Print the form with parameters</p></span>
 								</td>
@@ -913,7 +921,7 @@
 							</tr> 
 							<tr class="" valign="top" id="ligne1"> 
 								<td class="column-columnname">
-									<span id="cell_1_1" ><a name='translationSL_enable_translation'><p><b>enable_translation</b><span class='desc_phpDoc'>[METHODE]</span></p><p>Enable the translation and display the management interface</p><p>Please note that the translators will be able to send you their translation so that you can add them to your repository (the email used is in the header of the main file of your plugin <code>Author Email : xxx@xxx.com</code>)</p></span>
+									<span id="cell_1_1" ><a name='translationSL_enable_translation'><p><b>enable_translation</b><span class='desc_phpDoc'>[METHODE]</span></p><p>Enable the translation and display the management interface</p><p>Please note that the translators will be able to send you their translation so that you can add them to your repository (the email used is in the header of the main file of your plugin <code>Author Email : name@domain.tld</code>)</p></span>
 								</td>
 								<td class="column-columnname">
 									<span id="cell_1_2" ><p><b>Paramètres : </b></p><p style='padding-left:30px;'>Pas de paramètre</p><p><b>Valeur de retour :</b></p><p style='padding-left:30px;'><b>void</b> </p><p><b>Exemple d&#039;appel :</b></p><p style='padding-left:30px;'><code>void enable_translation () ; </code></p></span>

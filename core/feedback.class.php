@@ -24,7 +24,7 @@ if (!class_exists("feedbackSL")) {
 		
 		/** ====================================================================================================================================================
 		* Display the feedback form
-		* Please note that the users will send you their comments/feedback at the email used is in the header of the main file of your plugin <code>Author Email : xxx@xxx.com</code>
+		* Please note that the users will send you their comments/feedback at the email used is in the header of the main file of your plugin <code>Author Email : name@domain.tld</code>
 		* 
 		* @return void
 		*/

@@ -102,6 +102,8 @@ class my_plugin extends pluginSedLex {
 	* If you want to load a script, please type :
 	* 	<code>wp_enqueue_script( 'jsapi', 'https://www.google.com/jsapi');</code> or 
 	*	<code>wp_enqueue_script('my_plugin_script', plugins_url('/script.js', __FILE__));</code>
+	*	<code>$this->add_inline_js($js_text);</code>
+	*	<code>$this->add_js($js_url_file);</code>
 	*
 	* @return void
 	*/
@@ -109,6 +111,48 @@ class my_plugin extends pluginSedLex {
 	function _admin_js_load() {	
 		return ; 
 	}
+	
+	/** ====================================================================================================================================================
+	* Init css for the admin side
+	* If you want to load a style sheet, please type :
+	*	<code>$this->add_inline_css($css_text);</code>
+	*	<code>$this->add_css($css_url_file);</code>
+	*
+	* @return void
+	*/
+	
+	function _admin_css_load() {	
+		return ; 
+	}
+	
+	/** ====================================================================================================================================================
+	* Init javascript for the public side
+	* If you want to load a script, please type :
+	* 	<code>wp_enqueue_script( 'jsapi', 'https://www.google.com/jsapi');</code> or 
+	*	<code>wp_enqueue_script('my_plugin_script', plugins_url('/script.js', __FILE__));</code>
+	*	<code>$this->add_inline_js($js_text);</code>
+	*	<code>$this->add_js($js_url_file);</code>
+	*
+	* @return void
+	*/
+	
+	function _public_js_load() {	
+		return ; 
+	}
+	
+	/** ====================================================================================================================================================
+	* Init css for the public side
+	* If you want to load a style sheet, please type :
+	*	<code>$this->add_inline_css($css_text);</code>
+	*	<code>$this->add_css($css_url_file);</code>
+	*
+	* @return void
+	*/
+	
+	function _public_css_load() {	
+		return ; 
+	}
+
 	
 	/** ====================================================================================================================================================
 	* Add a button in the TinyMCE Editor
@@ -197,29 +241,29 @@ class my_plugin extends pluginSedLex {
 				// Examples for creating tables
 				//----------------------------------
 				
-				echo "<h5>Tables</h5>" ; 
+				echo "<h5>".__("Tables", $this->pluginID)."</h5>" ; 
 				$table = new adminTable() ; 
-				$table->title(array("Col1", "Col2", "Col3")) ; 
+				$table->title(array(__("Col1", $this->pluginID), __("Col2", $this->pluginID), __("Col2", $this->pluginID))) ; 
 				
 				ob_start() ; 
-				echo "Cell 1-1" ; 
+				echo __("Cell 1-1", $this->pluginID) ; 
 				$cel1 = new adminCell(ob_get_clean()) ; 		
 				ob_start() ; 
-				echo "Cell 1-2" ; 
+				echo __("Cell 1-2", $this->pluginID) ; 
 				$cel2 = new adminCell(ob_get_clean()) ; 		
 				ob_start() ; 
-				echo "Cell 1-3" ; 
+				echo __("Cell 1-3", $this->pluginID) ; 
 				$cel3 = new adminCell(ob_get_clean()) ; 		
 				$table->add_line(array($cel1, $cel2, $cel3), '1') ; 
 				
 				ob_start() ; 
-				echo "Cell 2-1" ; 
+				echo __("Cell 2-1", $this->pluginID) ; 
 				$cel1 = new adminCell(ob_get_clean()) ; 		
 				ob_start() ; 
-				echo "Cell 2-2" ; 
+				echo __("Cell 2-2", $this->pluginID) ; 
 				$cel2 = new adminCell(ob_get_clean()) ; 		
 				ob_start() ; 
-				echo "Cell 2-3" ; 
+				echo __("Cell 2-3", $this->pluginID) ; 
 				$cel3 = new adminCell(ob_get_clean()) ; 		
 				$table->add_line(array($cel1, $cel2, $cel3), '2') ; 
 
@@ -229,14 +273,21 @@ class my_plugin extends pluginSedLex {
 
 			ob_start() ; 
 				$params = new parametersSedLex($this, "tab-parameters") ; 
-				$params->add_title("Title 1") ; 
-				$params->add_param('opt1', 'Modify opt1:') ; 
-				$params->add_comment("This is a comment") ; 
-				$params->add_param('opt2', 'Modify opt2:') ; 
-				$params->add_param('opt3', 'Modify opt3:') ; 
-				$params->add_comment("This is another comment") ; 
-				$params->add_title("Title 2") ; 
-				$params->add_param('opt4', 'Modify opt4:') ; 
+				$params->add_title(__('Title 1',  $this->pluginID)) ; 
+				$params->add_param('opt1', __('Modify arg 1:',  $this->pluginID)) ; 
+				$params->add_comment(__("This is a comment. The default value is:",  $this->pluginID)) ; 
+				$params->add_comment_default_value('opt1') ; 
+				$params->add_param('opt2', __('Modify arg 2:',  $this->pluginID)) ; 
+				$params->add_param('opt3', __('Modify arg 3:',  $this->pluginID)) ; 
+				$params->add_comment(__('This is another comment.',  $this->pluginID)) ; 
+				$params->add_comment(__('The default value is:',  $this->pluginID)) ; 
+				$params->add_comment_default_value('opt3') ; 
+				
+				$params->add_title(__('Title 2',  $this->pluginID)) ; 
+				$params->add_param('opt4', __('Modify arg 4:',  $this->pluginID)) ; 
+				$params->add_comment(__("This is a comment. The default value is:",  $this->pluginID)) ; 
+				$params->add_comment_default_value('opt4') ; 
+				
 				$params->flush() ; 
 				
 			$tabs->add_tab(__('Parameters',  $this->pluginID), ob_get_clean() , WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_param.png") ; 	
@@ -257,7 +308,7 @@ class my_plugin extends pluginSedLex {
 			$tabs->add_tab(__('Give feedback',  $this->pluginID), ob_get_clean() , WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_mail.png") ; 	
 			
 			ob_start() ; 
-				// A liste of plugin slug to be excluded
+				// A list of plugin slug to be excluded
 				$exlude = array('wp-pirate-search') ; 
 				// Replace sedLex by your own author name
 				$trans = new otherPlugins("sedLex", $exlude) ; 

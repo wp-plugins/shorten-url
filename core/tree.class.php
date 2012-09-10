@@ -200,9 +200,11 @@ if (!class_exists("treeList")) {
 					$toggle = " onclick='stopPropag".$rand."(event);' " ; 
 				}
 				// We replace the link in the text by a stopPropag to avoid closing the hierarchy when clicking on links
-				if ($reduce_develop) {
-				//	$item[0] = str_replace("<a ", "<a onclick='stopPropag(event);' ", $item[0]) ; 
+				
+				if ($children!=null) {
+					$item[0] = str_replace("<a ", "<a onclick='stopPropag".$rand."(event);' ", $item[0]) ; 
 				}
+				
 				echo "<li".$id."".$toggle.">"."<div>".$item[0]."</div>" ; 
 				if ($children!=null) {
 					treeList::render_sub($children, $reduce_develop, $next_hide, $rand) ; 

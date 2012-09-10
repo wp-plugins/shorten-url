@@ -4,9 +4,10 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-06-25T15:11:29+00:00\n"
+"PO-Revision-Date: 2012-09-05T04:46:42+00:00\n"
 "Last-Translator: reitermarkus <me@reitermark.us>\n"
 "Last-Translator: ThorstenKallnischkies <http://desastre.eu>\n"
+"Last-Translator: blog.xmee.de <blog.xmee.de>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -584,4 +585,22 @@ msgstr "Die Datei %s kann nicht geändert werden. Überprüfen Sie die Datei-Ber
 
 msgid "[CLASS]"
 msgstr "[CLASS]"
+
+msgid "Plugin"
+msgstr "Plug-In"
+
+msgid "Delete"
+msgstr "Löschen"
+
+msgid "Import"
+msgstr "Importieren"
+
+msgid "Merge"
+msgstr "Verbinden"
+
+msgid "Return value:"
+msgstr "Rückgabewert:"
+
+msgid "Typical call:"
+msgstr "Typischer Aufruf:"
 

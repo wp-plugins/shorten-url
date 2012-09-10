@@ -48,6 +48,12 @@ if (!class_exists('pluginSedLex')) {
 			
 			add_action('wp_print_scripts', array( $this, 'javascript_front'), 5);
 			add_action('wp_print_styles', array( $this, 'css_front'), 5);
+			if (method_exists($this,'_public_js_load')) {
+				add_action('wp_print_scripts', array($this,'_public_js_load'));
+			}
+			if (method_exists($this,'_public_css_load')) {
+				add_action('wp_print_styles', array($this,'_public_css_load'));
+			}
 			add_action('wp_print_scripts', array( $this, 'flush_js'), 10000000);
 			add_action('wp_print_styles', array( $this, 'flush_css'), 10000000);
 			
@@ -361,6 +367,9 @@ if (!class_exists('pluginSedLex')) {
 			
 			if (method_exists($this,'_admin_js_load')) {
 				add_action('admin_print_scripts-'.$page, array($this,'_admin_js_load'));
+			}
+			if (method_exists($this,'_admin_css_load')) {
+				add_action('admin_print_styles-'.$page, array($this,'_admin_css_load'));
 			}
 			
 			add_action('admin_print_scripts-'.$page, array($this,'javascript_admin_always'),5);
@@ -1148,7 +1157,7 @@ if (!class_exists('pluginSedLex')) {
 								
 								$rc = new phpDoc();
 								foreach ($lines as $lineNumber => $lineContent) {	
-									if (preg_match('/^require.*[\'"](.*)[\'"]/',  trim($lineContent),$match)) {
+									if (preg_match('/url\.[\'"](.*)[\'"]/',  trim($lineContent),$match)) {
 										$chem = dirname(__FILE__)."/".$match[1] ;
 										$rc->addFile($chem) ; 
 									}

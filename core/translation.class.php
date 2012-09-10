@@ -29,7 +29,7 @@ if (!class_exists("translationSL")) {
 		
 		/** ====================================================================================================================================================
 		* Enable the translation and display the management interface
-		* Please note that the translators will be able to send you their translation so that you can add them to your repository (the email used is in the header of the main file of your plugin <code>Author Email : xxx@xxx.com</code>)
+		* Please note that the translators will be able to send you their translation so that you can add them to your repository (the email used is in the header of the main file of your plugin <code>Author Email : name@domain.tld</code>)
 		* 
 		* @return void
 		*/

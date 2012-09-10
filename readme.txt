@@ -72,6 +72,9 @@ Have fun !
 == Changelog ==
 
 = 1.3.3 =
+* Even non published posts have short url
+
+= 1.3.3 =
 * Add http:// if missing
 
 = 1.3.2 =
@@ -111,4 +114,4 @@ Have fun !
 Visit http://www.sedlex.fr/cote_geek/
 
  
-InfoVersion:b9581215a9d44a077599339512ac0e48
+InfoVersion:3f4edf2b2a76cd74716a3f3684dcce27

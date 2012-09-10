@@ -31,28 +31,36 @@ if (!class_exists('pluginSedLex')) {
 		}
 	}
 	
-	require_once($url.'core.php') ; 
+	$files = array() ; 
 	
-	require_once($url.'core.class.php') ; 
-	require_once($url.'core/admin_table.class.php') ; 
-	require_once($url.'core/tabs.class.php') ; 
-	require_once($url.'core/box.class.php') ; 
-	require_once($url.'core/browser.class.php') ; 
-	require_once($url.'core/database.class.php') ; 
-	require_once($url.'core/debug.class.php') ; 
-	require_once($url.'core/feedback.class.php') ; 
-	require_once($url.'core/folder_diff.class.php') ; 
-	require_once($url.'core/otherplugins.class.php') ; 
-	require_once($url.'core/parameters.class.php') ; 
-	require_once($url.'core/phpdoc.class.php') ; 
-	require_once($url.'core/popup.class.php') ; 
-	require_once($url.'core/progress_bar.class.php') ; 
-	require_once($url.'core/translation.class.php') ; 
-	require_once($url.'core/text_diff.class.php') ; 
-	require_once($url.'core/tree.class.php') ; 
-	require_once($url.'core/svn.class.php') ; 
-	require_once($url.'core/utils.class.php') ; 
-	require_once($url.'core/zip.class.php') ; 
+	$files[] = $url.'core.php' ; 
+	
+	$files[] = $url.'core.class.php' ; 
+	$files[] = $url.'core/admin_table.class.php'; 
+	$files[] = $url.'core/tabs.class.php' ; 
+	$files[] = $url.'core/box.class.php' ; 
+	$files[] = $url.'core/browser.class.php' ; 
+	$files[] = $url.'core/database.class.php' ; 
+	$files[] = $url.'core/debug.class.php' ; 
+	$files[] = $url.'core/feedback.class.php' ; 
+	$files[] = $url.'core/folder_diff.class.php' ; 
+	$files[] = $url.'core/otherplugins.class.php' ; 
+	$files[] = $url.'core/parameters.class.php' ; 
+	$files[] = $url.'core/phpdoc.class.php' ; 
+	$files[] = $url.'core/popup.class.php' ; 
+	$files[] = $url.'core/progress_bar.class.php'; 
+	$files[] = $url.'core/translation.class.php'; 
+	$files[] = $url.'core/text_diff.class.php' ; 
+	$files[] = $url.'core/tree.class.php'; 
+	$files[] = $url.'core/svn.class.php' ; 
+	$files[] = $url.'core/utils.class.php' ; 
+	$files[] = $url.'core/zip.class.php' ; 
+	
+	foreach ($files as $f) {
+		if (file_exists($f)) {
+			require_once($f) ; 
+		}
+	}
 }
 
 ?>

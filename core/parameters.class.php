@@ -51,6 +51,24 @@ if (!class_exists("parametersSedLex")) {
 		function add_comment($comment)  {
 			$this->buffer[] = array('comment', $comment) ; 
 		}
+		
+		/** ====================================================================================================================================================
+		* Add a comment in the form which display the default value of the param
+		* 
+		* @param string $comment the comment to add 
+		* @return void
+		*/
+		function add_comment_default_value($param)  {
+			$comment = $this->obj->get_default_option($param) ; 
+			$comment = str_replace("\r", "", $comment) ; 
+			$comment = str_replace("<", "&lt;", $comment) ; 
+			$comment = str_replace(">", "&gt;", $comment) ; 
+			$comment = str_replace("*", "", $comment) ; 
+			$comment = str_replace(" ", "&nbsp;", $comment) ; 
+			$comment = str_replace("\n", "<br>", $comment) ; 
+			$this->buffer[] = array('comment', "<code>$comment</code>") ; 
+		}
+
 
 		/** ====================================================================================================================================================
 		* Add a textarea, input, checkbox, etc. in the form to enable the modification of parameter of the plugin
