@@ -597,17 +597,17 @@ if (!class_exists("translationSL")) {
 					if (is_dir($dir)) {
 						$root = scandir($dir);
 						foreach($root as $value) {
-							if (preg_match("/(.*)-(.*)[.]tmp[0-9]*$/", $value, $match)) {
+							if (preg_match("/(.*)-(.*)[.]tmp([0-9]*)$/", $value, $match)) {
 								$cible_file = $match[1]."-".$match[2] ; 
 								if (!is_file($dir.$cible_file)) {
 									// The sent translation is new and can be imported without difficulties 
 									$info = translationSL::get_info(file($dir.$match[0]),file($dir.$match[1].".pot")) ; 
 									if ($info['translated']!=0) {
-										$cel1 = new adminCell("<p>".$match[1]."</p>") ;
+										$cel1 = new adminCell("<p>".$match[1]." (n&deg;".$match[3].")</p>") ;
 										$cel2 = new adminCell("<p>".str_replace(".po", "", $match[2])."</p>") ;
 										$cel3 = new adminCell("<p>".(sprintf(__("%s sentences have been translated (i.e. %s).",'SL_framework'), "<b>".$info['translated']."/".$info['total']."</b>", "<b>".(floor($info['translated']/$info['total']*1000)/10)."%</b>"))."</p>") ;
 										$cel1->add_action(__("Delete", 'SL_framework'), "deleteTranslation('".$dir.$value."')") ; 
-										$cel1->add_action(__("Import",'SL_framework') , "importTranslation('".$dir.$value."', '".$dir.$cible_file."')") ; 
+										$cel1->add_action(__("See the new translation file and merge",'SL_framework') , "seeTranslation('".$dir.$value."', '".$dir.$cible_file."')") ; 
 										$table->add_line(array($cel1, $cel2, $cel3), '1') ;
 										$nb_ligne ++ ; 
 									} else {
@@ -618,14 +618,14 @@ if (!class_exists("translationSL")) {
 									$info = translationSL::compare_info(file($dir.$value),file($dir.$cible_file),file($dir.$match[1].".pot")) ; 
 									$info2 = translationSL::get_info(file($dir.$cible_file),file($dir.$match[1].".pot")) ; 
 									if (($info['modified']!=0) || ($info['new']!=0)) {
-										$cel1 = new adminCell("<p>".$match[1]."</p>") ;
+										$cel1 = new adminCell("<p>".$match[1]." (n&deg;".$match[3].")</p>") ;
 										$cel2 = new adminCell("<p>".str_replace(".po", "", $match[2])."</p>") ;
 										$cel3 = new adminCell("<p>".(sprintf(__("%s sentences have been newly translated and %s sentences have been modified (the old file has %s translated sentences).",'SL_framework'), "<b>".$info['new']."</b>", "<b>".$info['modified']."</b>", "<b>".$info2['translated']."/".$info2['total']."</b>"))."</p>") ;
 										$cel1->add_action(__("Delete", 'SL_framework'), "deleteTranslation('".$dir.$value."')") ; 
 										if ($info['modified']!=0) {
-											$cel1->add_action(__("See modifications and Merge",'SL_framework') , "seeTranslation('".$dir.$value."', '".$dir.$cible_file."')") ; 
+											$cel1->add_action(__("See the modifications/new translations and Merge",'SL_framework') , "seeTranslation('".$dir.$value."', '".$dir.$cible_file."')") ; 
 										} else {
-											$cel1->add_action(__("Merge",'SL_framework') , "mergeTranslation('".$dir.$value."', '".$dir.$cible_file."')") ; 
+											$cel1->add_action(__("See the new translations and Merge",'SL_framework') , "seeTranslation('".$dir.$value."', '".$dir.$cible_file."')") ; 
 										}
 										$table2->add_line(array($cel1, $cel2, $cel3), '1') ;
 										$nb_ligne2 ++ ; 
@@ -650,39 +650,6 @@ if (!class_exists("translationSL")) {
 			
 			//Die in order to avoid the 0 character to be printed at the end
 			//die() ;
-		}
-		
-		/** ====================================================================================================================================================
-		* Callback for importing a translation file
-		* 
-		* @access private
-		* @return void
-		*/
-		
-		function importTranslation() {
-			$path1 = $_POST['path1'] ; 
-			$path2 = $_POST['path2'] ; 
-			
-			$r = @rename($path1, $path2) ; 
-			if ($r!==false) {
-				// We convert the file into a .mo file
-				$hash = array() ; 
-				$msgid = "" ; 
-				$content_po = file($path2) ; 
-				foreach ($content_po as $ligne_po) {
-					if (preg_match("/^msgid \\\"(.*)\\\"$/", trim($ligne_po), $match)) {
-						$msgid = $match[1] ; 			
-					} else if (preg_match("/^msgstr \\\"(.*)\\\"$/", trim($ligne_po), $match)) {
-						if (trim($match[1])!="") {
-							$hash[] = array('msgid' => $msgid, 'msgstr' => $match[1]) ; 
-						}
-					}
-				}
-				// We convert into a new MO file
-				echo preg_replace("/(.*)[.]po/", "$1.mo", $path2)."\n" ; 
-				translationSL::phpmo_write_mo_file($hash,preg_replace("/(.*)[.]po/", "$1.mo", $path2)) ; 
-			}
-			die() ; 
 		}
 		
 		/** ====================================================================================================================================================
@@ -716,7 +683,11 @@ if (!class_exists("translationSL")) {
 			$pathpot = preg_replace("/(.*)-(.*)[.]po*$/", "$1.pot" , $path2) ; 
 
 			$content_pot = file($pathpot) ; 
-			$content_po2 = file($path2) ; 
+			if (is_file($path2)) {
+				$content_po2 = file($path2) ; 
+			} else {
+				$content_po2 = array() ; 
+			}
 			$content_po1 = file($path1) ; 
 			
 			echo "<span id='info_translation_merge'>" ; 
@@ -756,7 +727,7 @@ if (!class_exists("translationSL")) {
 						if (trim($match[1])!="") {
 							$po1_array[md5(trim($msgid))] = array(trim($msgid),trim($match[1])) ; 
 							if (isset($pot_array[md5(trim($msgid))])) {
-								if (isset($po2_array[md5(trim($msgid))])) {
+								//if (isset($po2_array[md5(trim($msgid))])) {
 									if ($po2_array[md5(trim($msgid))][1]!=$po1_array[md5(trim($msgid))][1]) {
 										$cel1 = new adminCell("<p>".$msgid."</p>") ;
 										$cel2 = new adminCell("<p>".$po2_array[md5(trim($msgid))][1]."</p>") ;
@@ -766,7 +737,7 @@ if (!class_exists("translationSL")) {
 										$cel4 = new adminCell("<p><input type='CHECKBOX' name='new_".md5(trim($msgid))."' checked='yes' >Replace the old sentence with the new one?</input></p>") ;
 										$table->add_line(array($cel1, $cel2, $cel3, $cel4), '1') ; 
 									}
-								}
+								//}
 							}
 						}
 					}
@@ -799,7 +770,11 @@ if (!class_exists("translationSL")) {
 			$pathpot = preg_replace("/(.*)-(.*)[.]po*$/", "$1.pot" , $path2) ; 
 			$lang = preg_replace("/(.*)-(.*)[.]po*$/", "$2" , $path2) ; 
 			$content_pot = file($pathpot) ; 
-			$content_po2 = file($path2) ; 
+			if (is_file($path2)) {
+				$content_po2 = file($path2) ; 
+			} else {
+				$content_po2 = array() ; 
+			}
 			$content_po1 = file($path1) ; 
 			
 			$translators = array() ; 

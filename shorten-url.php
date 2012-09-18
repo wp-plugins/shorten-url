@@ -3,7 +3,7 @@
 Plugin Name: Short URL
 Plugin Tag: shorttag, shortag, bitly, url, short 
 Description: <p>Your pages/posts may have a short url hosted by your own domain.</p><p>Replace the internal function of wordpress <code>get_short_link()</code> by a bit.ly like url. </p><p>Instead of having a short link like http://www.yourdomain.com/?p=3564, your short link will be http://www.yourdomain.com/NgH5z (for instance). </p><p>You can configure: </p><ul><li>the length of the short link, </li><li>if the link is prefixed with a static word, </li><li>the characters used for the short link.</li></ul><p>Moreover, you can manage external links with this plugin. The links in your posts will be automatically replace by the short one if available.</p><p>This plugin is under GPL licence. </p>
-Version: 1.3.4
+Version: 1.3.5
 Author: SedLex
 Author Email: sedlex@sedlex.fr
 Framework Email: sedlex@sedlex.fr
@@ -119,6 +119,7 @@ class shorturl extends pluginSedLex {
 			case 'num_char' 	: return true 	; break ; 
 			case 'prefix' 		: return "" 	; break ; 
 			case 'length' 		: return 5 		; break ; 
+			case 'removewww' 		: return false 		; break ; 
 		}
 		return null ;
 	}
@@ -310,6 +311,9 @@ class shorturl extends pluginSedLex {
 					
 					$params->add_title(__('What is the length of your short URL (without the prefix)?',$this->pluginID)) ; 
 					$params->add_param('length', __('Length:',$this->pluginID)) ; 
+
+					$params->add_title(__('Do you want to remove www before your short url?',$this->pluginID)) ; 
+					$params->add_param('removewww', __('Remove www:',$this->pluginID)) ; 
 					
 					$params->flush() ; 
 			$tabs->add_tab(__('Parameters',  $this->pluginID), ob_get_clean() , WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_param.png") ; 	
@@ -555,7 +559,12 @@ class shorturl extends pluginSedLex {
 		$url = $wpdb->get_var( $select ) ;
 	
 		if ($url!="") {
-			return home_url()."/".$url ; 
+			if (!$this->get_param('removewww')){
+				return home_url()."/".$url ; 
+			} else {
+				$home = home_url() ; 
+				return str_replace("/www.", "/", $home)."/".$url ; 
+			}
 		}
 	
 		// We generate a new short Url
@@ -579,7 +588,12 @@ class shorturl extends pluginSedLex {
 				$wpdb->query( $sql ) ;
 			}
 		}
-		return home_url()."/".$result ; 
+		if (!$this->get_param('removewww')){
+			return home_url()."/".$result ; 
+		} else {
+			$home = home_url() ; 
+			return str_replace("/www.", "/", $home)."/".$result ; 
+		}
 	}
 
 

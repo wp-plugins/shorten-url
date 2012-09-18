@@ -1,137 +1,147 @@
 Content-Transfer-Encoding: 8bit
 
-#: shorten-url.php:143
+#: shorten-url.php:144
 #@ shorturl
 msgid "This plugin helps you sharing your post with short-links."
 msgstr ""
 
-#: shorten-url.php:171
+#: shorten-url.php:172
 #@ shorturl
 msgid "Title of your posts/pages"
 msgstr ""
 
-#: shorten-url.php:171
-#: shorten-url.php:256
+#: shorten-url.php:172
+#: shorten-url.php:257
 #@ shorturl
 msgid "Short URL"
 msgstr ""
 
-#: shorten-url.php:171
+#: shorten-url.php:172
 #@ shorturl
 msgid "Type"
 msgstr ""
 
-#: shorten-url.php:171
-#: shorten-url.php:256
+#: shorten-url.php:172
+#: shorten-url.php:257
 #@ shorturl
 msgid "Number of clicks"
-msgstr ""
-
-#: shorten-url.php:206
-#: shorten-url.php:273
-#@ shorturl
-msgid "Reset"
 msgstr ""
 
 #: shorten-url.php:207
 #: shorten-url.php:274
 #@ shorturl
+msgid "Reset"
+msgstr ""
+
+#: shorten-url.php:208
+#: shorten-url.php:275
+#@ shorturl
 msgid "Edit"
 msgstr ""
 
-#: shorten-url.php:218
+#: shorten-url.php:219
 #@ shorturl
 msgid "Internal Redirections"
 msgstr ""
 
-#: shorten-url.php:256
+#: shorten-url.php:257
 #@ shorturl
 msgid "External URL"
 msgstr ""
 
-#: shorten-url.php:271
+#: shorten-url.php:272
 #@ shorturl
 msgid "Delete"
 msgstr ""
 
-#: shorten-url.php:284
+#: shorten-url.php:285
 #@ shorturl
 msgid "External URL:"
 msgstr ""
 
-#: shorten-url.php:287
-#: shorten-url.php:291
+#: shorten-url.php:288
+#: shorten-url.php:292
 #@ shorturl
 msgid "Add a new URL to shorten"
 msgstr ""
 
-#: shorten-url.php:294
+#: shorten-url.php:295
 #@ shorturl
 msgid "External Redirections"
 msgstr ""
 
-#: shorten-url.php:298
-#: shorten-url.php:315
+#: shorten-url.php:299
+#: shorten-url.php:319
 #@ shorturl
 msgid "Parameters"
 msgstr ""
 
-#: shorten-url.php:302
+#: shorten-url.php:303
 #@ shorturl
 msgid "Do you want to use the following characters?"
 msgstr ""
 
-#: shorten-url.php:303
+#: shorten-url.php:304
 #@ shorturl
 msgid "These parameters will be taken in account only for generation of new links"
 msgstr ""
 
-#: shorten-url.php:304
+#: shorten-url.php:305
 #@ shorturl
 msgid "Lower-case characters ([a-z]):"
 msgstr ""
 
-#: shorten-url.php:305
+#: shorten-url.php:306
 #@ shorturl
 msgid "Upper-case characters ([A-Z]):"
 msgstr ""
 
-#: shorten-url.php:306
+#: shorten-url.php:307
 #@ shorturl
 msgid "Numeric characters ([0-9]):"
 msgstr ""
 
-#: shorten-url.php:308
+#: shorten-url.php:309
 #@ shorturl
 msgid "Do you want to use a prefix before your short URL?"
 msgstr ""
 
-#: shorten-url.php:309
+#: shorten-url.php:310
 #@ shorturl
 msgid "Prefix:"
 msgstr ""
 
-#: shorten-url.php:311
+#: shorten-url.php:312
 #@ shorturl
 msgid "What is the length of your short URL (without the prefix)?"
 msgstr ""
 
-#: shorten-url.php:312
+#: shorten-url.php:313
 #@ shorturl
 msgid "Length:"
 msgstr ""
 
-#: shorten-url.php:321
+#: shorten-url.php:315
+#@ shorturl
+msgid "Do you want to remove www before your short url?"
+msgstr ""
+
+#: shorten-url.php:316
+#@ shorturl
+msgid "Remove www:"
+msgstr ""
+
+#: shorten-url.php:325
 #@ shorturl
 msgid "Manage translations"
 msgstr ""
 
-#: shorten-url.php:327
+#: shorten-url.php:331
 #@ shorturl
 msgid "Give feedback"
 msgstr ""
 
-#: shorten-url.php:332
+#: shorten-url.php:336
 #@ shorturl
 msgid "Other plugins"
 msgstr ""

@@ -71,7 +71,10 @@ Have fun !
 
 == Changelog ==
 
-= 1.3.3 =
+= 1.3.5 =
+* www may be removed from short URL
+
+= 1.3.4 =
 * Even non published posts have short url
 
 = 1.3.3 =
@@ -114,4 +117,4 @@ Have fun !
 Visit http://www.sedlex.fr/cote_geek/
 
  
-InfoVersion:3f4edf2b2a76cd74716a3f3684dcce27
+InfoVersion:8e6e51cb40b31f2e6730998a6344732b

@@ -146,6 +146,7 @@ if (!class_exists("SL_Database")) {
 					$entete .= "-- -----------------------------\n";
 					$entete .= "-- CREATE ".$table[0]."\n";
 					$entete .= "-- -----------------------------\n";
+					$entete .= "DROP TABLE IF EXISTS ".$table[0].";\n";
 					$entete .= $wpdb->get_var("show create table ".$table[0], 1).";";
 					$nb_entry_total += $wpdb->get_var("SELECT COUNT(*) FROM ".$table[0]);
 				}
