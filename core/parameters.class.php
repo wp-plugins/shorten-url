@@ -63,7 +63,8 @@ if (!class_exists("parametersSedLex")) {
 			$comment = str_replace("\r", "", $comment) ; 
 			$comment = str_replace("<", "&lt;", $comment) ; 
 			$comment = str_replace(">", "&gt;", $comment) ; 
-			$comment = str_replace("*", "", $comment) ; 
+			if (strpos($comment, "*")===0)
+				$comment = substr($comment, 1) ; 
 			$comment = str_replace(" ", "&nbsp;", $comment) ; 
 			$comment = str_replace("\n", "<br>", $comment) ; 
 			$this->buffer[] = array('comment', "<code>$comment</code>") ; 
@@ -126,7 +127,7 @@ if (!class_exists("parametersSedLex")) {
 			if (is_array($this->obj->get_default_option($param))) $type = "list" ; 
 			// C'est un text si dans le texte par defaut, il y a une etoile
 			if (is_string($this->obj->get_default_option($param))) {
-				if (str_replace("*","",$this->obj->get_default_option($param)) != $this->obj->get_default_option($param)) $type = "text" ; 
+				if (strpos($this->obj->get_default_option($param), "*") === 0) $type = "text" ; 
 			}
 			// C'est un file si dans le texte par defaut est egal a [file]
 			if (is_string($this->obj->get_default_option($param))) {
@@ -366,7 +367,7 @@ if (!class_exists("parametersSedLex")) {
 					if (is_array($this->obj->get_default_option($param))) $type = "list" ; 
 					// C'est un text si dans le texte par defaut, il y a une etoile
 					if (is_string($this->obj->get_default_option($param))) {
-						if (str_replace("*","",$this->obj->get_default_option($param)) != $this->obj->get_default_option($param)) $type = "text" ; 
+						if (strpos($this->obj->get_default_option($param), "*") === 0) $type = "text" ; 
 					}
 					// C'est un file si dans le texte par defaut est egal a [file]
 					if (is_string($this->obj->get_default_option($param))) {
@@ -513,7 +514,7 @@ if (!class_exists("parametersSedLex")) {
 							$iii++ ; 
 						}
 						$cel_label = new adminCell($cl) ; 
-						$cel_value = new adminCell("<p class='paramLine'><textarea name='".$param."' id='".$param."' rows='".$num."' cols='70'>".htmlentities(str_replace("*","",$this->obj->get_param($param)), ENT_QUOTES, "UTF-8")."</textarea></p>") ; 
+						$cel_value = new adminCell("<p class='paramLine'><textarea name='".$param."' id='".$param."' rows='".$num."' cols='70'>".htmlentities($this->obj->get_param($param), ENT_QUOTES, "UTF-8")."</textarea></p>") ; 
 						$currentTable->add_line(array($cel_label, $cel_value), '1') ; 			
 					}
 					

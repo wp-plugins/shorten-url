@@ -136,4 +136,32 @@ function saveVersionReadme(plugin) {
 	});
 }
 
+/* =====================================================================================
+*
+*  Save todoList
+*
+*/
+
+function saveTodo(md5, plugin) {
+	jQuery("#wait_savetodo_"+md5).show();
+	jQuery("#savedtodo_"+md5).hide();
+	textTodo = jQuery("#txt_savetodo_"+md5).val() ; 
+	
+	var arguments = {
+		action: 'saveTodo', 
+		textTodo: textTodo, 
+		plugin : plugin
+	} 
+	//POST the data and append the results to the results div
+	jQuery.post(ajaxurl, arguments, function(response) {
+		jQuery("#wait_savetodo_"+md5).hide();
+		if (response!="ok") {
+			jQuery("#errortodo_"+md5).html(response);
+		} else {
+			jQuery("#savedtodo_"+md5).show();
+			jQuery("#errortodo_"+md5).html("");
+		}
+	});
+}
+
 

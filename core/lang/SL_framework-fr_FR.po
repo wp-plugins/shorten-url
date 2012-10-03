@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-08-02T08:47:09+00:00\n"
+"PO-Revision-Date: 2012-09-26T14:11:04+00:00\n"
 "Last-Translator: SedLex <http://www.sedlex.fr/>\n"
 "Last-Translator: PierreF <pf@romanliturgy.org>\n"
 "Last-Translator: wkpixearts <wkpixeartsforall@gmail.com>\n"
@@ -135,6 +135,9 @@ msgstr "Description"
 msgid "SVN Management"
 msgstr "Gestion SVN"
 
+msgid "Update plugin information..."
+msgstr "Mettre à jour les informations du plugin ..."
+
 msgid "There is a SQL database for this plugin"
 msgstr "Il y a une base de données SQL pour cette extension"
 
@@ -264,6 +267,93 @@ msgstr "Il y a des problèmes avec les droits des répertoires. Merci de les cor
 msgid "Please see below:"
 msgstr "Merci de voir ci-dessous :"
 
+msgid "Plugins that you may install"
+msgstr "Les plugins que vous pouvez installer"
+
+msgid "The following plugins have been developed by the author and are not yet installed:"
+msgstr "Les plugins suivants ont été développé par l&#039;auteur et vous ne les avez pas encore installés :"
+
+msgid "Plugin not yet installed"
+msgstr "Les plugins non encore installés"
+
+msgid "Description and Screenshots"
+msgstr "Description et captures d&#039;écran"
+
+msgid "All author's plugins have been installed. Thank you!"
+msgstr "Tous les plugins de l&#039;auteur ont été installé. Merci à vous !"
+
+msgid "Installed plugins"
+msgstr "Plugins installés"
+
+msgid "You have already installed the following author's plugins:"
+msgstr "Vous avez installés les plugins suivants de l&#039;auteur :"
+
+msgid "Plugin already installed"
+msgstr "Plugins déjà installés"
+
+msgid "Number of download:"
+msgstr "Nombre de téléchargement :"
+
+msgid "Your credentials do not seem to be correct. Please check them!"
+msgstr "Vos identifiants de connexion ne semblent pas corrects. Merci de les vérifier !"
+
+msgid "This file have not been written in the repository due to server problem. Nevertheless, you should retry as it often works better with a second try !"
+msgstr "Le fichier n&#039;a pas été mis sur le dépôt SVN à cause de problème côté serveur. Néanmoins, vous devriez réessayer car cela arrive souvent ... le deuxième essai peut être le bon !"
+
+msgid "SVN client for %s"
+msgstr "SVN client pour %s"
+
+msgid "Updating the local cache"
+msgstr "Mise à jour du cache local"
+
+msgid "folder created"
+msgstr "répertoire crée"
+
+msgid "folder creation has failed !"
+msgstr "création du répertoire non réussie"
+
+msgid "%s bytes transfered"
+msgstr "%s octets transférés"
+
+msgid "An error occurred during the retrieval of files on the server ! Sorry ..."
+msgstr "Une erreur est survenu pendant la récupération des fichiers sur le serveur ! Désolé ..."
+
+msgid "Local to SVN repository"
+msgstr "Local vers dépôt SVN"
+
+msgid "Comparing %s with %s"
+msgstr "Comparer %s avec %s"
+
+msgid "Confirmation"
+msgstr "Confirmation"
+
+msgid "Commit comment:"
+msgstr "Commentaire de soumission :"
+
+msgid "Yes, the SVN version will be deleted and be replaced by the local version"
+msgstr "Oui, la version SVN sera supprimée and remplacée par la version locale"
+
+msgid "SVN repository to Local"
+msgstr "Dépôt SVN vers Local"
+
+msgid "Yes, the local version will be overwritten with the repository files"
+msgstr "Oui, la version locale sera remplacée avec les fichiers du dépôt SVN"
+
+msgid "Sending to the repository in progress..."
+msgstr "Envoi au dépôt SVN en cours..."
+
+msgid "The commit has ended [ %s ]... You should received an email quickly ! You may close the window or wait for the automatic closing."
+msgstr "La validation a pris fin [ %s ] ... Vous devriez recevoir un email rapidement! Vous pouvez fermer la fenêtre ou attendre la fermeture automatique."
+
+msgid "The commit has ended but there is an error!"
+msgstr "La validation est terminé mais il y a eu une erreur !"
+
+msgid "Sending to the local files in progress..."
+msgstr "Déplacement des fichiers en local en cours ..."
+
+msgid "The rollback has ended ..."
+msgstr "Le rollback est terminé ...."
+
 msgid "Error: the submitted value is not an integer and thus, the parameter has not been updated!"
 msgstr "Erreur : la valeur soumises n&#039;est pas un entier, la valeur du paramètre n&#039;est donc pas mise à jour"
 
@@ -309,65 +399,53 @@ msgstr "Les paramètres ont été mis à jour (mais il existe des avertissements
 msgid "Parameters have been updated successfully!"
 msgstr "Les paramètres ont été mis à jour avec succès !"
 
-msgid "Error: %s function is not found"
-msgstr "Erreur : la fonction %s n&#039;est pas trouvée"
+msgid "KB"
+msgstr "ko"
 
-msgid "The file %s cannot be read. You should have a problem with file permissions or security restrictions."
-msgstr "Le fichier %s ne peut pas être lu. Vous avez probablement un problème de droit sur ce fichier et des restrictions de sécurité."
+msgid "MB"
+msgstr "Mo"
 
-msgid "The file %s cannot be deleted. You should have a problem with file permissions or security restrictions."
-msgstr "Le fichier %s ne peut pas être effacé. Vous avez probablement un problème de droit sur ce fichier et des restrictions de sécurité."
+msgid "GB"
+msgstr "Go"
 
-msgid "The folder %s cannot be opened. You should have a problem with folder permissions or security restrictions."
-msgstr "Le répertoire %s ne peut pas être ouvert. Vous avez probablement un problème de droit sur ce répertoire et des restrictions de sécurité."
+msgid "Feedback form"
+msgstr "Formulaire de feedback"
 
-msgid "An other process is still running (it runs for %s seconds)"
-msgstr "Un autre processus est en cours d&#039;exécution (il tourne depuis %s seconds)"
+msgid "This form is an easy way to contact the author and to discuss issues/incompatibilities/etc. with him"
+msgstr "Ce formulaire est un moyen simple de contacter l&#039;auteur afin de discuter avec lui de vos problèmes, des incompatibilités rencontrées, etc."
 
-msgid "The file %s cannot be modified/created. You should have a problem with file permissions or security restrictions."
-msgstr "Le fichier %s ne peut pas être modifié/créé. Vous avez probablement un problème de droit sur ce fichier et des restrictions de sécurité."
+msgid "Contact the author"
+msgstr "Contact de l&#039;auteur"
 
-msgid "The file %s cannot be created. You should have a problem with file permissions or security restrictions."
-msgstr "Le fichier %s ne peut pas être créé. Vous avez probablement un problème de droit sur ce fichier et des restrictions de sécurité."
+msgid "Your name:"
+msgstr "Votre nom :"
 
-msgid "The file %s cannot be compressed."
-msgstr "Le fichier %s ne peut pas être compressé."
+msgid "Your email:"
+msgstr "Votre email :"
 
-msgid "The file %s cannot be renamed. You should have a problem with file permissions or security restrictions."
-msgstr "Le fichier %s ne peut pas être renommé. Vous avez probablement un problème de droit sur ce fichier et des restrictions de sécurité."
+msgid "Useful... so that the author will be able to anwser you."
+msgstr "Utile ... ainsi l&#039;auteur pourra vous répondre."
 
-msgid "Plugins that you may install"
-msgstr "Les plugins que vous pouvez installer"
+msgid "Your comments:"
+msgstr "Vos commentaires :"
 
-msgid "The following plugins have been developed by the author and are not yet installed:"
-msgstr "Les plugins suivants ont été développé par l&#039;auteur et vous ne les avez pas encore installés :"
+msgid "Please note that additional information on your wordpress installation will be sent to the author in order to help the debugging if needed (such as : the wordpress version, the installed plugins, etc.)"
+msgstr "Merci de noter que des informations complémentaires relatives à votre installation de wordpress seront envoyées à l&#039;auteur afin d&#039;aider la correction des erreurs(comme la version de wordpress, la liste des plugins installés, etc.)"
 
-msgid "Plugin not yet installed"
-msgstr "Les plugins non encore installés"
+msgid "Send feedback"
+msgstr "Envoyer vos commentaires"
 
-msgid "Description and Screenshots"
-msgstr "Description et captures d&#039;écran"
+msgid "No email have been provided for the author of this plugin. Therefore, the feedback is impossible"
+msgstr "Aucun email n&#039;a été communiqué par l&#039;auteur de ce plugin. Aucun feedback n&#039;est donc possible."
 
-msgid "All author's plugins have been installed. Thank you!"
-msgstr "Tous les plugins de l&#039;auteur ont été installé. Merci à vous !"
+msgid "The feedback has been sent"
+msgstr "Le feedback a été envoyé"
 
-msgid "Installed plugins"
-msgstr "Plugins installés"
+msgid "An error occured sending the email."
+msgstr "Une erreur est survenue lors de l&#039;envoi du mail"
 
-msgid "You have already installed the following author's plugins:"
-msgstr "Vous avez installés les plugins suivants de l&#039;auteur :"
-
-msgid "Plugin already installed"
-msgstr "Plugins déjà installés"
-
-msgid "Number of download:"
-msgstr "Nombre de téléchargement :"
-
-msgid "The file %s cannot be modified. You should have a problem with file permissions or security restrictions."
-msgstr "Ce fichier ne peut pas être modifié. Vous avez probablement un problème de droit sur ce fichier et des restrictions de sécurité."
-
-msgid "Close popup"
-msgstr "Fermer le popup"
+msgid "Make sure that your wordpress is able to send email."
+msgstr "Verifier que votre wordpress est en capacité d&#039;envoyer des mails"
 
 msgid "Here, you may configure three levels of translations: at the plugin level, at the framework level, and at the dashboard level."
 msgstr "Ici, vous pouvez configurer trois niveaux de traductions : au niveau du plugin, au niveau du framework, et au niveau de la zone d&#039;administration."
@@ -392,9 +470,6 @@ msgstr "Phrase à traduire"
 
 msgid "Translation"
 msgstr "Traduction"
-
-msgid "Your name:"
-msgstr "Votre nom :"
 
 msgid "(if your name/pseudo is already in the list, there is no need to fill this input)"
 msgstr "(si votre nom/pseudo est déja dans la liste, il n&#039;est pas nécessiare de remplir ce champ)"
@@ -435,17 +510,17 @@ msgstr "%s phrases ont été traduites (c&#039;est à dire %s)"
 msgid "Delete"
 msgstr "Effacer"
 
-msgid "Import"
-msgstr "Importer"
+msgid "See the new translation file and merge"
+msgstr "Voir le nouveau fichier de traduction et fusionner"
 
 msgid "%s sentences have been newly translated and %s sentences have been modified (the old file has %s translated sentences)."
 msgstr "%s phrases on été traduites et %s phrases ont été modifiées (l&#039;ancien fichier contenait %s phrases traduites)."
 
-msgid "See modifications and Merge"
-msgstr "Voir modifications et Fusion"
+msgid "See the modifications/new translations and Merge"
+msgstr "Voir les modifications / les nouvelles traductions et fusionner"
 
-msgid "Merge"
-msgstr "Fusion"
+msgid "See the new translations and Merge"
+msgstr ""
 
 msgid "New translations are available"
 msgstr "De nouvelles traductions sont disponibles"
@@ -465,17 +540,17 @@ msgstr "Nouvelle phrase"
 msgid "To replace?"
 msgstr "Remplacer?"
 
+msgid "Merge"
+msgstr "Fusion"
+
 msgid "%s sentences have been translated (i.e. %s) %s %s sentences have to be checked because they are close (but not identical) to those to translate.%s"
 msgstr "%s phrases ont été traduites (c&#039;est à dire %s) %s %s phrases doivent être vérifiées car elles sont proches (mais pas identiques) à celles, devant être traduites.%s"
 
 msgid "The translation %s have been sent"
 msgstr "La traduction %s a été envoyée"
 
-msgid "An error occured sending the email."
-msgstr "Une erreur est survenue lors de l&#039;envoi du mail"
-
-msgid "Make sure that your wordpress is able to send email."
-msgstr "Verifier que votre wordpress est en capacité d&#039;envoyer des mails"
+msgid "%s file cannot be created for %s as there is no translated sentence. Please, translate at least one sentence to create a file"
+msgstr ""
 
 msgid "%s file has been updated for %s"
 msgstr "Le fichier %s a été mis à jour pour %s"
@@ -540,6 +615,9 @@ msgstr "Le fichier %s ne peut pas être enregistré dans %s. Vérifier les droit
 msgid "The translations files do not exists ... it is strange!"
 msgstr "Le fichier de traduction n&#039;existe pas... C&#039;est étrange !"
 
+msgid "Summary cached %s"
+msgstr ""
+
 msgid "The sentences used in this plugin are in English. Help the others users using the same language as you by translating this plugin."
 msgstr "Les phrases utilisées dans ce plugin sont en anglais. Aidez les autres utilisateurs utilisant la même langue que vous en traduisant ce plugin."
 
@@ -585,41 +663,47 @@ msgstr "C&#039;est la langue par défaut pour le framework des plugins. Elle ne 
 msgid "Send to the author of the framework"
 msgstr "Envoyer à l&#039;auteur du framework"
 
-msgid "Feedback form"
-msgstr "Formulaire de feedback"
-
-msgid "This form is an easy way to contact the author and to discuss issues/incompatibilities/etc. with him"
-msgstr "Ce formulaire est un moyen simple de contacter l&#039;auteur afin de discuter avec lui de vos problèmes, des incompatibilités rencontrées, etc."
-
-msgid "Contact the author"
-msgstr "Contact de l&#039;auteur"
-
-msgid "Your email:"
-msgstr "Votre email :"
-
-msgid "Useful... so that the author will be able to anwser you."
-msgstr "Utile ... ainsi l&#039;auteur pourra vous répondre."
-
-msgid "Your comments:"
-msgstr "Vos commentaires :"
-
-msgid "Please note that additional information on your wordpress installation will be sent to the author in order to help the debugging if needed (such as : the wordpress version, the installed plugins, etc.)"
-msgstr "Merci de noter que des informations complémentaires relatives à votre installation de wordpress seront envoyées à l&#039;auteur afin d&#039;aider la correction des erreurs(comme la version de wordpress, la liste des plugins installés, etc.)"
-
-msgid "Send feedback"
-msgstr "Envoyer vos commentaires"
-
-msgid "No email have been provided for the author of this plugin. Therefore, the feedback is impossible"
-msgstr "Aucun email n&#039;a été communiqué par l&#039;auteur de ce plugin. Aucun feedback n&#039;est donc possible."
-
-msgid "The feedback has been sent"
-msgstr "Le feedback a été envoyé"
-
 msgid "Select all"
 msgstr "Tout sélectionnez"
 
 msgid "Un-select all"
 msgstr "Tout désélectionnez"
+
+msgid "Sorry, but only %s files can be diff at once, in order to avoid any memory saturation"
+msgstr "Désolé, mais seulement %s fichiers peuvent être diff à la fois, afin d&#039;éviter toute saturation de la mémoire"
+
+msgid "Error: %s function is not found"
+msgstr "Erreur : la fonction %s n&#039;est pas trouvée"
+
+msgid "The file %s cannot be read. You should have a problem with file permissions or security restrictions."
+msgstr "Le fichier %s ne peut pas être lu. Vous avez probablement un problème de droit sur ce fichier et des restrictions de sécurité."
+
+msgid "The file %s cannot be deleted. You should have a problem with file permissions or security restrictions."
+msgstr "Le fichier %s ne peut pas être effacé. Vous avez probablement un problème de droit sur ce fichier et des restrictions de sécurité."
+
+msgid "The folder %s cannot be opened. You should have a problem with folder permissions or security restrictions."
+msgstr "Le répertoire %s ne peut pas être ouvert. Vous avez probablement un problème de droit sur ce répertoire et des restrictions de sécurité."
+
+msgid "An other process is still running (it runs for %s seconds)"
+msgstr "Un autre processus est en cours d&#039;exécution (il tourne depuis %s seconds)"
+
+msgid "The file %s cannot be modified/created. You should have a problem with file permissions or security restrictions."
+msgstr "Le fichier %s ne peut pas être modifié/créé. Vous avez probablement un problème de droit sur ce fichier et des restrictions de sécurité."
+
+msgid "The file %s cannot be created. You should have a problem with file permissions or security restrictions."
+msgstr "Le fichier %s ne peut pas être créé. Vous avez probablement un problème de droit sur ce fichier et des restrictions de sécurité."
+
+msgid "The file %s cannot be compressed."
+msgstr "Le fichier %s ne peut pas être compressé."
+
+msgid "The file %s cannot be renamed. You should have a problem with file permissions or security restrictions."
+msgstr "Le fichier %s ne peut pas être renommé. Vous avez probablement un problème de droit sur ce fichier et des restrictions de sécurité."
+
+msgid "The file %s cannot be modified. You should have a problem with file permissions or security restrictions."
+msgstr "Ce fichier ne peut pas être modifié. Vous avez probablement un problème de droit sur ce fichier et des restrictions de sécurité."
+
+msgid "Close popup"
+msgstr "Fermer le popup"
 
 msgid "Saved on %s"
 msgstr "Sauvegardé le %s"
@@ -668,79 +752,4 @@ msgstr "Voir aussi :"
 
 msgid "[CLASS]"
 msgstr "[CLASSE]"
-
-msgid "KB"
-msgstr "ko"
-
-msgid "MB"
-msgstr "Mo"
-
-msgid "GB"
-msgstr "Go"
-
-msgid "Your credentials do not seem to be correct. Please check them!"
-msgstr "Vos identifiants de connexion ne semblent pas corrects. Merci de les vérifier !"
-
-msgid "This file have not been written in the repository due to server problem. Nevertheless, you should retry as it often works better with a second try !"
-msgstr "Le fichier n&#039;a pas été mis sur le dépôt SVN à cause de problème côté serveur. Néanmoins, vous devriez réessayer car cela arrive souvent ... le deuxième essai peut être le bon !"
-
-msgid "SVN client for %s"
-msgstr "SVN client pour %s"
-
-msgid "Updating the local cache"
-msgstr "Mise à jour du cache local"
-
-msgid "folder created"
-msgstr "répertoire crée"
-
-msgid "folder creation has failed !"
-msgstr "création du répertoire non réussie"
-
-msgid "%s bytes transfered"
-msgstr "%s octets transférés"
-
-msgid "An error occurred during the retrieval of files on the server ! Sorry ..."
-msgstr "Une erreur est survenu pendant la récupération des fichiers sur le serveur ! Désolé ..."
-
-msgid "Local to SVN repository"
-msgstr "Local vers dépôt SVN"
-
-msgid "Comparing %s with %s"
-msgstr "Comparer %s avec %s"
-
-msgid "Confirmation"
-msgstr "Confirmation"
-
-msgid "Commit comment:"
-msgstr "Commentaire de soumission :"
-
-msgid "Yes, the SVN version will be deleted and be replaced by the local version"
-msgstr "Oui, la version SVN sera supprimée and remplacée par la version locale"
-
-msgid "SVN repository to Local"
-msgstr "Dépôt SVN vers Local"
-
-msgid "Yes, the local version will be overwritten with the repository files"
-msgstr "Oui, la version locale sera remplacée avec les fichiers du dépôt SVN"
-
-msgid "Sending to the repository in progress..."
-msgstr "Envoi au dépôt SVN en cours..."
-
-msgid "The commit has ended [ %s ]... You should received an email quickly ! You may close the window or wait for the automatic closing."
-msgstr "La validation a pris fin [ %s ] ... Vous devriez recevoir un email rapidement! Vous pouvez fermer la fenêtre ou attendre la fermeture automatique."
-
-msgid "The commit has ended but there is an error!"
-msgstr "La validation est terminé mais il y a eu une erreur !"
-
-msgid "Sending to the local files in progress..."
-msgstr "Déplacement des fichiers en local en cours ..."
-
-msgid "The rollback has ended ..."
-msgstr "Le rollback est terminé ...."
-
-msgid "Update plugin information..."
-msgstr "Mettre à jour les informations du plugin ..."
-
-msgid "Sorry, but only %s files can be diff at once, in order to avoid any memory saturation"
-msgstr "Désolé, mais seulement %s fichiers peuvent être diff à la fois, afin d&#039;éviter toute saturation de la mémoire"
 

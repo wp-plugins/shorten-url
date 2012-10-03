@@ -38,6 +38,7 @@ This plugin is compatible with multisite installation. Each blog may manage thei
 * German (Austria) translation provided by AndreasK.
 * German (Germany) translation provided by reitermarkus, navelbrush
 * English (United States), default language
+* Farsi (Iran) translation provided by EhsanKing
 * French (France) translation provided by SedLex
 * Portuguese (Brazil) translation provided by Blinky
 * Russian (Russia) translation provided by Pacifik
@@ -70,6 +71,11 @@ Have fun !
 2. The configuration page of the plugin 
 
 == Changelog ==
+
+= 1.3.6 =
+* Correct a problem in quick move
+* Search URL feature
+* Shorten all links in posts
 
 = 1.3.5 =
 * www may be removed from short URL
@@ -117,4 +123,4 @@ Have fun !
 Visit http://www.sedlex.fr/cote_geek/
 
  
-InfoVersion:8e6e51cb40b31f2e6730998a6344732b
+InfoVersion:008c6fb419ec6ec95b54d652041a4f69

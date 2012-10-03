@@ -1,0 +1,106 @@
+msgid ""
+msgstr ""
+"Generated: SL Framework (http://www.sedlex.fr)\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2012-09-23T20:05:05+00:00\n"
+"Last-Translator: EhsanKing <ehsankingehsan@gmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"
+"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;\n"
+"X-Poedit-Basepath: \n"
+"X-Poedit-Bookmarks: \n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Textdomain-Support: yes\n"
+
+msgid "This plugin helps you sharing your post with short-links."
+msgstr "این افزونه به اشتراک گذاری پست خود با پیوندهای کوتاه به شما کمک می کند."
+
+msgid "Title of your posts/pages"
+msgstr "تیتر پست/صفحه"
+
+msgid "Short URL"
+msgstr "آدرس کوتاه"
+
+msgid "Type"
+msgstr "نوع"
+
+msgid "Number of clicks"
+msgstr "تعداد کلیک ها"
+
+msgid "Reset"
+msgstr "ریست"
+
+msgid "Edit"
+msgstr "ویرایش"
+
+msgid "Internal Redirections"
+msgstr "مسیر داخلی(پست و صفحه ها)"
+
+msgid "External URL"
+msgstr "آدرس خارجی"
+
+msgid "Delete"
+msgstr "حذف"
+
+msgid "External URL:"
+msgstr "آدرس خارجی:"
+
+msgid "Add a new URL to shorten"
+msgstr "ایجاد آدرس کوتاه"
+
+msgid "External Redirections"
+msgstr "مسیر خارجی"
+
+msgid "Parameters"
+msgstr "پارامترها"
+
+msgid "Do you want to use the following characters?"
+msgstr "استفاده از کارکتر ها در آدرس؟"
+
+msgid "These parameters will be taken in account only for generation of new links"
+msgstr "این پارامترها در حساب,فقط برای لینک های جدید گرفته شده است."
+
+msgid "Lower-case characters ([a-z]):"
+msgstr "حروف کوچک:"
+
+msgid "Upper-case characters ([A-Z]):"
+msgstr "حروف بزرگ:"
+
+msgid "Numeric characters ([0-9]):"
+msgstr "اعداد:"
+
+msgid "Do you want to use a prefix before your short URL?"
+msgstr "آیا شما می خواهید یک پیشوند قبل از URL کوتاه خود استفاده کنید؟"
+
+msgid "Prefix:"
+msgstr "پیشوند:"
+
+msgid "What is the length of your short URL (without the prefix)?"
+msgstr "طول URL های کوتاه شما (بدون پیشوند) چیست؟"
+
+msgid "Length:"
+msgstr "طول کارکترها:"
+
+msgid "Do you want to remove www before your short url?"
+msgstr "آیا www قبل از آدرس ها حذف شود؟"
+
+msgid "Remove www:"
+msgstr "حذف www"
+
+msgid "Manage translations"
+msgstr "مدیریت ترجمه"
+
+msgid "Give feedback"
+msgstr "بازخورد"
+
+msgid "Other plugins"
+msgstr "دیگر افزونه ها"
+

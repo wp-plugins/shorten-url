@@ -19,6 +19,7 @@ if (!class_exists("adminTable")) {
 		var $hasFooter ; 
 		var $content ; 
 		var $id ; 
+		var $searchWords ; 
 		
 		/** ====================================================================================================================================================
 		* Constructor of the class
@@ -29,7 +30,7 @@ if (!class_exists("adminTable")) {
 		* @return adminTable the table
 		*/
 		
-		function adminTable($nb_all_Items=0, $nb_max_per_page=0, $order=false) {	
+		function adminTable($nb_all_Items=0, $nb_max_per_page=0, $order=false, $search=false) {	
 			global $SLframework_id_table ; 
 			
 			$SLframework_id_table ++ ; 
@@ -40,6 +41,8 @@ if (!class_exists("adminTable")) {
 			$this->nbLigneTotal = $nb_all_Items ; 
 			$this->nbLignePerPage = $nb_max_per_page ; 
 			$this->hasFooter = true ; 
+			$this->search = $search ; 
+			$this->searchWords = "" ; 
 			$this->content = array() ; 
 		}
 		
@@ -62,7 +65,7 @@ if (!class_exists("adminTable")) {
 		*/
 		function current_page() {
 			if (isset($_GET['paged_'.$this->id])) {
-				$page_cur = $_GET['paged_'.$this->id] ; 
+				$page_cur = preg_replace("/[^0-9]/", "", $_GET['paged_'.$this->id]) ; 
 			} else {
 				$page_cur = 1 ; 
 			}
@@ -70,13 +73,38 @@ if (!class_exists("adminTable")) {
 		}
 		
 		/** ====================================================================================================================================================
+		* Set the number of items (all).
+		* 
+		* @return void
+		*/
+		function set_nb_all_Items($nb) {
+			$this->nbLigneTotal = $nb ; 
+		}
+		
+		/** ====================================================================================================================================================
+		* Get the currentfilter of the table.
+		* 
+		* @return string the filter
+		*/
+		function current_filter() {
+			if (isset($_GET['filter_'.$this->id])) {
+				$page_filter = trim(preg_replace("#(\xBB|\xAB|!|\xA1|%|,|:|;|\(|\)|\&|\"|\'|\.|-|\/|\?|\\\)#", " ", $_GET['filter_'.$this->id])) ; 
+				while ($page_filter != str_replace("  ", " ", $page_filter)) {
+					$page_filter = str_replace("  ", " ", $page_filter) ; 
+				}
+			} else {
+				$page_filter = "" ; 
+			}
+			return $page_filter ; 
+		}
+		/** ====================================================================================================================================================
 		* Get the current column order of the table.
 		* 
 		* @return integer the column number
 		*/
 		function current_ordercolumn() {
 			if (isset($_GET['ordercol_'.$this->id])) {
-				$col_cur = $_GET['ordercol_'.$this->id] ; 
+				$col_cur = preg_replace("/[^0-9]/", "", $_GET['ordercol_'.$this->id]) ; 
 			} else {
 				$col_cur = 1 ; 
 			}
@@ -139,12 +167,39 @@ if (!class_exists("adminTable")) {
 		*/
 		function flush() {
 			ob_start() ; 
+			$get = $_GET;
+			
+			//
+			// Est-ce que on affiche la zone de recherche
+			//
+			if ($this->search) {
+				
+					
+					$filter = $this->current_filter() ; 
+					
+?>					<form id="posts-filterwords" action="<?php echo $_SERVER['PHP_SELF'] ;?>" method="get">
+						<div class="tablenav top">
+							<div class="tablenav-pages">
+<?php
+								// Variable cachee pour reconstruire completement l'URL de la page courante
+								foreach ($get as $k => $v) {
+									if (($k!="filter_".$this->id)&&($k!="paged_".$this->id)) {
+?>										<input name="<?php echo $k;?>" value="<?php echo $v;?>" type="hidden"/>
+<?php    							}
+								}
+?>								<input name="paged_<?php echo $this->id ; ?>" value="1" type="hidden"/>
+								<span class="paging-input"><? echo sprintf(__("Filter: %s", "SL_framework"), "<input type='text' name='filter_".$this->id."' value=\"".$filter."\" size='30'>") ?></span>
+								<br class="clear">
+							</div>
+						</div>
+					</form>
+<?php			
+			}
+
 			//
 			// Est-ce que on affiche le raccourci pour se deplacer dans les entrees du tableau
 			//
 			if ($this->nbLigneTotal>count($this->content)) {
-				$get = $_GET;
-				
 				$page_cur = $this->current_page() ; 
 				
 				$page_tot = ceil($this->nbLigneTotal/$this->nbLignePerPage) ; 
@@ -158,13 +213,14 @@ if (!class_exists("adminTable")) {
 <?php
 								// Variable cachee pour reconstruire completement l'URL de la page courante
 								foreach ($get as $k => $v) {
-?>								<input name="<?php echo $k;?>" value="<?php echo $v;?>" size="1" type="hidden"/>
-<?php
+									if ($k!="paged_".$this->id) {
+?>										<input name="<?php echo $k;?>" value="<?php echo $v;?>" type="hidden"/>
+<?php    								}
 								}
 ?>								<span class="displaying-num"><?php echo $this->nbLigneTotal ; ?> items</span>
 								<a class="first-page<?php if ($page_cur == 1) {echo  ' disabled' ; } ?>" <?php if ($page_cur == 1) {echo  'onclick="javascript:return false;" ' ; } ?>title="Go to the first page" href="<?php echo add_query_arg('table_id', $this->id, add_query_arg( 'paged_'.$this->id, '1' ));?>">&laquo;</a>
 								<a class="prev-page<?php if ($page_cur == 1) {echo  ' disabled' ; } ?>" <?php if ($page_cur == 1) {echo  'onclick="javascript:return false;" ' ; } ?>title="Go to the previous page" href="<?php echo add_query_arg('table_id', $this->id, add_query_arg( 'paged_'.$this->id, $page_inf ));?>">&lsaquo;</a>
-								<span class="paging-input"><input class="current-page" title="Current page" name="paged" value="<?php echo $page_cur;?>" size="1" type="text"> of <span class="total-pages"><?php echo $page_tot;?></span></span>
+								<span class="paging-input"><? echo sprintf(__("%s of %s", "SL_framework"), "<input class='current-page' title='".__('Current Page', 'SL_framework')."' name='paged_".$this->id."' value='".$page_cur."' size='1' type='text'>", "<span class='total-pages'>".$page_tot."</span>") ?></span>
 								<a class="next-page<?php if ($page_cur == $page_tot) {echo  ' disabled' ; } ?>" <?php if ($page_cur == $page_tot) {echo  'onclick="javascript:return false;" ' ; } ?>title="Go to the next page" href="<?php echo add_query_arg('table_id', $this->id, add_query_arg( 'paged_'.$this->id, $page_sup ));?>">&rsaquo;</a>
 								<a class="last-page<?php if ($page_cur == $page_tot) {echo  ' disabled' ; } ?>" <?php if ($page_cur == $page_tot) {echo  'onclick="javascript:return false;" ' ; } ?>title="Go to the last page" href="<?php echo add_query_arg('table_id', $this->id, add_query_arg( 'paged_'.$this->id, $page_tot ));?>">&raquo;</a>			
 								<br class="clear">
