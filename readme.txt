@@ -72,6 +72,9 @@ Have fun !
 
 == Changelog ==
 
+= 1.3.7 =
+* Root URL for short link may be modified
+
 = 1.3.6 =
 * Correct a problem in quick move
 * Search URL feature
@@ -123,4 +126,4 @@ Have fun !
 Visit http://www.sedlex.fr/cote_geek/
 
  
-InfoVersion:008c6fb419ec6ec95b54d652041a4f69
+InfoVersion:45d1fb0559777a7729de022367fb4fc1

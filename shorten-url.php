@@ -3,7 +3,7 @@
 Plugin Name: Short URL
 Plugin Tag: shorttag, shortag, bitly, url, short 
 Description: <p>Your pages/posts may have a short url hosted by your own domain.</p><p>Replace the internal function of wordpress <code>get_short_link()</code> by a bit.ly like url. </p><p>Instead of having a short link like http://www.yourdomain.com/?p=3564, your short link will be http://www.yourdomain.com/NgH5z (for instance). </p><p>You can configure: </p><ul><li>the length of the short link, </li><li>if the link is prefixed with a static word, </li><li>the characters used for the short link.</li></ul><p>Moreover, you can manage external links with this plugin. The links in your posts will be automatically replace by the short one if available.</p><p>This plugin is under GPL licence. </p>
-Version: 1.3.6
+Version: 1.3.7
 Author: SedLex
 Author Email: sedlex@sedlex.fr
 Framework Email: sedlex@sedlex.fr
@@ -120,6 +120,8 @@ class shorturl extends pluginSedLex {
 			case 'prefix' 		: return "" 	; break ; 
 			case 'length' 		: return 5 		; break ; 
 			case 'removewww' 		: return false 		; break ; 
+			case 'changeroot' 		: return false 		; break ; 
+			case 'changeroot_url' 		: return "" 	; break ; 
 			case 'catch_url' 		: return false 		; break ; 
 			case 'catch_url_filter' 		: return "*" 		; break ; 
 		}
@@ -162,12 +164,14 @@ class shorturl extends pluginSedLex {
 			// Mise en place de la barre de navigation
 
 			ob_start() ; 
-				echo '<script language="javascript">var site="'.home_url().'"</script>' ; 
+				// on identifie la racine des short links
+				
+				echo '<script language="javascript">var site="'.$this->get_home_url().'"</script>' ; 
 				
 				$maxnb = 20 ; 
 				$table = new adminTable(0, $maxnb, true, true) ; 
 				
-				// on construit le filtre pour la requête
+				// on construit le filtre pour la requete
 				$filter = explode(" ", $table->current_filter()) ; 
 												
 				// Get all posts / pages to be 
@@ -280,7 +284,7 @@ class shorturl extends pluginSedLex {
 					$id_temp = md5($r->short_url) ; 
 					$cel1 = new adminCell("<a href='".$r->url_externe."'>".$r->url_externe."</a><img src='".WP_PLUGIN_URL.'/'.str_replace(basename( __FILE__),"",plugin_basename(__FILE__))."img/ajax-loader.gif' id='wait_external".$id_temp."' style='display: none;' />") ; 	
 					$cel1->add_action(__("Delete", $this->pluginID), "deleteLink_external('".$id_temp."')") ; 
-					$cel2 = new adminCell("<span id='lien_external".$id_temp."'><a href='".home_url()."/".$r->short_url."'>".home_url()."/".$r->short_url."</a></span>") ; 
+					$cel2 = new adminCell("<span id='lien_external".$id_temp."'><a href='".$this->get_home_url()."/".$r->short_url."'>".$this->get_home_url()."/".$r->short_url."</a></span>") ; 
 					$cel2->add_action(__("Reset", $this->pluginID), "resetLink_external('".$id_temp."')") ; 
 					$cel2->add_action(__("Edit", $this->pluginID), "forceLink_external('".$id_temp."')") ; 
 					$cel3 = new adminCell($r->nb_hits) ; 	
@@ -322,9 +326,13 @@ class shorturl extends pluginSedLex {
 					$params->add_title(__('What is the length of your short URL (without the prefix)?',$this->pluginID)) ; 
 					$params->add_param('length', __('Length:',$this->pluginID)) ; 
 
-					$params->add_title(__('Do you want to remove www before your short url?',$this->pluginID)) ; 
+					$params->add_title(__('Customize the short link URL',$this->pluginID)) ; 
 					$params->add_param('removewww', __('Remove www:',$this->pluginID)) ; 
-
+					$params->add_comment(sprintf(__('Therefore, the short URL will begin with %s',$this->pluginID), str_replace("://www.", "://", home_url()))) ; 
+					$params->add_param('changeroot', __('Change the root URL of the short link:',$this->pluginID), "", "", array("!removewww", "changeroot_url")) ; 
+					$params->add_comment(__('If you have a shorter URL pointing to your Wordpress blog, you may configure it here by selecting this option',$this->pluginID)) ; 
+					$params->add_param('changeroot_url', __('Your shorter domain URL:',$this->pluginID)) ; 
+					
 					$params->add_title(__('Do you want to automatically shorten links in post/page?',$this->pluginID)) ; 
 					$params->add_param('catch_url', __('Automatic shorten links:',$this->pluginID), "", "", array('catch_url_filter')) ; 
 					$params->add_param('catch_url_filter', __('Regexp filter:',$this->pluginID)) ; 
@@ -393,7 +401,7 @@ class shorturl extends pluginSedLex {
 		
 		// get the arguments
 		$idLink = $_POST['idLink'];
-		
+
 		// New short link
 		$car_minus = $this->get_param('low_char') ; 
 		$car_maxus = $this->get_param('upp_char') ; 
@@ -419,7 +427,7 @@ class shorturl extends pluginSedLex {
 		// Return the new URL to the interface
 		$old_id = $idLink ; 
 		$new_id = md5($result) ; 
-		$link = home_url()."/".$wpdb->get_var("SELECT short_url FROM {$table_name} WHERE id_post=0 AND short_url='".$result."'") ;
+		$link = $this->get_home_url()."/".$wpdb->get_var("SELECT short_url FROM {$table_name} WHERE id_post=0 AND short_url='".$result."'") ;
 		?>
 		<a href="<?php echo $link; ?>"><?php echo $link ; ?></a>
 		<script>
@@ -482,7 +490,7 @@ class shorturl extends pluginSedLex {
 		// Return the new URL to the interface
 		$old_id = $idLink ; 
 		$new_id = md5($link) ; 
-		$link = home_url()."/".$wpdb->get_var("SELECT short_url FROM {$table_name} WHERE id_post=0 AND short_url='".$link."'") ;
+		$link = $this->get_home_url()."/".$wpdb->get_var("SELECT short_url FROM {$table_name} WHERE id_post=0 AND short_url='".$link."'") ;
 		?>
 		<a href="<?php echo $link; ?>"><?php echo $link ; ?></a>
 		<script>
@@ -576,12 +584,7 @@ class shorturl extends pluginSedLex {
 		$url = $wpdb->get_var( $select ) ;
 	
 		if ($url!="") {
-			if (!$this->get_param('removewww')){
-				return home_url()."/".$url ; 
-			} else {
-				$home = home_url() ; 
-				return str_replace("/www.", "/", $home)."/".$url ; 
-			}
+			return $this->get_home_url()."/".$url ; 
 		}
 	
 		// We generate a new short Url
@@ -605,12 +608,8 @@ class shorturl extends pluginSedLex {
 				$wpdb->query( $sql ) ;
 			}
 		}
-		if (!$this->get_param('removewww')){
-			return home_url()."/".$result ; 
-		} else {
-			$home = home_url() ; 
-			return str_replace("/www.", "/", $home)."/".$result ; 
-		}
+		
+		return $this->get_home_url()."/".$result ; 
 	}
 
 
@@ -675,7 +674,7 @@ class shorturl extends pluginSedLex {
 		// Search for existing short link
 		$short = $wpdb->get_var( "SELECT short_url FROM {$table_name} WHERE id_post=0 AND url_externe='".$match[2]."'"); 
 		if ($short != "") {
-			return '<a'.$match[1].'href="'.home_url()."/".$short.'"'.$match[3].'>'.$match[4].'</a>';
+			return '<a'.$match[1].'href="'.$this->get_home_url()."/".$short.'"'.$match[3].'>'.$match[4].'</a>';
 		} else {
 			// Create a new shorlink if applicable
 			if ($this->get_param('catch_url')) {
@@ -687,7 +686,7 @@ class shorturl extends pluginSedLex {
 						foreach ($regexp as $r) {
 							if (preg_match("/".$r."/i", $_SERVER['REQUEST_URI'])) {
 								$result = $this->add_external_link($match[2]) ; 
-								return '<a'.$match[1].'href="'.home_url()."/".$result.'"'.$match[3].'>'.$match[4].'</a>';
+								return '<a'.$match[1].'href="'.$this->get_home_url()."/".$result.'"'.$match[3].'>'.$match[4].'</a>';
 							}
 						}
 					}
@@ -732,6 +731,31 @@ class shorturl extends pluginSedLex {
 			}
 		}
 	
+	}
+	
+	
+	/** ====================================================================================================================================================
+	* To add an external link in the 
+	* 
+	* @return the short_url
+	*/	
+	
+	function get_home_url() {		
+		// on identifie la racine des short links
+		$home_url = home_url() ; 
+		if ($this->get_param('removewww')) {
+			$home_url = str_replace("://www.", "://", home_url()) ; 
+		}
+		if ($this->get_param('changeroot')) {
+			$home_url = $this->get_param('changeroot_url') ; 
+			if (strpos($home_url, "http")!==0) {
+				$home_url  = "http://".$home_url  ; 
+			}
+			if (substr($home_url,-1)=="/") {
+				$home_url = substr($home_url, 0, -1) ; 
+			}
+		}
+		return $home_url  ; 
 	}
 
 
