@@ -21,10 +21,10 @@ if (!class_exists("foldDiff")) {
 		* @access private
 		* @return void
 		*/
-		function foldDiff() {
+		function foldDiff($maxFile=20) {
 			$this->folder = array() ; 
 			$this->folder_show = array() ; 
-			$this->maxnbfile = 30 ; 
+			$this->maxnbfile = $maxFile ; 
 			$this->nbfile = 0 ; 
 		}
 		
@@ -256,6 +256,7 @@ if (!class_exists("foldDiff")) {
 			
 			//Test whether the text diff should be displayed
 			//---------------------------------------------------
+			$text_diff = "" ; 
 			if ((($item[1]==3)||($item[1]==2)||($item[1]==1))&&($item[2]=="text_file")) {
 				$loupe =  "<a href='#' onclick='diffToggle".$random."(\"".md5($item[3].$random)."\") ; return false ; '>" ; 
 				$loupe .= "<img style='border:0px' src='".WP_PLUGIN_URL.'/'.str_replace(basename(  __FILE__),"",plugin_basename( __FILE__))."img/loupe.png'/>"  ; 
@@ -263,8 +264,12 @@ if (!class_exists("foldDiff")) {
 				$text_diff = "<div id='diff_".md5($item[3].$random)."' style='display:none;padding:0px;margin:0px;'>\n" ; 
 				if ($this->maxnbfile>$this->nbfile) {
 					$this->nbfile ++ ; 
-					$text1 = @file_get_contents($this->rep1.$item[3]) ; 
-					$text2 = @file_get_contents($this->rep2.$item[3]) ; 
+					$text1 = "" ; 
+					$text2 = "" ; 
+					if (is_file($this->rep1.$item[3]))
+						$text1 = @file_get_contents($this->rep1.$item[3]) ; 
+					if (is_file($this->rep2.$item[3]))
+						$text2 = @file_get_contents($this->rep2.$item[3]) ; 
 					$textdiff = new textDiff() ; 
 					$textdiff->diff($text2, $text1) ; 
 					$text_diff .= $textdiff->show_only_difference() ; 

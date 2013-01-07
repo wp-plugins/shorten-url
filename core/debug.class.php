@@ -20,7 +20,7 @@ if (!class_exists("SL_Debug")) {
 		* @return string the path of the log file
 		*/
 
-		function get_log_path() {
+		static function get_log_path() {
 			// Test if the directory of the log file exists
 			if (!is_dir(WP_CONTENT_DIR."/sedlex/log/")) {
 				@mkdir(WP_CONTENT_DIR."/sedlex/log/", 0755, true) ; 
@@ -53,7 +53,7 @@ if (!class_exists("SL_Debug")) {
 		* @return void
 		*/
 
-		function log($where, $text, $error_level=5) {
+		static function log($where, $text, $error_level=5) {
 			// Test if this message has to be loged
 			$frmk = new coreSLframework() ; 
 			$level = $frmk->get_param('debug_level') ; 

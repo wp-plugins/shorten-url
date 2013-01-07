@@ -16,12 +16,18 @@ function pluginInfo(id_div, url, plugin_name) {
 		} 
 		
 		jQuery.post(ajaxurl, arguments, function(response) {
-			if (response!="-1") {
-				jQuery('#'+id_div).html(response);
-			} else {
+			jQuery('#'+id_div).html(response);
+		}).error(function(x,e) { 
+			if (x.status==0){
+				//Offline
+			} else if (x.status==500){
+				jQuery('#'+id_div).html("Error 500: The ajax request is retried");
 				pluginInfo(id_div, url, plugin_name) ; 
+			} else {
+				jQuery('#'+id_div).html("Error "+x.status+": No data retrieved");
 			}
 		});
+		
 	}, rand) ; 
 }
 
@@ -53,12 +59,18 @@ function coreInfo(md5, url, plugin_name, current_core, current_finger, author, s
 		jQuery('#corePlugin_'+md5).html(waitImg);
 
 		jQuery.post(ajaxurl, arguments, function(response) {
-			if (response!="-1") {
-				jQuery('#corePlugin_'+md5).html(response);
-			} else {
+			jQuery('#corePlugin_'+md5).html(response);
+		}).error(function(x,e) { 
+			if (x.status==0){
+				//Offline
+			} else if (x.status==500){
+				jQuery('#corePlugin_'+md5).html("Error 500: The ajax request is retried");
 				coreInfo(md5, url, plugin_name, current_core, current_finger, author); 
+			} else {
+				jQuery('#corePlugin_'+md5).html("Error "+x.status+": No data retrieved");
 			}
 		});
+		
 	}, rand) ; 
 }
 
@@ -77,6 +89,9 @@ function coreUpdate(md5, url, plugin_name, current_core, current_finger, author,
 		author : author, 
 		url : url,
 		from : from, 
+		md5 : md5, 
+		src_wait : src_wait, 
+		msg_wait : msg_wait, 
 		to : to
 	} 
 	
@@ -84,12 +99,18 @@ function coreUpdate(md5, url, plugin_name, current_core, current_finger, author,
 	jQuery('#corePlugin_'+md5).html(waitImg);
 	
 	jQuery.post(ajaxurl, arguments, function(response) {
-		if (response!="-1") {
-			jQuery('#corePlugin_'+md5).html(response);
-		} else {
+		jQuery('#corePlugin_'+md5).html(response);
+	}).error(function(x,e) { 
+		if (x.status==0){
+			//Offline
+		} else if (x.status==500){
+			jQuery('#corePlugin_'+md5).html("Error 500: The ajax request is retried");
 			coreUpdate(md5, url, plugin_name, current_core, current_finger, author, from, to) ; 
+		} else {
+			jQuery('#corePlugin_'+md5).html("Error "+x.status+": No data retrieved");
 		}
 	});
+	
 	return false ; 
 }
 
@@ -110,6 +131,15 @@ function changeVersionReadme(md5, plugin) {
 	jQuery.post(ajaxurl, arguments, function(response) {
 		jQuery('body').append(response);
 		jQuery("#wait_changeVersionReadme_"+md5).hide();
+	}).error(function(x,e) { 
+		if (x.status==0){
+			//Offline
+		} else if (x.status==500){
+			jQuery('body').append("Error 500: The ajax request is retried");
+			changeVersionReadme(md5, plugin) ; 
+		} else {
+			jQuery('body').append("Error "+x.status+": No data retrieved");
+		}
 	});
 }
 
@@ -133,6 +163,15 @@ function saveVersionReadme(plugin) {
 	//POST the data and append the results to the results div
 	jQuery.post(ajaxurl, arguments, function(response) {
 		jQuery('#readmeVersion').html(response);
+	}).error(function(x,e) { 
+		if (x.status==0){
+			//Offline
+		} else if (x.status==500){
+			jQuery('#readmeVersion').html("Error 500: The ajax request is retried");
+			saveVersionReadme(plugin) ;
+		} else {
+			jQuery('#readmeVersion').html("Error "+x.status+": No data retrieved");
+		}
 	});
 }
 
@@ -160,6 +199,15 @@ function saveTodo(md5, plugin) {
 		} else {
 			jQuery("#savedtodo_"+md5).show();
 			jQuery("#errortodo_"+md5).html("");
+		}
+	}).error(function(x,e) { 
+		if (x.status==0){
+			//Offline
+		} else if (x.status==500){
+			jQuery("#errortodo_"+md5).html("Error 500: The ajax request is retried");
+			saveTodo(md5, plugin) ;  
+		} else {
+			jQuery("#errortodo_"+md5).html("Error "+x.status+": No data retrieved");
 		}
 	});
 }

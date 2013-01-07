@@ -42,6 +42,7 @@ if (!class_exists('pluginSedLex')) {
 	$files[] = $url.'core/browser.class.php' ; 
 	$files[] = $url.'core/database.class.php' ; 
 	$files[] = $url.'core/debug.class.php' ; 
+	$files[] = $url.'core/deprecated.class.php' ; 
 	$files[] = $url.'core/feedback.class.php' ; 
 	$files[] = $url.'core/folder_diff.class.php' ; 
 	$files[] = $url.'core/otherplugins.class.php' ; 

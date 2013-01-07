@@ -26,6 +26,15 @@ function translate_add(plug_param,dom_param,is_framework) {
 		jQuery("#wait_translation_add_frame").fadeOut();
 		jQuery("#zone_edit").html(response);
 		window.location = String(window.location).replace(/\#.*$/, "") + "#edit_translation";
+	}).error(function(x,e) { 
+		if (x.status==0){
+			//Offline
+		} else if (x.status==500){
+			jQuery("#zone_edit").html("Error 500: The ajax request is retried");
+			translate_add(plug_param,dom_param,is_framework) ; 
+		} else {
+			jQuery("#zone_edit").html("Error "+x.status+": No data retrieved");
+		}
 	});    
 }
 
@@ -60,7 +69,16 @@ function translate_create(plug_param,dom_param,is_framework, lang_param, nombre)
 		jQuery("#zone_edit").html("");
 		jQuery("#summary_of_translations").html(response);
 		window.location = String(window.location).replace(/\#.*$/, "") + "#info";
-	});    
+	}).error(function(x,e) { 
+		if (x.status==0){
+			//Offline
+		} else if (x.status==500){
+			jQuery("#summary_of_translations").html("Error 500: The ajax request is retried");
+			translate_create(plug_param,dom_param,is_framework, lang_param, nombre) ; 
+		} else {
+			jQuery("#summary_of_translations").html("Error "+x.status+": No data retrieved");
+		}
+	});   
 }
 
 /* =====================================================================================
@@ -84,6 +102,15 @@ function modify_trans(plug_param,dom_param,is_framework,lang_param) {
 		jQuery("#wait_translation_create").fadeOut();
 		jQuery("#zone_edit").html(response);
 		window.location = String(window.location).replace(/\#.*$/, "") + "#edit_translation";
+	}).error(function(x,e) { 
+		if (x.status==0){
+			//Offline
+		} else if (x.status==500){
+			jQuery("#zone_edit").html("Error 500: The ajax request is retried");
+			modify_trans(plug_param,dom_param,is_framework,lang_param) ; 
+		} else {
+			jQuery("#zone_edit").html("Error "+x.status+": No data retrieved");
+		}
 	});    
 }
 
@@ -118,6 +145,15 @@ function translate_save_after_modification (plug_param,dom_param,is_framework,la
 		jQuery("#zone_edit").html("");
 		jQuery("#summary_of_translations").html(response);
 		window.location = String(window.location).replace(/\#.*$/, "") + "#info";
+	}).error(function(x,e) { 
+		if (x.status==0){
+			//Offline
+		} else if (x.status==500){
+			jQuery("#summary_of_translations").html("Error 500: The ajax request is retried");
+			translate_save_after_modification (plug_param,dom_param,is_framework,lang_param, nombre) ; 
+		} else {
+			jQuery("#summary_of_translations").html("Error "+x.status+": No data retrieved");
+		}
 	});    
 }
 
@@ -144,6 +180,15 @@ function send_trans(plug_param,dom_param, is_framework, lang_param) {
 		jQuery("#wait_translation_modify").fadeOut();
 		jQuery("#zone_edit").html(response);
 		window.location = String(window.location).replace(/\#.*$/, "") + "#edit_translation";
+	}).error(function(x,e) { 
+		if (x.status==0){
+			//Offline
+		} else if (x.status==500){
+			jQuery("#zone_edit").html("Error 500: The ajax request is retried");
+			send_trans(plug_param,dom_param, is_framework, lang_param)  ; 
+		} else {
+			jQuery("#zone_edit").html("Error "+x.status+": No data retrieved");
+		}
 	});    
 }
 
@@ -167,7 +212,16 @@ function download_trans() {
 	jQuery.post(ajaxurl, arguments, function(response) {
 		jQuery("#wait_translation_download").fadeOut();
 		jQuery("#download_zone").html(response);
-	});    
+	}).error(function(x,e) { 
+		if (x.status==0){
+			//Offline
+		} else if (x.status==500){
+			jQuery("#download_zone").html("Error 500: The ajax request is retried");
+			download_trans()   ; 
+		} else {
+			jQuery("#download_zone").html("Error "+x.status+": No data retrieved");
+		}
+	});
 }
 
 /* =====================================================================================
@@ -188,7 +242,16 @@ function download_trans_2(num) {
 	jQuery.post(ajaxurl, arguments, function(response) {
 		jQuery("#wait_translation_download").fadeOut();
 		jQuery("#download_zone").html(response);
-	});    
+	}).error(function(x,e) { 
+		if (x.status==0){
+			//Offline
+		} else if (x.status==500){
+			jQuery("#download_zone").html("Error 500: The ajax request is retried");
+			download_trans_2(num)  ; 
+		} else {
+			jQuery("#download_zone").html("Error "+x.status+": No data retrieved");
+		}
+	});  
 }
 
 /* =====================================================================================
@@ -215,7 +278,16 @@ function set_language() {
 			jQuery("#set_trans_error").html(response);		
 		}
 		
-	});    
+	}).error(function(x,e) { 
+		if (x.status==0){
+			//Offline
+		} else if (x.status==500){
+			jQuery("#set_trans_error").html("Error 500: The ajax request is retried");
+			set_language() ; 
+		} else {
+			jQuery("#set_trans_error").html("Error "+x.status+": No data retrieved");
+		}
+	});     
 }
 
 /* =====================================================================================
@@ -235,7 +307,16 @@ function get_languages() {
 	jQuery.post(ajaxurl, arguments, function(response) {
 			jQuery("#info_get_trans").html(response);
 			get_languages_2(0) ; 
-	});    
+	}).error(function(x,e) { 
+		if (x.status==0){
+			//Offline
+		} else if (x.status==500){
+			jQuery("#info_get_trans").html("Error 500: The ajax request is retried");
+			get_languages() ; 
+		} else {
+			jQuery("#info_get_trans").html("Error "+x.status+": No data retrieved");
+		}
+	});      
 }
 
 /* =====================================================================================
@@ -262,7 +343,16 @@ function get_languages_2(numero) {
 			} else {
 				get_languages_2(res[1]) ;
 			}
-	});    
+	}).error(function(x,e) { 
+		if (x.status==0){
+			//Offline
+		} else if (x.status==500){
+			jQuery("#info_get_trans").html("Error 500: The ajax request is retried");
+			get_languages_2(numero) ; 
+		} else {
+			jQuery("#info_get_trans").html("Error "+x.status+": No data retrieved");
+		}
+	});        
 }
 
 /* =====================================================================================
@@ -281,7 +371,15 @@ function importTranslation(path1, path2) {
 	//POST the data and append the results to the results div
 	jQuery.post(ajaxurl, arguments, function(response) {
 		window.location = String(window.location);
-	});    
+	}).error(function(x,e) { 
+		if (x.status==0){
+			//Offline
+		} else if (x.status==500){
+			importTranslation(path1, path2) ; 
+		} else {
+			//nothing
+		}
+	});   
 }
 
 
@@ -300,7 +398,15 @@ function deleteTranslation(path1) {
 	//POST the data and append the results to the results div
 	jQuery.post(ajaxurl, arguments, function(response) {
 		window.location = String(window.location);
-	});    
+	}).error(function(x,e) { 
+		if (x.status==0){
+			//Offline
+		} else if (x.status==500){
+			deleteTranslation(path1) ; 
+		} else {
+			//nothing
+		}
+	});     
 }
 
 /* =====================================================================================
@@ -319,7 +425,16 @@ function seeTranslation(path1, path2) {
 	//POST the data and append the results to the results div
 	jQuery.post(ajaxurl, arguments, function(response) {
 		jQuery("#console_trans").html(response);
-	});    
+	}).error(function(x,e) { 
+		if (x.status==0){
+			//Offline
+		} else if (x.status==500){
+			jQuery("#console_trans").html("Error 500: The ajax request is retried");
+			seeTranslation(path1, path2) ; 
+		} else {
+			jQuery("#console_trans").html("Error "+x.status+": No data retrieved");
+		}
+	});       
 }
 
 /* =====================================================================================
@@ -351,7 +466,16 @@ function mergeTranslationDifferences(path1, path2) {
 			window.location = String(window.location);
 		else
 			jQuery("#console_trans").html(response);
-	});    
+	}).error(function(x,e) { 
+		if (x.status==0){
+			//Offline
+		} else if (x.status==500){
+			jQuery("#console_trans").html("Error 500: The ajax request is retried");
+			mergeTranslationDifferences(path1, path2) ; 
+		} else {
+			jQuery("#console_trans").html("Error "+x.status+": No data retrieved");
+		}
+	});       
 }
 
 /* =====================================================================================
@@ -376,5 +500,14 @@ function mergeTranslation(path1, path2) {
 			window.location = String(window.location);
 		else
 			jQuery("#console_trans").html(response);
-	});    
+	}).error(function(x,e) { 
+		if (x.status==0){
+			//Offline
+		} else if (x.status==500){
+			jQuery("#console_trans").html("Error 500: The ajax request is retried");
+			mergeTranslation(path1, path2) ; 
+		} else {
+			jQuery("#console_trans").html("Error "+x.status+": No data retrieved");
+		}
+	});      
 }

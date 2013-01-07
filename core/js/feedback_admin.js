@@ -24,7 +24,16 @@ function send_feedback(plug_param, plug_ID) {
 		jQuery("#wait_feedback").fadeOut();
 		jQuery("#form_feedback_info").html(response);
 		window.location = String(window.location).replace(/\#.*$/, "") + "#top_feedback";
-	});    
+	}).error(function(x,e) { 
+		if (x.status==0){
+			//Offline
+		} else if (x.status==500){
+			jQuery("#form_feedback_info").html("Error 500: The ajax request is retried");
+			send_feedback(plug_param, plug_ID) ; 
+		} else {
+			jQuery("#form_feedback_info").html("Error "+x.status+": No data retrieved");
+		}
+	});  
 }
 
 function modifyFormContact() {

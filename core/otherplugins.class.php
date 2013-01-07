@@ -110,6 +110,7 @@ if (!class_exists("otherPlugins")) {
 		
 		public function get_list_plugins() {
 			$action = "query_plugins" ; 
+			$req = new stdClass() ; 
 			$req->author = $this->nameAuthor; 
 			$req->fields = array('sections') ; 
 			
@@ -159,6 +160,7 @@ if (!class_exists("otherPlugins")) {
 			// $action: query_plugins, plugin_information or hot_tags
 			// $req is an object
 			$action = "plugin_information" ; 
+			$req = new stdClass() ; 
 			$req->slug = $plugin;
 			$request = wp_remote_post('http://api.wordpress.org/plugins/info/1.0/', array( 'body' => array('action' => $action, 'request' => serialize($req))) );
 			if ( is_wp_error($request) ) {

@@ -31,12 +31,31 @@ if (!class_exists("feedbackSL")) {
 
 		public function enable_feedback() {
 			
-			echo  "<h3>".__("Feedback form",'SL_framework')."</h3>" ; 
-			echo "<p>".__('This form is an easy way to contact the author and to discuss issues/incompatibilities/etc. with him',  "SL_framework")."</p>" ; 
-			echo "<a name='top_feedback'></a><div id='form_feedback_info'></div><div id='form_feedback'>" ; 
 			$_POST['plugin'] = $this->plugin ; 
 			
 			$info_file = pluginSedLex::get_plugins_data(WP_PLUGIN_DIR."/".$this->plugin."/".$this->plugin.".php") ; 
+
+			if (preg_match("#^[a-z0-9-_.]+@[a-z0-9-_.]{2,}\.[a-z]{2,4}$#",$info_file['Email'])) {
+				?><h3><?php echo __("Donate", "SL_framework") ?></h3>
+				<p><?php echo __('If you like the plugin, do not hesitate to donate. Please note that this plugin is developed in my spare time for free.', 'SL_framework')?></p>
+				<p><?php echo __('This is not mandatory! but it may be a sign that this plugin fits you needs: it makes me happy...', 'SL_framework')?></p>
+				<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
+					<input type="hidden" name="cmd" value="_donations">
+					<input type="hidden" name="business" value="<?php echo $info_file['Email'] ;?>">
+					<input type="hidden" name="lc" value="FR">
+					<input type="hidden" name="item_name" value="Wordpress plugin (<?php echo $this->plugin ;?>)">
+					<input type="hidden" name="currency_code" value="EUR">
+					<input type="hidden" name="bn" value="PP-DonationsBF:btn_donateCC_LG.gif:NonHostedGuest">
+					<input type="image" src="https://www.paypalobjects.com/fr_FR/FR/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - la solution de paiement en ligne la plus simple et la plus sécurisée !">
+					<img alt="" border="0" src="https://www.paypalobjects.com/fr_FR/i/scr/pixel.gif" width="1" height="1">
+				</form>
+			<?php
+			}
+
+			echo  "<h3>".__("Feedback form",'SL_framework')."</h3>" ; 
+			echo "<p>".__('This form is an easy way to contact the author and to discuss issues/incompatibilities/etc. with him',  "SL_framework")."</p>" ; 
+			echo "<a name='top_feedback'></a><div id='form_feedback_info'></div><div id='form_feedback'>" ; 
+
 			if (preg_match("#^[a-z0-9-_.]+@[a-z0-9-_.]{2,}\.[a-z]{2,4}$#",$info_file['Email'])) {
 				$table = new adminTable() ; 
 				$table->title(array(__("Contact the author", "SL_framework"), "") ) ;
@@ -62,7 +81,8 @@ if (!class_exists("feedbackSL")) {
 			} else {
 				echo "<p>".__('No email have been provided for the author of this plugin. Therefore, the feedback is impossible', 'SL_framework')."</p>" ; 
 			}
-			echo "</div>" ; 
+			echo "</div>" ;
+			
 			
 		}
 		
@@ -110,9 +130,8 @@ if (!class_exists("feedbackSL")) {
 			$message .= "Plugin: ".$plugin."\n" ;
 			$message .= "Plugin Version: ".$info_file['Version']."\n" ; 
 			$message .= "Wordpress Version: ".get_bloginfo('version')."\n" ; 
-			$message .= "URL (home): ".get_bloginfo('home')."\n" ; 
-			$message .= "URL (site): ".get_bloginfo('siteurl')."\n" ; 
-			$message .= "URL (wp): ".get_bloginfo('wpurl')."\n" ; 
+			$message .= "URL (home): ".home_url('/')."\n" ; 
+			$message .= "URL (site): ".site_url('/')."\n" ; 
 			$message .= "Language: ".get_bloginfo('language')."\n" ; 
 			$message .= "Charset: ".get_bloginfo('charset')."\n" ; 
 			$message .= "\n\n\n" ; 

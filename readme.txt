@@ -6,7 +6,7 @@ Author URI: http://www.sedlex.fr/
 Plugin URI: http://wordpress.org/extend/plugins/shorten-url/
 Tags: shorttag, shortag, bitly, url, short
 Requires at least: 3.0
-Tested up to: 3.4
+Tested up to: 3.5
 Stable tag: trunk
 
 Your pages/posts may have a short url hosted by your own domain.
@@ -38,6 +38,7 @@ This plugin is compatible with multisite installation. Each blog may manage thei
 * German (Austria) translation provided by AndreasK.
 * German (Germany) translation provided by reitermarkus, navelbrush
 * English (United States), default language
+* Spanish (Spain) translation provided by SebasContre
 * Farsi (Iran) translation provided by EhsanKing
 * French (France) translation provided by SedLex
 * Portuguese (Brazil) translation provided by Blinky
@@ -71,6 +72,10 @@ Have fun !
 2. The configuration page of the plugin 
 
 == Changelog ==
+
+= 1.3.8 =
+* Update the core
+* Avoid an infinite loop when 404 error
 
 = 1.3.7 =
 * Root URL for short link may be modified
@@ -126,4 +131,4 @@ Have fun !
 Visit http://www.sedlex.fr/cote_geek/
 
  
-InfoVersion:45d1fb0559777a7729de022367fb4fc1
+InfoVersion:d6139cd4ae19039059d544b2e67b5eaa

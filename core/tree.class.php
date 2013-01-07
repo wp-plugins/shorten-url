@@ -37,7 +37,7 @@ if (!class_exists("treeList")) {
 		* @return void
 		*/
 		
-		function render($array, $reduce_develop=false, $reorder_callback=null, $classPerso=""){
+		static function render($array, $reduce_develop=false, $reorder_callback=null, $classPerso=""){
 			$rand = rand(1, 10000000) ; 
 			echo "<div id='sortableTreeView".$rand."' class='".$classPerso."'>" ; 
 				treeList::render_sub($array,$reduce_develop, false, $rand) ; 
@@ -170,7 +170,7 @@ if (!class_exists("treeList")) {
 		* @return void
 		*/
 		
-		function render_sub($array, $reduce_develop=false, $hide=false, $rand=""){
+		static function render_sub($array, $reduce_develop=false, $hide=false, $rand=""){
 			$hidden = "" ; 
 			if ($hide) {
 				$hidden = " style='display: none;' " ; 

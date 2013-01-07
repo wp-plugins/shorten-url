@@ -48,7 +48,7 @@ if (!class_exists("translationSL")) {
 				translationSL::update_languages_plugin($this->domain, $this->plugin) ; 
 				translationSL::update_languages_framework($this->domain, $this->plugin) ; 
 			}			
-			$this->summary_translations() ; 
+			translationSL::summary_translations() ; 
     		
 			echo "</div><a name='edit_translation'></a><a name='info'></a>" ; 
 			echo "<div id='zone_edit'></div>" ; 
@@ -79,7 +79,7 @@ if (!class_exists("translationSL")) {
 		* @return array list of the php files
 		*/
 		
-		private function get_php_files($root, $other='') {
+		static private function get_php_files($root, $other='') {
 			
 			@chmod($root."/".$other, 0755) ; 
 			$dir=opendir($root."/".$other);
@@ -116,7 +116,7 @@ if (!class_exists("translationSL")) {
 		* @return void
 		*/
 		
-		function update_summary () {
+		static function update_summary () {
 			translationSL::summary_translations() ; 
 			die() ; 
 		}
@@ -128,7 +128,7 @@ if (!class_exists("translationSL")) {
 		* @return void
 		*/
 
-		function summary_translations () {
+		static function summary_translations () {
   			$domain = preg_replace("/[^a-zA-Z0-9_-]/","",$_POST['domain']) ; 
 			$plugin = preg_replace("/[^a-zA-Z0-9_-]/","",$_POST['plugin']) ; 
 			require('translation.inc.php') ;
@@ -182,7 +182,7 @@ if (!class_exists("translationSL")) {
 		* @return void
 		*/
 
-		function translate_add () {
+		static function translate_add () {
 			echo "<hr/>" ;
 			require('translation.inc.php') ;
 			// We sanitize the language
@@ -235,7 +235,7 @@ if (!class_exists("translationSL")) {
 		* @return void
 		*/
 
-		function translate_modify () {
+		static function translate_modify () {
 			echo "<hr/>" ;
 			require('translation.inc.php') ;
 			// We sanitize the language
@@ -344,9 +344,10 @@ if (!class_exists("translationSL")) {
 		* $param array $content_po array of line of the file .po
 		* $param array $content_pot array of line of the file .pot
 		* @access private
-		* @return void
+		* @return array
 		*/
-		function get_info($content_po, $content_pot) {
+
+		static private function get_info($content_po, $content_pot) {
 			// We search in the pot file to check if all sentences are translated
 			$count = 0 ; 
 			$count_close = 0 ; 
@@ -429,7 +430,7 @@ if (!class_exists("translationSL")) {
 		* @return void
 		*/
 		
-		function compare_info($content_po1, $content_po2, $content_pot) {
+		static function compare_info($content_po1, $content_po2, $content_pot) {
 			// We search in the pot file to check if all sentences are translated
 			$new = 0 ; 
 			$modified = 0 ; 
@@ -493,7 +494,7 @@ if (!class_exists("translationSL")) {
 		* @access private
 		* @return void
 		*/
-		function check_mail() {
+		static function check_mail() {
 			global $submenu ; 
 			
 			$frmk = new coreSLframework() ; 
@@ -521,7 +522,7 @@ if (!class_exists("translationSL")) {
 					if (isset($struct->parts)) {
 						$num_part = 1 ; 
 						foreach($struct->parts as $s) {
-							if ($s->disposition == "attachment") {
+							if ((isset($s->disposition))&&($s->disposition == "attachment")) {
 								if (preg_match("/po$/", $s->parameters[0]->value)) {
 									if (preg_match("/(.*)-([a-z]{2}_[A-Z]{2})\.po/", $s->parameters[0]->value , $match)) {
 										// We identify the $path
@@ -659,7 +660,7 @@ if (!class_exists("translationSL")) {
 		* @return void
 		*/
 		
-		function deleteTranslation() {
+		static function deleteTranslation() {
 			$path1 = $_POST['path1'] ; 
 			@unlink($path1) ; 	
 			SL_Debug::log(get_class(), "Delete the translation ".$path1, 4) ; 
@@ -674,7 +675,7 @@ if (!class_exists("translationSL")) {
 		* @return void
 		*/
 		
-		function seeTranslation() {
+		static function seeTranslation() {
 			$path1 = $_POST['path1'] ; 
 			$path2 = $_POST['path2'] ; 
 			
@@ -694,6 +695,7 @@ if (!class_exists("translationSL")) {
 			ob_start() ;
 				// We build an array with all the sentences for pot
 				$pot_array = array() ; 
+				$all_count = 0 ; 
 				foreach ($content_pot as $ligne_pot) {
 					if (preg_match("/^msgid \\\"(.*)\\\"$/", trim($ligne_pot), $match)) {
 						$pot_array[md5(trim($match[1]))] = trim($match[1]) ; 
@@ -727,17 +729,21 @@ if (!class_exists("translationSL")) {
 						if (trim($match[1])!="") {
 							$po1_array[md5(trim($msgid))] = array(trim($msgid),trim($match[1])) ; 
 							if (isset($pot_array[md5(trim($msgid))])) {
-								//if (isset($po2_array[md5(trim($msgid))])) {
-									if ($po2_array[md5(trim($msgid))][1]!=$po1_array[md5(trim($msgid))][1]) {
-										$cel1 = new adminCell("<p>".$msgid."</p>") ;
-										$cel2 = new adminCell("<p>".$po2_array[md5(trim($msgid))][1]."</p>") ;
-										$diff = new textDiff() ; 
-										$diff->diff($po2_array[md5(trim($msgid))][1],$po1_array[md5(trim($msgid))][1]) ; 
-										$cel3 = new adminCell("<p>".$diff->show_simple_difference()."</p>") ;
-										$cel4 = new adminCell("<p><input type='CHECKBOX' name='new_".md5(trim($msgid))."' checked='yes' >Replace the old sentence with the new one?</input></p>") ;
-										$table->add_line(array($cel1, $cel2, $cel3, $cel4), '1') ; 
-									}
-								//}
+							
+								if (!isset($po2_array[md5(trim($msgid))][1]))
+									$po2_array[md5(trim($msgid))][1] = "" ; 
+								if (!isset($po1_array[md5(trim($msgid))][1]))
+									$po1_array[md5(trim($msgid))][1] = "" ; 
+									
+								if ($po2_array[md5(trim($msgid))][1]!=$po1_array[md5(trim($msgid))][1]) {
+									$cel1 = new adminCell("<p>".$msgid."</p>") ;
+									$cel2 = new adminCell("<p>".$po2_array[md5(trim($msgid))][1]."</p>") ;
+									$diff = new textDiff() ; 
+									$diff->diff($po2_array[md5(trim($msgid))][1],$po1_array[md5(trim($msgid))][1]) ; 
+									$cel3 = new adminCell("<p>".$diff->show_simple_difference()."</p>") ;
+									$cel4 = new adminCell("<p><input type='CHECKBOX' name='new_".md5(trim($msgid))."' checked='yes' >Replace the old sentence with the new one?</input></p>") ;
+									$table->add_line(array($cel1, $cel2, $cel3, $cel4), '1') ; 
+								}
 							}
 						}
 					}
@@ -762,7 +768,7 @@ if (!class_exists("translationSL")) {
 		* @return void
 		*/
 		
-		function mergeTranslationDifferences() {
+		static function mergeTranslationDifferences() {
 			$md5 = $_POST['md5'] ; 
 			$path1 = $_POST['path1'] ; 
 			$path2 = $_POST['path2'] ; 
@@ -783,6 +789,7 @@ if (!class_exists("translationSL")) {
 			
 			// We build an array with all the sentences for pot
 			$pot_array = array() ; 
+			$all_count = 0 ; 
 			foreach ($content_pot as $ligne_pot) {
 				if (preg_match("/^msgid \\\"(.*)\\\"$/", trim($ligne_pot), $match)) {
 					$pot_array[md5(trim($match[1]))] = trim($match[1]) ; 
@@ -802,10 +809,6 @@ if (!class_exists("translationSL")) {
 					}
 				} else if (preg_match("/Last-Translator: (.*) \<(.*)\>/", trim($ligne_po), $match)) {
 					$translators[md5(trim($match[0]))] = $match[0] ; 
-				} else if (preg_match("/X-Poedit-Language:(.*)/", trim($ligne_po), $match)) {
-					$language = $match[0] ; 
-				} else if (preg_match("/X-Poedit-Country:(.*)/", trim($ligne_po), $match)) {
-					$country = $match[0] ; 
 				}
 			}
 							
@@ -862,8 +865,8 @@ if (!class_exists("translationSL")) {
 				}
 			}
 			$content .= "\"Plural-Forms: ".$plurals."\\n\"\n";
-			$content .= "\"".$language."\n" ; 
-			$content .= "\"".$country."\n" ; 
+			$content .= "\"X-Poedit-Language: ".$code_locales[$lang]['lang']."\\n\"\n";
+			$content .= "\"X-Poedit-Country: ".$code_locales[$lang]['country']."\\n\"\n";
 			$content .= "\"X-Poedit-SourceCharset: utf-8\\n\"\n";
 			$content .= "\"X-Poedit-KeywordsList: __;\\n\"\n";
 			$content .= "\"X-Poedit-Basepath: \\n\"\n";
@@ -886,12 +889,12 @@ if (!class_exists("translationSL")) {
 			// We delete all cache file
 			$path = preg_replace("/^(.*)\/([^\/]*)$/", "$1" , $path2) ; 
 			
-			$dir = @opendir($path); 
+			$dir = @opendir(WP_CONTENT_DIR."/sedlex/translations"); 
 			while(false !== ($item = readdir($dir))) {
 				if ('.' == $item || '..' == $item)
 					continue;
-				if (preg_match("/cached\.html$/", $item, $h)) {
-					@unlink ($path."/".$item);
+				if (preg_match("/\.html$/", $item, $h)) {
+					@unlink (WP_CONTENT_DIR."/sedlex/translations/".$item);
 				}
 			}
 			closedir($dir);
@@ -918,7 +921,7 @@ if (!class_exists("translationSL")) {
 		* @access private
 		* @return void
 		*/
-		function send_translation() {
+		static function send_translation() {
 			require('translation.inc.php') ;
 			// We sanitize the language
 			$lang = preg_replace("/[^a-zA-Z_]/","",$_POST['lang']) ; 
@@ -1000,14 +1003,14 @@ if (!class_exists("translationSL")) {
 		* @return void
 		*/
 
-		function translate_create () {
+		static function translate_create () {
 			require('translation.inc.php') ;
 
 			$domain = preg_replace("/[^a-zA-Z0-9_-]/","",$_POST['domain']) ; 
 			$plugin = preg_replace("/[^a-zA-Z0-9_-]/","",$_POST['plugin']) ; 
 			$lang = preg_replace("/[^a-zA-Z_]/","",$_POST['lang']) ; 
 			$name = preg_replace("/[^a-zA-Z0-9_.-]/","",$_POST['name']) ; 
-			$email = preg_replace("/[^:\/a-z0-9@A-Z_.-=&?!]/","",$_POST['email']) ; 
+			$email = preg_replace("/[^:\/a-z0-9@A-Z_.-=&?!-]/","",$_POST['email']) ; 
 			$isFramework = $_POST['isFramework'] ; 
 			
 			$plugin_lien = $plugin ; 
@@ -1241,7 +1244,8 @@ if (!class_exists("translationSL")) {
 		* @param string $out path to the mo file
 		* @return void
 		*/
-		function phpmo_write_mo_file($hash, $out) {
+		
+		static function phpmo_write_mo_file($hash, $out) {
 			// sort by msgid
 			ksort($hash, SORT_STRING);
 			// our mo file data
@@ -1303,7 +1307,7 @@ if (!class_exists("translationSL")) {
 		* @return void
 		*/
 		
-		function update_languages_wp_init() {		
+		static function update_languages_wp_init() {		
 			// On definit le repertoire de traduction
 			if ( !defined('WP_LANG_DIR') ) {
 				define('WP_LANG_DIR', WP_CONTENT_URL.'/languages');
@@ -1321,7 +1325,9 @@ if (!class_exists("translationSL")) {
 			$tagged_version = $root_tagged_version;
 			if (!empty($hits[3])) $tagged_version .= $hits[3];
 
-			@unlink($path."/core/lang/wp_lang_".$tagged_version.".ini") ; 
+			if (is_file($path."/core/lang/wp_lang_".$tagged_version.".ini")) {
+				@unlink($path."/core/lang/wp_lang_".$tagged_version.".ini") ; 
+			}
 			@file_put_contents($path."/core/lang/wp_lang_".$tagged_version.".ini", serialize(array()) ) ; 
 			
 			$revision 	= 0;
@@ -1355,7 +1361,7 @@ if (!class_exists("translationSL")) {
 		* @return void
 		*/
 		
-		function update_languages_wp_list() {		
+		static function update_languages_wp_list() {		
 			$num = preg_replace("/[^0-9]/","",$_POST['num']) ; 
 			
 			// The plugin_frame is the plugin that store the framework file
@@ -1415,7 +1421,7 @@ if (!class_exists("translationSL")) {
 		* @return void
 		*/
 		
-		function installed_languages_wp() {						
+		static function installed_languages_wp() {						
 			require('translation.inc.php') ;
 			// The plugin_frame is the plugin that store the framework file
 			$plugin_frame = explode("/",plugin_basename(__FILE__)); 
@@ -1593,7 +1599,7 @@ if (!class_exists("translationSL")) {
 		* @return void
 		*/
 
-		function set_translation () {
+		static function set_translation () {
 			$lang = preg_replace("/[^a-zA-Z_]/","",$_POST['lang']) ; 
 			$frmk = new coreSLframework() ;
 			$frmk->set_param('lang', $lang) ; 
@@ -1608,7 +1614,7 @@ if (!class_exists("translationSL")) {
 		* @return void
 		*/
 
-		function download_translation () {
+		static function download_translation () {
 
 			// On definit le repertoire de traduction
 			if ( !defined('WP_LANG_DIR') ) {
@@ -1684,7 +1690,7 @@ if (!class_exists("translationSL")) {
 		* @return void
 		*/
 		
-		function update_languages_plugin($domain, $plugin) {
+		static function update_languages_plugin($domain, $plugin) {
 			$path = WP_PLUGIN_DIR."/".$plugin ; 
 			if ($domain=="SL_framework") {
 				return ; 
@@ -1748,7 +1754,7 @@ if (!class_exists("translationSL")) {
 		* @return void
 		*/
 		
-		function installed_languages_plugin($domain, $plugin) {
+		static function installed_languages_plugin($domain, $plugin) {
 			require('translation.inc.php') ;
 
 			$path = WP_PLUGIN_DIR."/".$plugin ; 
@@ -1780,20 +1786,22 @@ if (!class_exists("translationSL")) {
 			$signature_files = md5($signature_files); 
 
 			$nb = count($file) ; 
-			
-			if (is_file($path."/core/data/".$domain."_".$signature_files."_plugincached.html")) {
-				echo file_get_contents($path."/core/data/".$domain."_".$signature_files."_plugincached.html") ; 
+			if (!is_dir(WP_CONTENT_DIR."/sedlex/translations/")) {
+				@mkdir(WP_CONTENT_DIR."/sedlex/translations/", 0777, true) ; 
+			}
+			if (is_file(WP_CONTENT_DIR."/sedlex/translations/".$domain."_".$signature_files.".html")) {
+				echo file_get_contents(WP_CONTENT_DIR."/sedlex/translations/".$domain."_".$signature_files.".html") ; 
 				echo "<p style='text-align:right;color:#AAAAAA;font-size:9px;'>".sprintf(__('Summary cached %s', 'SL_framework'), $signature_files)."</p>" ; 
 				return ; 
 			}
 			
 			// We delete all cache file
-			$dir = @opendir($path."/core/data/"); 
+			$dir = @opendir(WP_CONTENT_DIR."/sedlex/translations/"); 
 			while(false !== ($item = readdir($dir))) {
 				if ('.' == $item || '..' == $item)
 					continue;
-				if (preg_match("/plugincached\.html$/", $item, $h)) {
-					unlink ($path."/core/data/".$item);
+				if (preg_match("/".$domain.".*\.html$/", $item, $h)) {
+					unlink (WP_CONTENT_DIR."/sedlex/translations/".$item);
 				}
 			}
 			closedir($dir);
@@ -1847,8 +1855,12 @@ if (!class_exists("translationSL")) {
 					
 					// We check if the present author have modify a translation here
 					if ($f=="en_US") {
-						$info = __("This is the default language of the plugin. It cannot be modified.", "SL_framework") ; 
+						$info['total'] = 0 ; 
+						$info['translated'] = __("This is the default language of the plugin. It cannot be modified.", "SL_framework") ; 
+						$info['close'] = 0 ; 
+						$info['translators'] = "##" ; 
 					} else {
+						$info = translationSL::get_info(file($path."/lang/".$domain."-".$f.".po"), file($path."/lang/".$domain.".pot")) ; 
 						$info = translationSL::get_info(file($path."/lang/".$domain."-".$f.".po"), file($path."/lang/".$domain.".pot")) ; 
 					}
 					
@@ -1866,7 +1878,7 @@ if (!class_exists("translationSL")) {
 						if ($f!="en_US") {
 							$signature_files .= $domain."-".$f.".mo".filesize($path."/lang/".$domain."-".$f.".mo");
 							$cel_lang->add_action(__('Modify','SL_framework'), "modify_trans('".$plugin_lien."','".$domain."', 'false', '".$f."')" ) ; 
-							if (($isEmailAuthor=="true") && (strlen($nameTranslator)>3) && (strpos($info, $nameTranslator)>0)) {
+							if (($isEmailAuthor=="true") && (strlen($nameTranslator)>3) && (strpos($info['translators'], $nameTranslator)>0)) {
 								$cel_lang->add_action(__('Send to the author of the plugin','SL_framework'), "send_trans(\"".$plugin_lien."\",\"".$domain."\", \"false\", \"".$f."\")") ; 
 							}
 						}
@@ -1878,7 +1890,7 @@ if (!class_exists("translationSL")) {
 							}
 							$cel_tran = new adminCell($info['translators']) ;
 						} else {
-							$cel_pour = new adminCell("<p style='color:#CCCCCC'>".$info."</p>") ;
+							$cel_pour = new adminCell("<p style='color:#CCCCCC'>".$info['translated']."</p>") ;
 							$cel_tran = new adminCell("") ;				
 						}
 						$table->add_line(array($cel_lang, $cel_pour, $cel_tran), $f) ; 
@@ -1915,7 +1927,7 @@ if (!class_exists("translationSL")) {
 			$content = ob_get_clean() ; 
 
 			$signature_files = md5($signature_files) ; 
-			file_put_contents($path."/core/data/".$domain."_".$signature_files."_plugincached.html", $content) ; 
+			file_put_contents(WP_CONTENT_DIR."/sedlex/translations/".$domain."_".$signature_files.".html", $content) ; 
 			echo $content ; 
 		}
 		
@@ -1926,7 +1938,7 @@ if (!class_exists("translationSL")) {
 		* @return void
 		*/
 		
-		function list_languages($plugin) {
+		static function list_languages($plugin) {
 			require('translation.inc.php') ;
 
 			$path = WP_PLUGIN_DIR."/".$plugin ; 
@@ -1934,7 +1946,6 @@ if (!class_exists("translationSL")) {
 						
 			@chmod($path."/lang/", 0755) ; 
 			$dir = @opendir($path."/lang/"); 
-			$dom = $domain ; 
 
 			$file = array() ; 
 			while(false !== ($item = readdir($dir))) {
@@ -1983,7 +1994,7 @@ if (!class_exists("translationSL")) {
 		* @return void
 		*/
 		
-		function update_languages_framework($domain, $plugin) {
+		static function update_languages_framework($domain, $plugin) {
 			// The plugin_frame is the plugin that store the framework file
 			$plugin_frame = explode("/",plugin_basename(__FILE__)); 
 			$plugin_frame = $plugin_frame[0]; 
@@ -2010,7 +2021,7 @@ if (!class_exists("translationSL")) {
 				foreach($lines as $l) {
 					$i++ ; 
 					$match_array = array("@__[ ]*\([ ]*\\\"([^\\\"]*)\\\"([^)]*)SL_framework([^)]*)\)@", 
-										 "@__[ ]*\([ ]*'([^']*)'([^)]*)SL_framework([^)]*)\)@")  ; 
+									"@__[ ]*\([ ]*'([^']*)'([^)]*)SL_framework([^)]*)\)@")  ; 
 					foreach ($match_array as $reg) {
 						if (preg_match_all($reg,$l, $match,PREG_SET_ORDER)) {
 							foreach($match as $m) {
@@ -2046,7 +2057,7 @@ if (!class_exists("translationSL")) {
 		* @return void
 		*/
 		
-		function installed_languages_framework($domain, $plugin) {
+		static function installed_languages_framework($domain, $plugin) {
 			require('translation.inc.php') ;
 			
 			// The plugin_frame is the plugin that store the framework file
@@ -2084,19 +2095,22 @@ if (!class_exists("translationSL")) {
 			$signature_files = md5($signature_files) ; 
 
 			$nb = count($file) ; 
-			if (is_file($path_cache."/core/data/SL_framework_".$signature_files."_corecached.html")) {
-				echo file_get_contents($path_cache."/core/data/SL_framework_".$signature_files."_corecached.html") ; 
+			if (!is_dir(WP_CONTENT_DIR."/sedlex/translations/")) {
+				@mkdir(WP_CONTENT_DIR."/sedlex/translations/", 0777, true) ; 
+			}
+			if (is_file(WP_CONTENT_DIR."/sedlex/translations/SL_framework_".$signature_files.".html")) {
+				echo file_get_contents(WP_CONTENT_DIR."/sedlex/translations/SL_framework_".$signature_files.".html") ; 
 				echo "<p style='text-align:right;color:#AAAAAA;font-size:9px;'>".sprintf(__('Summary cached %s', 'SL_framework'), $signature_files)."</p>" ; 
 				return ; 
 			}
 			
 			// We delete all cache file
-			$dir = @opendir($path_cache."/core/data/"); 
+			$dir = @opendir(WP_CONTENT_DIR."/sedlex/translations"); 
 			while(false !== ($item = readdir($dir))) {
 				if ('.' == $item || '..' == $item)
 					continue;
-				if (preg_match("/corecached\.html$/", $item, $h)) {
-					unlink ($path_cache."/core/data/".$item);
+				if (preg_match("/SL_framework.*\.html$/", $item, $h)) {
+					unlink (WP_CONTENT_DIR."/sedlex/translations".$item);
 				}
 			}
 			closedir($dir);
@@ -2151,7 +2165,10 @@ if (!class_exists("translationSL")) {
 					
 					// We check if the present author have modify a translation here
 					if ($f=="en_US") {
-						$info = __("This is the default language of the plugin framework. It cannot be modified.", "SL_framework") ; 
+						$info['total'] = 0 ; 
+						$info['translated'] = __("This is the default language of the plugin. It cannot be modified.", "SL_framework") ; 
+						$info['close'] = 0 ; 
+						$info['translators'] = "##" ; 
 					} else {
 						$info = translationSL::get_info(file($path."/core/lang/SL_framework-".$f.".po"), file($path."/core/lang/SL_framework.pot")) ; 
 					}
@@ -2170,7 +2187,7 @@ if (!class_exists("translationSL")) {
 						if ($f!="en_US") {
 							$signature_files .= "SL_framework-".$f.".mo".filesize($path."/core/lang/SL_framework-".$f.".mo") ; 
 							$cel_lang->add_action(__('Modify','SL_framework'), "modify_trans('".$plugin_lien."','".$domain."', '".$plugin_frame."', '".$f."')" ) ; 
-							if (($isEmailAuthor=="true") && (strlen($nameTranslator)>3) && (strpos($info, $nameTranslator)>0)) {
+							if (($isEmailAuthor=="true") && (strlen($nameTranslator)>3) && (strpos($info['translators'], $nameTranslator)>0)) {
 								$cel_lang->add_action(__('Send to the author of the framework','SL_framework'), "send_trans('".$plugin_lien."','".$domain."', '".$plugin_frame."' , \"".$f."\")") ; 
 							}
 						}
@@ -2219,7 +2236,7 @@ if (!class_exists("translationSL")) {
 			$content = ob_get_clean() ; 
 			
 			$signature_files = md5($signature_files) ; 
-			file_put_contents($path_cache."/core/data/SL_framework_".$signature_files."_corecached.html", $content) ;
+			file_put_contents(WP_CONTENT_DIR."/sedlex/translations/SL_framework_".$signature_files.".html", $content) ;
 			echo $content ; 		
 		}
 	}

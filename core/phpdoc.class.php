@@ -200,7 +200,11 @@ if (!class_exists("phpDoc")) {
 					foreach ($array_params as $i => $ch) {
 						if ($de[1]=="$".$ch['name']) {
 							$array_params[$i]['type'] = $de[0] ;
-							$array_params[$i]['description'] = $de[2] ;
+							if (isset($de[2])) {
+								$array_params[$i]['description'] = $de[2] ;
+							} else {
+								$array_params[$i]['description'] = "" ;
+							}
 						}
 					}
 				}

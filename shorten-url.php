@@ -3,7 +3,8 @@
 Plugin Name: Short URL
 Plugin Tag: shorttag, shortag, bitly, url, short 
 Description: <p>Your pages/posts may have a short url hosted by your own domain.</p><p>Replace the internal function of wordpress <code>get_short_link()</code> by a bit.ly like url. </p><p>Instead of having a short link like http://www.yourdomain.com/?p=3564, your short link will be http://www.yourdomain.com/NgH5z (for instance). </p><p>You can configure: </p><ul><li>the length of the short link, </li><li>if the link is prefixed with a static word, </li><li>the characters used for the short link.</li></ul><p>Moreover, you can manage external links with this plugin. The links in your posts will be automatically replace by the short one if available.</p><p>This plugin is under GPL licence. </p>
-Version: 1.3.7
+Version: 1.3.8
+
 Author: SedLex
 Author Email: sedlex@sedlex.fr
 Framework Email: sedlex@sedlex.fr
@@ -21,7 +22,7 @@ class shorturl extends pluginSedLex {
 	* @return void
 	*/
 	static $instance = false;
-	static $path = false;
+	var $path = false;
 
 	protected function _init() {
 		global $wpdb ; 
@@ -35,7 +36,7 @@ class shorturl extends pluginSedLex {
 		//Init et des-init
 		register_activation_hook(__FILE__, array($this,'install'));
 		register_deactivation_hook(__FILE__, array($this,'deactivate'));
-		register_uninstall_hook(__FILE__, array($this,'uninstall_removedata'));
+		register_uninstall_hook(__FILE__, array('shorturl','uninstall_removedata'));
 		
 		//Parametres supplementaires
 		add_action('wp_ajax_reset_link', array($this,'reset_link'));
@@ -45,11 +46,12 @@ class shorturl extends pluginSedLex {
 		add_action('wp_ajax_cancel_link', array($this,'cancel_link'));
 		add_action('wp_ajax_cancel_link_external', array($this,'cancel_link_external'));
 		add_action('wp_ajax_delete_link_external', array($this,'delete_link_external'));
-		add_filter('get_shortlink', array($this,'get_short_link_filter'), 9, 2);
-		add_action('template_redirect',array($this,'redirect_404'), 0 );
 		
-		add_action( "the_content", array($this,"the_content") );
+		// 
+		add_action('all_admin_notices', array($this,'verify_permalink'));
 
+		add_filter('get_shortlink', array($this,'get_short_link_filter'), 9, 2);
+		add_action('template_redirect',array($this,'redirect_404'), 1);
 	}
 	/**
 	 * Function to instantiate our class and make it a singleton
@@ -59,6 +61,37 @@ class shorturl extends pluginSedLex {
 			self::$instance = new self;
 		}
 		return self::$instance;
+	}
+	
+	/** ====================================================================================================================================================
+	* In order to uninstall the plugin, few things are to be done ... 
+	* (do not modify this function)
+	* 
+	* @return void
+	*/
+	
+	public function uninstall_removedata () {
+		global $wpdb ;
+		// DELETE OPTIONS
+		delete_option('shorturl'.'_options') ;
+		if (is_multisite()) {
+			delete_site_option('shorturl'.'_options') ;
+		}
+		
+		// DELETE SQL
+		if (function_exists('is_multisite') && is_multisite()){
+			$old_blog = $wpdb->blogid;
+			$old_prefix = $wpdb->prefix ; 
+			// Get all blog ids
+			$blogids = $wpdb->get_col($wpdb->prepare("SELECT blog_id FROM ".$wpdb->blogs));
+			foreach ($blogids as $blog_id) {
+				switch_to_blog($blog_id);
+				$wpdb->query("DROP TABLE ".str_replace($old_prefix, $wpdb->prefix, $wpdb->prefix . "pluginSL_" . 'shorturl')) ; 
+			}
+			switch_to_blog($old_blog);
+		} else {
+			$wpdb->query("DROP TABLE ".$wpdb->prefix . "pluginSL_" . 'shorturl' ) ; 
+		}
 	}
 	
 	/**
@@ -105,6 +138,22 @@ class shorturl extends pluginSedLex {
 			$wpdb->query("ALTER TABLE ".$table_name." ADD nb_hits mediumint(9);");
 		}
 		
+	}
+	
+	/** ====================================================================================================================================================
+	* Verify that permalink option is correct
+	* 
+	* @return variant of the option
+	*/
+
+	function verify_permalink() {
+		$rewrite = new WP_Rewrite() ; 
+		if ($rewrite->permalink_structure=='') {
+			echo '<div class="updated">' ; 
+			echo '<p>'.__('The permalink options should not be configured to default in order to enable Short-URL.', $this->pluginID).'</p>' ; 
+			echo '<p>'.sprintf(__('Please go to %s page to correct it.', $this->pluginID), "<a href='/'>Permalink</a>").'</p>' ; 
+			echo '</div>' ;	
+		}
 	}
 
 	/** ====================================================================================================================================================
@@ -213,6 +262,7 @@ class shorturl extends pluginSedLex {
 				
 				// lignes du tableau
 				// boucle sur les differents elements
+				$ligne = 0 ; 
 				foreach ($result as $r) {
 					$ligne++ ; 
 					ob_start() ; 
@@ -267,7 +317,7 @@ class shorturl extends pluginSedLex {
 					$filter_words .= "url_externe like '%".$fi."%'" ; 
 				}
 				
-				$count = $wpdb->get_var("SELECT COUNT(*) FROM ".$table_name." WHERE id_post=0 ".$filter_words."; ") ; 
+				$count = $wpdb->get_var("SELECT COUNT(*) FROM ".$table_name." WHERE id_post=0 ".$filter_words." AND url_externe<>''; ") ; 
 				$table->set_nb_all_Items($count) ; 
 				
 				if ($table->current_ordercolumn()==1) {
@@ -278,7 +328,7 @@ class shorturl extends pluginSedLex {
 					$orderby = " ORDER BY nb_hits ".$table->current_orderdir() ; 
 				} 
 
-				$res = $wpdb->get_results("SELECT * FROM ".$table_name." WHERE id_post=0 ".$filter_words." ".$orderby." LIMIT ".($maxnb*($table->current_page()-1)).", ".$maxnb." ; ") ; 
+				$res = $wpdb->get_results("SELECT * FROM ".$table_name." WHERE id_post=0 ".$filter_words." AND url_externe<>'' ".$orderby." LIMIT ".($maxnb*($table->current_page()-1)).", ".$maxnb." ; ") ; 
 				
 				foreach($res as $r) {
 					$id_temp = md5($r->short_url) ; 
@@ -415,7 +465,7 @@ class shorturl extends pluginSedLex {
 			$result = $this->get_param('prefix').Utils::rand_str($car_longu , $char) ; 
 			$select = "SELECT id_post FROM {$table_name} WHERE short_url='".$result."'" ; 
 			$temp_id = $wpdb->get_var( $select ) ;
-			if (!is_numeric($temp_id)) {
+			if (($temp_id==null)||($temp_id===false)||($temp_id==NULL)||(!is_numeric($temp_id))) {
 				$ok = true ; 
 			}
 		}
@@ -600,7 +650,7 @@ class shorturl extends pluginSedLex {
 			$result = $this->get_param('prefix').Utils::rand_str($car_longu , $char) ; 
 			$select = "SELECT id_post FROM {$table_name} WHERE short_url='".$result."'" ; 
 			$temp_id = $wpdb->get_var( $select ) ;
-			if ((!is_numeric($temp_id))&&($post_id!=0)) {
+			if (($temp_id==null)||($temp_id===false)||((!is_numeric($temp_id))&&($post_id!=0))) {
 				$ok = true ; 
 				$sql = "DELETE FROM {$table_name} WHERE id_post=".$post_id ; 
 				$wpdb->query( $sql ) ;
@@ -629,7 +679,9 @@ class shorturl extends pluginSedLex {
 			if (preg_match("/^([a-zA-Z0-9_.-])*$/",$param[count($param)-1],$matches)==1) {
 				$select = "SELECT id_post FROM {$table_name} WHERE short_url='".$param[count($param)-1]."'" ; 
 				$temp_id = $wpdb->get_var( $select ) ;
-				if (is_numeric($temp_id)) {
+				if (($temp_id==null)||($temp_id===false)) {
+					return ; 
+				} else if (is_numeric($temp_id)) {
 					if ($temp_id==0) {
 						$select = "SELECT url_externe FROM {$table_name} WHERE short_url='".$param[count($param)-1]."'" ; 
 						$temp_url = $wpdb->get_var( $select ) ;
@@ -649,12 +701,15 @@ class shorturl extends pluginSedLex {
 	}
 	
 	/** ====================================================================================================================================================
-	* Called when the content is printed
-	* 
-	* @return void
-	*/	
+	* Called when the content is displayed
+	*
+	* @param string $content the content which will be displayed
+	* @param string $type the type of the article (e.g. post, page, custom_type1, etc.)
+	* @param boolean $excerpt if the display is performed during the loop
+	* @return string the new content
+	*/
 	
-	function the_content($content) {		
+	function _modify_content($content, $type, $excerpt) {	
 		$out = preg_replace_callback('#<a([^>]*?)href="([^"]*?)"([^>]*?)>([^<]*?)</a>#i', array($this,"replace_by_short_link"), $content);
 		return $out;
 	}
@@ -721,7 +776,8 @@ class shorturl extends pluginSedLex {
 			$result = $this->get_param('prefix').Utils::rand_str($car_longu , $char) ; 
 			$select = "SELECT id_post FROM {$table_name} WHERE short_url='".$result."'" ; 
 			$temp_id = $wpdb->get_var( $select ) ;
-			if (!is_numeric($temp_id)) {
+			
+			if (($temp_id==null)||($temp_id===false)||(!is_numeric($temp_id))) {
 				$ok = true ; 
 				$sql = "DELETE FROM {$table_name} WHERE url_externe='".$url_ext."'" ; 
 				$wpdb->query( $sql ) ;

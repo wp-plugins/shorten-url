@@ -1271,6 +1271,17 @@ $code_locales = array(
 		'ms-cp' => 'CP1252',
 		'google-api' => false,
 	),
+	'gl_ES' => array (
+		'country' => "Spain",
+		'country-www' => 'es',
+		'lang' => 'Galician',
+		'lang-native' => 'Galician/Galicia',
+		'lang-www' => 'gl-ES',
+		'dir' => 'ltr',
+		'ms-loc' => 'esp',
+		'ms-cp' => 'CP1252',
+		'google-api' => true,		
+	),	
 	'he_IL' => array (
 		'country' => "Israel",
 		'country-www' => 'il',

@@ -1,0 +1,133 @@
+msgid ""
+msgstr ""
+"Generated: SL Framework (http://www.sedlex.fr)\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2012-11-24T18:59:54+00:00\n"
+"Last-Translator: SebasContre <seba.im>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"
+"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;\n"
+"X-Poedit-Basepath: \n"
+"X-Poedit-Bookmarks: \n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Textdomain-Support: yes\n"
+
+msgid "This plugin helps you sharing your post with short-links."
+msgstr "Este plugins te ayuda a compartir tus entradas con enlaces cortos."
+
+msgid "Title of your posts/pages"
+msgstr "Título de tus entradas/páginas"
+
+msgid "Short URL"
+msgstr "URL corta"
+
+msgid "Type"
+msgstr "Tipo"
+
+msgid "Number of clicks"
+msgstr "Número de clics"
+
+msgid "Edit"
+msgstr "Editar"
+
+msgid "Internal Redirections"
+msgstr "Redirecciones Internas"
+
+msgid "External URL"
+msgstr "URL externa"
+
+msgid "Delete"
+msgstr "Suprimir"
+
+msgid "External URL:"
+msgstr "URL externa:"
+
+msgid "External Redirections"
+msgstr "Redirecciones Externas"
+
+msgid "Parameters"
+msgstr "Parámetros"
+
+msgid "Lower-case characters ([a-z]):"
+msgstr "Caracteres en minúsculas ([a-z])"
+
+msgid "Upper-case characters ([A-Z]):"
+msgstr "Caracteres en mayúsculas ([A-Z])"
+
+msgid "Numeric characters ([0-9]):"
+msgstr "Caracteres numéricos ([0-9])"
+
+msgid "Length:"
+msgstr "Largo:"
+
+msgid "Remove www:"
+msgstr "Quitar www:"
+
+msgid "Reset"
+msgstr "Reiniciar"
+
+msgid "Add a new URL to shorten"
+msgstr "Añadir una nueva URL para acortar"
+
+msgid "Do you want to use the following characters?"
+msgstr "¿Quieres utilizar los siguientes caracteres?"
+
+msgid "These parameters will be taken in account only for generation of new links"
+msgstr "Estos parámetros se tendrán en cuenta únicamente para la generación de nuevos vínculos"
+
+msgid "Do you want to use a prefix before your short URL?"
+msgstr "¿Quieres usar un prefijo antes de tu URL corta?"
+
+msgid "Prefix:"
+msgstr "Prefijo:"
+
+msgid "What is the length of your short URL (without the prefix)?"
+msgstr "¿Cual es el largo de tu URL corta (sin el prefijo)?"
+
+msgid "Customize the short link URL"
+msgstr "Personalizar la URL corta"
+
+msgid "Manage translations"
+msgstr "Administrar traducciones"
+
+msgid "Give feedback"
+msgstr "Enviar comentarios"
+
+msgid "Other plugins"
+msgstr "Otros plugins"
+
+msgid "Therefore, the short URL will begin with %s"
+msgstr "Por tanto, la URL corta empezara con %s"
+
+msgid "Change the root URL of the short link:"
+msgstr "Cambiar la URL raiz del enlace corto:"
+
+msgid "If you have a shorter URL pointing to your Wordpress blog, you may configure it here by selecting this option"
+msgstr "Si tiene una URL mas corta apuntando a su blog Wordpress, puede configurarla seleccionando esta opción"
+
+msgid "Your shorter domain URL:"
+msgstr "Su dominio corto:"
+
+msgid "Do you want to automatically shorten links in post/page?"
+msgstr "¿Quiere acortar enlaces automáticamente en entradas/páginas?"
+
+msgid "Automatic shorten links:"
+msgstr "Acortar enlaces automáticamente:"
+
+msgid "Regexp filter:"
+msgstr "Filtro de Expresión Regulares:"
+
+msgid "Please enter one regexp per line."
+msgstr "Por favor, introduzca una expresión regular por línea."
+
+msgid "If no regexp is entered, links in all pages and posts will be shorten."
+msgstr "Si no se introduce una expresión regular, enlaces en todas las páginas y mensajes serán acortados."
+

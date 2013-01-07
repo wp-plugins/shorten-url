@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-04-27T13:20:54+00:00\n"
+"PO-Revision-Date: 2012-10-08T06:18:54+00:00\n"
 "Last-Translator: OWenT <http://www.owent.net>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -48,16 +48,16 @@ msgid "External URL:"
 msgstr "外部链接:"
 
 msgid "Add a new URL to shorten"
-msgstr "添加新短链接"
+msgstr "添加短链接"
 
 msgid "Results for External URL"
 msgstr "外部链接结果"
 
 msgid "Parameters"
-msgstr "参数"
+msgstr "配置"
 
 msgid "Do you want to use the following characters?"
-msgstr "您想用以下字符吗？"
+msgstr "设置短链接使用的字符"
 
 msgid "These parameters will be taken in account only for generation of new links"
 msgstr "这些参数仅在新生成的链接中有效"
@@ -72,7 +72,7 @@ msgid "Numeric characters ([0-9]):"
 msgstr "数字([0-9]):"
 
 msgid "Do you want to use a prefix before your short URL?"
-msgstr "您需要使用短链接前缀吗？"
+msgstr "设置短链接前缀"
 
 msgid "Prefix:"
 msgstr "前缀："
@@ -91,4 +91,58 @@ msgstr "反馈"
 
 msgid "Other plugins"
 msgstr "其他插件"
+
+msgid "Title of your posts/pages"
+msgstr "文章/页面标题"
+
+msgid "Type"
+msgstr "类型"
+
+msgid "Number of clicks"
+msgstr "点击量"
+
+msgid "Internal Redirections"
+msgstr "内部跳转"
+
+msgid "External Redirections"
+msgstr "外部跳转"
+
+msgid "Customize the short link URL"
+msgstr "自定义短连接"
+
+msgid "Remove www:"
+msgstr "移除URL前的www"
+
+msgid "Therefore, the short URL will begin with %s"
+msgstr "因此，短链接将以%s开始"
+
+msgid "Change the root URL of the short link:"
+msgstr "修改短链接服务URL"
+
+msgid "If you have a shorter URL pointing to your Wordpress blog, you may configure it here by selecting this option"
+msgstr "如果您有指向您Wordpress博客的短链接，您可以通过这个选项来配置"
+
+msgid "Your shorter domain URL:"
+msgstr "短链接服务地址"
+
+msgid "Please add %s before the URL"
+msgstr "在URL添加%s前缀"
+
+msgid "Do you want to automatically shorten links in post/page?"
+msgstr "您需要自动生成文章/页面短链接吗？"
+
+msgid "Automatic shorten links:"
+msgstr "自动短链接"
+
+msgid "Regexp filter:"
+msgstr "正则表达式"
+
+msgid "The above regexp filter is to select the page in which the link urls are shorten. For instance, %s (or %s) configures the plugin to shorten all links, for instance, in pages %s and %s"
+msgstr "以上正则表达式用于选取生成短链接的页面。示例：%s (或 %s) 可以设置本插件缩短所有的链接，如：%s 和 %s"
+
+msgid "Please enter one regexp per line."
+msgstr "请每行输入一个正则表达式"
+
+msgid "If no regexp is entered, links in all pages and posts will be shorten."
+msgstr "如果没有输入任何表达式，所有的文章/页面都将生成短链接"
 

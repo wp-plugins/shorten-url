@@ -30,7 +30,7 @@ if (!class_exists("textDiff")) {
 		* 
 		* @param string $text1 the reference text
 		* @param string $text2 the text to compare with
-		* @return array
+		* @return void
 		*/
 		
 		public function diff($text1, $text2) {
@@ -49,7 +49,7 @@ if (!class_exists("textDiff")) {
 		 * @return string  HTML with differences.
 		 */
 		 
-		function show_all_with_difference() {
+		public function show_all_with_difference() {
 			$renderer = new Text_Diff_Renderer_inline() ; 
 			$result = $renderer->render($this->text_diff) ; 
 			
@@ -102,7 +102,7 @@ if (!class_exists("textDiff")) {
 		 * @return string  HTML with differences.
 		 */
 		 
-		function show_simple_difference() {
+		public function show_simple_difference() {
 			$renderer = new Text_Diff_Renderer_inline() ; 
 			$result = $renderer->render($this->text_diff) ; 
 			
@@ -120,7 +120,7 @@ if (!class_exists("textDiff")) {
 		 * @return string  HTML with differences.
 		 */
 		 
-		function show_only_difference() {
+		public function show_only_difference() {
 			$renderer = new Text_Diff_Renderer_inline() ; 
 			$result = $renderer->render($this->text_diff) ; 
 			

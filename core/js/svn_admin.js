@@ -15,6 +15,15 @@ function showSvnPopup(md5, plugin) {
 	jQuery.post(ajaxurl, arguments, function(response) {
 		jQuery('body').append(response);
 		jQuery("#wait_popup_"+md5).hide();
+	}).error(function(x,e) { 
+		if (x.status==0){
+			//Offline
+		} else if (x.status==500){
+			jQuery('body').append("Error 500: The ajax request is retried");
+			showSvnPopup(md5, plugin) ; 
+		} else {
+			jQuery('body').append("Error "+x.status+": No data retrieved");
+		}
 	});
 }
 
@@ -82,6 +91,15 @@ function svnExecute(sens, plugin, random) {
 		jQuery.post(ajaxurl, arguments, function(response) {
 			jQuery("#wait_svn").hide();
 			jQuery("#console_svn").html(response);
+		}).error(function(x,e) { 
+			if (x.status==0){
+				//Offline
+			} else if (x.status==500){
+				jQuery("#console_svn").html("Error 500: The ajax request is retried");
+				svnExecute(sens, plugin, random)  ;
+			} else {
+				jQuery("#console_svn").html("Error "+x.status+": No data retrieved");
+			}
 		}); 
 		
 	} else if (sens=="toLocal") {
@@ -98,6 +116,15 @@ function svnExecute(sens, plugin, random) {
 		jQuery.post(ajaxurl, arguments, function(response) {
 			jQuery("#wait_svn").hide();
 			jQuery("#console_svn").html(response);
+		}).error(function(x,e) { 
+			if (x.status==0){
+				//Offline
+			} else if (x.status==500){
+				jQuery("#console_svn").html("Error 500: The ajax request is retried");
+				svnExecute(sens, plugin, random)  ;
+			} else {
+				jQuery("#console_svn").html("Error "+x.status+": No data retrieved");
+			}
 		});    	
 	}
 }
@@ -117,6 +144,15 @@ function repoToSvn(plugin) {
 	//POST the data and append the results to the results div
 	jQuery.post(ajaxurl, arguments, function(response) {
 		jQuery("#svn_div").html(response);
+	}).error(function(x,e) { 
+		if (x.status==0){
+			//Offline
+		} else if (x.status==500){
+			jQuery("#svn_div").html("Error 500: The ajax request is retried");
+			repoToSvn(plugin) ; 
+		} else {
+			jQuery("#svn_div").html("Error "+x.status+": No data retrieved");
+		}
 	});    
 }
 

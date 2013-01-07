@@ -22,11 +22,6 @@ require_once('core.php') ;
 */
 class my_plugin extends pluginSedLex {
 	
-	// Declaration of class variables (Please modify)
-	var $your_var1 ; 
-	var $your_var2 ; 
-	var $your_varn ; 
-
 	/** ====================================================================================================================================================
 	* Plugin initialization
 	* 
@@ -60,9 +55,8 @@ class my_plugin extends pluginSedLex {
 		//		- http://codex.wordpress.org/Function_Reference/add_filter
 		//		- http://codex.wordpress.org/Plugin_API/Filter_Reference
 		// Be aware that the second argument should be of the form of array($this,"the_function")
-		// For instance add_action( "the_content",  array($this,"modify_content")) : this function will call the function 'modify_content' when the content of a post is displayed
+		// For instance add_action( "wp_ajax_foo",  array($this,"bar")) : this function will call the method 'bar' when the ajax action 'foo' is called
 		
-		// add_action( "the_content",  array($this,"modify_content")) ; 
 		
 		// Important variables initialisation (Do not modify)
 		$this->path = __FILE__ ; 
@@ -71,9 +65,40 @@ class my_plugin extends pluginSedLex {
 		// activation and deactivation functions (Do not modify)
 		register_activation_hook(__FILE__, array($this,'install'));
 		register_deactivation_hook(__FILE__, array($this,'deactivate'));
-		register_uninstall_hook(__FILE__, array($this,'uninstall_removedata'));
+		register_uninstall_hook(__FILE__, array('my_plugin','uninstall_removedata'));
 	}
-
+	
+	/** ====================================================================================================================================================
+	* In order to uninstall the plugin, few things are to be done ... 
+	* (do not modify this function)
+	* 
+	* @return void
+	*/
+	
+	static public function uninstall_removedata () {
+		global $wpdb ;
+		// DELETE OPTIONS
+		delete_option('my_plugin'.'_options') ;
+		if (is_multisite()) {
+			delete_site_option('my_plugin'.'_options') ;
+		}
+		
+		// DELETE SQL
+		if (function_exists('is_multisite') && is_multisite()){
+			$old_blog = $wpdb->blogid;
+			$old_prefix = $wpdb->prefix ; 
+			// Get all blog ids
+			$blogids = $wpdb->get_col($wpdb->prepare("SELECT blog_id FROM ".$wpdb->blogs));
+			foreach ($blogids as $blog_id) {
+				switch_to_blog($blog_id);
+				$wpdb->query("DROP TABLE ".str_replace($old_prefix, $wpdb->prefix, $wpdb->prefix . "pluginSL_" . 'my_plugin')) ; 
+			}
+			switch_to_blog($old_blog);
+		} else {
+			$wpdb->query("DROP TABLE ".$wpdb->prefix . "pluginSL_" . 'my_plugin' ) ; 
+		}
+	}
+	
 	/**====================================================================================================================================================
 	* Function called when the plugin is activated
 	* For instance, you can do stuff regarding the update of the format of the database if needed
@@ -95,6 +120,35 @@ class my_plugin extends pluginSedLex {
 	 
 	public function _notify() {
 		return 0 ; 
+	}
+	
+	
+	/** ====================================================================================================================================================
+	* Init javascript for the public side
+	* If you want to load a script, please type :
+	* 	<code>wp_enqueue_script( 'jsapi', 'https://www.google.com/jsapi');</code> or 
+	*	<code>wp_enqueue_script('my_plugin_script', plugins_url('/script.js', __FILE__));</code>
+	*	<code>$this->add_inline_js($js_text);</code>
+	*	<code>$this->add_js($js_url_file);</code>
+	*
+	* @return void
+	*/
+	
+	function _public_js_load() {	
+		return ; 
+	}
+	
+	/** ====================================================================================================================================================
+	* Init css for the public side
+	* If you want to load a style sheet, please type :
+	*	<code>$this->add_inline_css($css_text);</code>
+	*	<code>$this->add_css($css_url_file);</code>
+	*
+	* @return void
+	*/
+	
+	function _public_css_load() {	
+		return ; 
 	}
 	
 	/** ====================================================================================================================================================
@@ -124,36 +178,20 @@ class my_plugin extends pluginSedLex {
 	function _admin_css_load() {	
 		return ; 
 	}
-	
-	/** ====================================================================================================================================================
-	* Init javascript for the public side
-	* If you want to load a script, please type :
-	* 	<code>wp_enqueue_script( 'jsapi', 'https://www.google.com/jsapi');</code> or 
-	*	<code>wp_enqueue_script('my_plugin_script', plugins_url('/script.js', __FILE__));</code>
-	*	<code>$this->add_inline_js($js_text);</code>
-	*	<code>$this->add_js($js_url_file);</code>
-	*
-	* @return void
-	*/
-	
-	function _public_js_load() {	
-		return ; 
-	}
-	
-	/** ====================================================================================================================================================
-	* Init css for the public side
-	* If you want to load a style sheet, please type :
-	*	<code>$this->add_inline_css($css_text);</code>
-	*	<code>$this->add_css($css_url_file);</code>
-	*
-	* @return void
-	*/
-	
-	function _public_css_load() {	
-		return ; 
-	}
 
+	/** ====================================================================================================================================================
+	* Called when the content is displayed
+	*
+	* @param string $content the content which will be displayed
+	* @param string $type the type of the article (e.g. post, page, custom_type1, etc.)
+	* @param boolean $excerpt if the display is performed during the loop
+	* @return string the new content
+	*/
 	
+	function _modify_content($content, $type, $excerpt) {	
+		return $content; 
+	}
+		
 	/** ====================================================================================================================================================
 	* Add a button in the TinyMCE Editor
 	*

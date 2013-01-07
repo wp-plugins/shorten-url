@@ -18,7 +18,7 @@ if (!class_exists("Utils")) {
 		* @return string the converted string
 		*/
 
-		function convertUTF8($content) {
+		static function convertUTF8($content) {
 		    if(!mb_check_encoding($content, 'UTF-8')
 			OR !($content === mb_convert_encoding(mb_convert_encoding($content, 'UTF-32', 'UTF-8' ), 'UTF-8', 'UTF-32'))) {
 
@@ -238,7 +238,9 @@ if (!class_exists("Utils")) {
 					return false ; 
 				}
 			} else {
-				@unlink($path) ; 
+				if (is_file($path)) {
+					@unlink($path) ; 
+				}
 				if (is_file($path)) {
 					return false ; 
 				}
@@ -298,7 +300,7 @@ if (!class_exists("Utils")) {
 		* @return boolean true if the folder or the file is writable
 		*/
 		
-		function is_writable($path) {
+		static function is_writable($path) {
 			if ($path{strlen($path)-1}=='/') // recursively return a temporary file path
 				return Utils::is_writable($path.uniqid(mt_rand()).'.tmp');
 			else if (is_dir($path))
@@ -322,7 +324,7 @@ if (!class_exists("Utils")) {
 		* @return boolean true if the folder or the file is writable
 		*/
 		
-		function is_readable($path) {
+		static function is_readable($path) {
 			if (is_dir($path))  {
 				if (@scandir($path) === FALSE) {
 					return false ; 

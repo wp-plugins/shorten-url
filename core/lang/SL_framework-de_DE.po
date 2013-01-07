@@ -4,10 +4,11 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-09-05T04:46:42+00:00\n"
+"PO-Revision-Date: 2012-11-01T10:42:22+00:00\n"
 "Last-Translator: reitermarkus <me@reitermark.us>\n"
 "Last-Translator: ThorstenKallnischkies <http://desastre.eu>\n"
 "Last-Translator: blog.xmee.de <blog.xmee.de>\n"
+"Last-Translator: agent <www.simonlang.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -122,7 +123,7 @@ msgid "List of SL plugins"
 msgstr "Liste der SL Plugins"
 
 msgid "Parameters of the framework"
-msgstr "Parameter des Frameworks"
+msgstr "Framework - Einstellungen"
 
 msgid "The following description is a quick tutorial on about how to create a plugin with the SL framework. (Please note that the following description is in English for developpers, sorry for this inconvenience)"
 msgstr "Die folgende Beschreibung ist ein kurzes Tutorial wie man ein Plugin mit dem SL Framework entwickelt. (Bitte beachten Sie: Das folgende Tutorial ist nur auf Englisch verfügbar.)"
@@ -518,7 +519,7 @@ msgid "Parameters have been updated (but with some warnings)!"
 msgstr "Parameter wurden aktualisiert (mit Warnungen)"
 
 msgid "This form is an easy way to contact the author and to discuss issues/incompatibilities/etc. with him"
-msgstr "Dieses bFormular ist eine einfache Möglichkeit, Kontakt mit dem Autor aufzunehmen und Probleme, Inkompatibilitäten etc. mit ihm zu diskutieren"
+msgstr "Dieses Formular ist eine einfache Möglichkeit, Kontakt mit dem Autor aufzunehmen und Probleme, Inkompatibilitäten etc. mit ihm zu diskutieren"
 
 msgid "Please note that additional information on your wordpress installation will be sent to the author in order to help the debugging if needed (such as : the wordpress version, the installed plugins, etc.)"
 msgstr "Bitte nehmen Sie zur Kenntnis, dass zusätzliche Informationen an den Autor geschickt werden, wie z.B. WordPress-Version, installierte Plugins, etc. Diese Informationen werden benötigt, um Fehler zu finden."
@@ -603,4 +604,91 @@ msgstr "Rückgabewert:"
 
 msgid "Typical call:"
 msgstr "Typischer Aufruf:"
+
+msgid "Update of the core ..."
+msgstr "1) Update des Frameworks"
+
+msgid "1) The core of the plugin is up-to-date"
+msgstr "1) Das Framework ist &quot;up-to-date&quot;"
+
+msgid "Save Todo List"
+msgstr "Speichere Todo - Liste"
+
+msgid "Todo list saved!"
+msgstr "Todo - Liste gespeichert!"
+
+msgid "(if your name/pseudo is already in the list, there is no need to fill this input)"
+msgstr "( falls dein Name/ Pseudonym bereits in der Liste ist, muss dieses Feld nicht ausgefüllt werden)"
+
+msgid "Your email or your website:"
+msgstr "Deine Email oder Webseite:"
+
+msgid "The file %s cannot be extracted from mail attachments"
+msgstr "Die Datei %s kann nicht aus Mail - Anhängen extrahiert werden"
+
+msgid "The file %s cannot be written in the %s folder"
+msgstr "Die Datei %s kann nicht im Ordner %s erstellt werden"
+
+msgid "%s sentences have been translated (i.e. %s)."
+msgstr "%s Sätze wurden übersetzt (z.B. %s )"
+
+msgid "%s sentences have been translated (i.e. %s) %s %s sentences have to be checked because they are close (but not identical) to those to translate.%s"
+msgstr "%s Sätze wurden bereits übersetzt ( z.B. %s ) %s %s Sätze müssen korrigiert werden, weil sie nur annähernd richtig übersetzt wurden.%s"
+
+msgid "The following languages may be used by your Wordpress installation."
+msgstr "Die folgenden Sprachen werden von Ihrer Wordpress - Installation benutzt."
+
+msgid "If you want to modify the default language of the dashboad, and thus of the plugin, please select your language here:"
+msgstr "Wenn Sie die Standard-Sprache des Dashboards und des Plugins modifizieren möchten, wählen Sie Ihre sprache hier:"
+
+msgid "You may add a new translation hereafter (Please note that it is recommended to send your translation to the author so that he would be able to add your translation to the future release of the plugin !)"
+msgstr "Sie können hier eine neue Übersetzung hinzufügen ( bitte beachten Sie, dass Sie ihre Übersetzung auch an den Autor senden, damit die Übersetzung für zukünftige Veröffentlichungen verwendet werden kann! )"
+
+msgid "The 'SL framework' is a framework used for developping many plugins like this one. Thus, if you participate translating the framework, it will be very helpful for a bunch of plugins."
+msgstr "Das &quot;SL Framework&quot; ist ein Framework, welches benutzt wird, um viele Plugins wie dieses hier zu entwickeln. Falls Sie sich entscheiden, dieses Framework zu übersetzen, helfen Sie einer Menge an Plugins."
+
+msgid "There is %d languages supported for the 'SL framework'."
+msgstr "Es sind %d Übersetzungen für das &quot;SL Framework&quot; verfügbar"
+
+msgid "There is %d sentence to be translated in the framework."
+msgstr "Es sind noch %d Sätze des Frameworks zu übersetzen"
+
+msgid "This is the default language of the plugin framework. It cannot be modified."
+msgstr "Dies ist die Standardsprache des Frameworks. Es kann nicht verändert werden."
+
+msgid "Filter: %s"
+msgstr "Filter: %s"
+
+msgid "%s of %s"
+msgstr "%s von %s"
+
+msgid "Current Page"
+msgstr "Aktuelle Seite"
+
+msgid "An error occured when retrieving the version of the plugin on Wordpress.org. Please retry!"
+msgstr "Ein Fehler trat auf, als versucht wurde Wordpress.org zu erreichen um eine Version zu ermitteln. Bitte erneut versuchen!"
+
+msgid "2) Modify the version (but the files of plugin are unchanged)"
+msgstr "2) Verändere die Version ( die Dateien der Plugins bleiben unberührt )"
+
+msgid "2) Modify the version (the files of the plugin have been changed)"
+msgstr "2) Verändere die Version ( die Dateien der Plugins wurden verändert )"
+
+msgid "3) Update the SVN repository (without modifying the version)"
+msgstr "3) Update das SVN Repository ( ohne die Version zu modifizieren )"
+
+msgid "3) Update the SVN repository (and release a new version %s)"
+msgstr "3) Update das SVN Repository ( und veröffentliche eine neue Version %s )"
+
+msgid "There is a problem with the header of %s. It appears that there is no Version header."
+msgstr "Es ist ein Problem mit dem Head von %s aufgetreten. Es scheint, als ob es keinen Versions - Header gibt."
+
+msgid "An error occurred during the retrieval of files on the server ! Sorry ..."
+msgstr "Ein Fehler beim Übertragen der Dateien vom Server trat auf! Sorry ...."
+
+msgid "Yes, the local version will be overwritten with the repository files"
+msgstr "Ja, die locale Version wird mit der Version aus dem Repository überschrieben"
+
+msgid "Sending to the repository in progress..."
+msgstr "Senden zum Repository wird durchgeführt...."
 

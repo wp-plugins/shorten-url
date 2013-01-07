@@ -9,6 +9,10 @@ if (!defined('ABSPATH')) {
 	exit("Sorry, you are not allowed to access this file directly.");
 }
 
+if (!defined('IS_AJAX_SL')) {
+	define('IS_AJAX_SL', isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
+}
+
 if (!class_exists('pluginSedLex')) {
 
 	$sedlex_list_scripts = array() ; 
@@ -21,22 +25,19 @@ if (!class_exists('pluginSedLex')) {
 	* @abstract
 	*/
 	abstract class pluginSedLex {
-	 
-		protected $pluginID = '';
-		protected $pluginName = '';
-		protected $signature = '';
-		protected $tableSQL = '' ; 
-				
+	
+
 		/** ====================================================================================================================================================
 		 * This is our constructor, which is private to force the use of getInstance()
 		 *
 		 * @return void
 		 */
 		protected function __construct() {
+			
 			if ( is_callable( array($this, '_init') ) ) {
 				$this->_init();
 			}
-			
+						
 			//Button for tinyMCE
 			add_action('init', array( $this, '_button_editor'));
 			add_action('parse_request', array($this,'create_js_for_tinymce') , 1);
@@ -46,16 +47,29 @@ if (!class_exists('pluginSedLex')) {
 			add_filter('plugin_action_links', array($this, 'plugin_action_links'), 10, 2);
 			add_action('init', array( $this, 'init_textdomain'));
 			
-			add_action('wp_print_scripts', array( $this, 'javascript_front'), 5);
-			add_action('wp_print_styles', array( $this, 'css_front'), 5);
+			// Public Script
+			add_action('wp_enqueue_scripts', array( $this, 'javascript_front'), 5);
+			add_action('wp_enqueue_scripts', array( $this, 'css_front'), 5);
 			if (method_exists($this,'_public_js_load')) {
-				add_action('wp_print_scripts', array($this,'_public_js_load'));
+				add_action('wp_enqueue_scripts', array($this,'_public_js_load'));
 			}
 			if (method_exists($this,'_public_css_load')) {
-				add_action('wp_print_styles', array($this,'_public_css_load'));
+				add_action('wp_enqueue_scripts', array($this,'_public_css_load'));
 			}
-			add_action('wp_print_scripts', array( $this, 'flush_js'), 10000000);
-			add_action('wp_print_styles', array( $this, 'flush_css'), 10000000);
+			add_action('wp_enqueue_scripts', array( $this, 'flush_js'), 10000000);
+			add_action('wp_enqueue_scripts', array( $this, 'flush_css'), 10000000);
+
+			// Admin Script
+			add_action('admin_enqueue_scripts', array( $this, 'javascript_admin'), 5);
+			add_action('admin_enqueue_scripts', array( $this, 'css_admin'), 5);
+			if (method_exists($this,'_admin_js_load')) {
+				add_action('admin_enqueue_scripts', array($this,'_admin_js_load'));
+			}
+			if (method_exists($this,'_admin_css_load')) {
+				add_action('admin_enqueue_scripts', array($this,'_admin_css_load'));
+			}
+			add_action('admin_enqueue_scripts', array( $this, 'flush_js'), 10000000);
+			add_action('admin_enqueue_scripts', array( $this, 'flush_css'), 10000000);
 			
 			// We add an ajax call for the translation class
 			add_action('wp_ajax_translate_add', array('translationSL','translate_add')) ; 
@@ -97,7 +111,12 @@ if (!class_exists('pluginSedLex')) {
 			add_action('wp_ajax_coreInfo', array($this,'coreInfo')) ; 
 			add_action('wp_ajax_coreUpdate', array($this,'coreUpdate')) ; 
 			
-			// We remove some functionnalities
+			// Enable the modification of the content and of the excerpt
+			add_filter('the_content', array($this,'the_content_SL'), 1000);
+			add_filter('get_the_excerpt', array( $this, 'the_excerpt_SL'),1000000);
+			add_filter('get_the_excerpt', array( $this, 'the_excerpt_ante_SL'),2);
+			
+			// We remove some functionalities
 			remove_action('wp_head', 'feed_links_extra', 3); // Displays the links to the extra feeds such as category feeds
 			remove_action('wp_head', 'feed_links', 2); // Displays the links to the general feeds: Post and Comment Feed
 			remove_action('wp_head', 'rsd_link'); // Displays the link to the Really Simple Discovery service endpoint, EditURI link
@@ -109,9 +128,31 @@ if (!class_exists('pluginSedLex')) {
 			remove_action('wp_head', 'wp_generator'); // Displays the XHTML generator that is generated on the wp_head hook, WP version
 			//remove_action( 'wp_head', 'wp_shortlink_wp_head');
 			
+			// deprecated
+			add_action( 'deprecated_function_run',  array( 'deprecatedSL', 'log_function' ), 10, 3 );
+			add_action( 'deprecated_file_included', array( 'deprecatedSL', 'log_file' ), 10, 4 );
+			add_action( 'deprecated_argument_run',  array( 'deprecatedSL', 'log_argument' ), 10, 4 );
+			add_action( 'doing_it_wrong_run',       array( 'deprecatedSL', 'log_wrong' ), 10, 3 );
+			add_action( 'deprecated_hook_used',     array( 'deprecatedSL', 'log_hook' ), 10, 4 );
+			
+			add_action('admin_notices', array($this, 'admin_notice'));
+			
 			$this->signature = '<p style="text-align:right;font-size:75%;">&copy; SedLex - <a href="http://www.sedlex.fr/">http://www.sedlex.fr/</a></p>' ; 
 			
 			$this->frmk = new coreSLframework() ;
+			$this->excerpt_called_SL = false ; 			
+		}
+		
+		/** ====================================================================================================================================================
+		* In order to display notices if any
+		* This function is not supposed to be called from your plugin : it is a purely internal function 
+		*  
+		* @access private
+		* @return void
+		*/
+		
+		public function admin_notice () {
+			deprecatedSL::show_front() ; 
 		}
 		
 		/** ====================================================================================================================================================
@@ -218,47 +259,13 @@ if (!class_exists('pluginSedLex')) {
 		}
 		
 		/** ====================================================================================================================================================
-		* In order to uninstall the plugin, few things are to be done ... 
-		* This function is not supposed to be called from your plugin : it is a purely internal function called when you de-activate the plugin
-		* 
-		* For now the function does nothing (but have to be declared)
-		* 
-		* @access private
-		* @see pluginSedLex::install
-		* @see pluginSedLex::deactivate
-		* @return void
-		*/
-		public function uninstall_removedata () {
-		
-			// DELETE OPTIONS
-			delete_option($this->pluginID.'_options') ;
-			if (is_multisite()) {
-				delete_site_option($this->pluginID.'_options') ;
-			}
-			
-			// DELETE SQL
-			if (function_exists('is_multisite') && is_multisite()){
-				$old_blog = $wpdb->blogid;
-				$old_prefix = $wpdb->prefix ; 
-				// Get all blog ids
-				$blogids = $wpdb->get_col($wpdb->prepare("SELECT blog_id FROM $wpdb->blogs"));
-				foreach ($blogids as $blog_id) {
-					switch_to_blog($blog_id);
-					$wpdb->query("DROP TABLE ".str_replace($old_prefix, $wpdb->prefix, $this->table_name)) ; 
-				}
-				switch_to_blog($old_blog);
-			} else {
-				$wpdb->query("DROP TABLE ".$this->table_name) ; 
-			}
-			
-		}
-		
-		/** ====================================================================================================================================================
 		* Get the value of an option of the plugin
 		* 
 		* For instance: <code> echo $this->get_param('opt1') </code> will return the value of the option 'opt1' stored for this plugin. Please note that two different plugins may have options with the same name without any conflict.
 		*
 		* @see  pluginSedLex::set_param
+		* @see  pluginSedLex::get_name_params
+		* @see  pluginSedLex::del_param
 		* @see parametersSedLex::parametersSedLex
 		* @param string $option the name of the option
 		* @return mixed  the value of the option requested
@@ -271,7 +278,11 @@ if (!class_exists('pluginSedLex')) {
 			}
 		
 			if (!isset($options[$option])) {
-				$options[$option] = str_replace("*","",$this->get_default_option($option)) ; 
+				if ( (is_string($this->get_default_option($option))) && (substr($this->get_default_option($option), 0, 1)=="*") ) {
+					$options[$option] = substr($this->get_default_option($option), 1) ; 
+				} else {
+					$options[$option] = $this->get_default_option($option) ; 
+				}
 			}
 			
 			if (is_multisite() && preg_match('/^global_/', $option)) {
@@ -280,6 +291,69 @@ if (!class_exists('pluginSedLex')) {
 				update_option($this->pluginID.'_options', $options);
 			}
 			return $options[$option] ;
+		}
+		
+		/** ====================================================================================================================================================
+		* Get name of all options
+		* 
+		* For instance: <code> echo $this->get_name_params() </code> will return an array with the name of all the options of the plugin
+		*
+		* @see  pluginSedLex::set_param
+		* @see  pluginSedLex::get_param
+		* @see  pluginSedLex::del_param
+		* @see parametersSedLex::parametersSedLex
+		* @return array an array with all option names
+		*/
+		
+		public function get_name_params() {
+			if (is_multisite()) {
+				$options = get_site_option($this->pluginID.'_options');
+			} else {
+				$options = get_option($this->pluginID.'_options');
+			}
+		
+			
+			if (is_array($options)) {
+				$results = array() ; 
+				foreach ($options as $o => $v) {
+					$results[] = $o ; 
+				}
+				return $results ; 
+			} else {
+				return array() ; 
+			}
+		}
+		
+		/** ====================================================================================================================================================
+		* Delete an option of the plugin
+		* 
+		* For instance: <code> echo $this->get_param('opt1') </code> will return the value of the option 'opt1' stored for this plugin. Please note that two different plugins may have options with the same name without any conflict.
+		*
+		* @see  pluginSedLex::set_param
+		* @see  pluginSedLex::get_name_params
+		* @see  pluginSedLex::gel_param
+		* @see parametersSedLex::parametersSedLex
+		* @param string $option the name of the option
+		* @return void
+		*/
+		
+		public function del_param($option) {
+			if (is_multisite()) {
+				$options = get_site_option($this->pluginID.'_options');
+			} else {
+				$options = get_option($this->pluginID.'_options');
+			}
+		
+			if (isset($options[$option])) {
+				unset($options[$option]) ; 
+			}
+			
+			if (is_multisite()) {
+				update_site_option($this->pluginID.'_options', $options);
+			} else {
+				update_option($this->pluginID.'_options', $options);
+			}
+			return ;
 		}
 		
 		/** ====================================================================================================================================================
@@ -325,6 +399,7 @@ if (!class_exists('pluginSedLex')) {
 			$topLevel = "sedlex.php" ; 
 			
 			// Fait en sorte qu'il n'y ait qu'un seul niveau 1 pour l'ensemble des plugins que j'ai redige
+			$menu_added=false ; 
 			foreach ($menu as $i) {
 				$key = array_search($topLevel, $i);
 				if ($key != '') {
@@ -335,15 +410,9 @@ if (!class_exists('pluginSedLex')) {
 				// Nothing ... because menu is already added
 				} else {
 				//add main menu
-				add_object_page('SL Plugins', 'SL Plugins', 10, $topLevel, array($this,'sedlex_information'));
+				add_object_page('SL Plugins', 'SL Plugins', 'activate_plugins', $topLevel, array($this,'sedlex_information'));
 			
-				$page = add_submenu_page($topLevel, __('About...', 'SL_framework'), __('About...', 'SL_framework'), 10, $topLevel, array($this,'sedlex_information'));
-
-				add_action('admin_print_scripts-'.$page, array($this,'javascript_admin_always'),5);
-				add_action('admin_print_styles-'.$page, array($this,'css_admin_always'),5);
-				
-				add_action('admin_print_scripts-'.$page, array( $this, 'flush_js'), 10000000);
-				add_action('admin_print_styles-'.$page, array( $this, 'flush_css'), 10000000);
+				$page = add_submenu_page($topLevel, __('About...', 'SL_framework'), __('About...', 'SL_framework'), 'activate_plugins', $topLevel, array($this,'sedlex_information'));
 			}
 		
 			//add sub menus
@@ -360,26 +429,8 @@ if (!class_exists('pluginSedLex')) {
 					$number = "" ; 
 				}
 			}
-			$page = add_submenu_page($topLevel, $this->pluginName, $this->pluginName . $number, 10, $plugin, array($this,'configuration_page'));
 			
-			// Different actions
-
-			add_action('admin_print_scripts-'.$page, array($this,'javascript_admin'));
-			add_action('admin_print_styles-'.$page, array($this,'css_admin'));
-			
-			if (method_exists($this,'_admin_js_load')) {
-				add_action('admin_print_scripts-'.$page, array($this,'_admin_js_load'));
-			}
-			if (method_exists($this,'_admin_css_load')) {
-				add_action('admin_print_styles-'.$page, array($this,'_admin_css_load'));
-			}
-			
-			add_action('admin_print_scripts-'.$page, array($this,'javascript_admin_always'),5);
-			add_action('admin_print_styles-'.$page, array($this,'css_admin_always'),5);
-			
-			add_action('admin_print_scripts-'.$page, array( $this, 'flush_js'), 10000000);
-			add_action('admin_print_styles-'.$page, array( $this, 'flush_css'), 10000000);
-
+			$page = add_submenu_page($topLevel, $this->pluginName, $this->pluginName . $number, 'activate_plugins', $plugin, array($this,'configuration_page'));			
 
 		}
 		
@@ -499,7 +550,7 @@ if (!class_exists('pluginSedLex')) {
 		}
 		
 		function create_js_for_tinymce() {
-			if ($_GET["output_js_tinymce"]=="customPluginButtons_".$this->pluginID) {
+			if ((isset($_GET["output_js_tinymce"]))&&($_GET["output_js_tinymce"]=="customPluginButtons_".$this->pluginID)) {
 				?>
 				(function(){
 					tinymce.create('tinymce.plugins.<?php echo "customPluginButtons_".$this->pluginID ; ?>', {
@@ -638,26 +689,7 @@ if (!class_exists('pluginSedLex')) {
 				$sedlex_list_scripts = array(); 
 			}
 		}
-		
-		/** ====================================================================================================================================================
-		* Insert the  admin javascript file which is located in js/js_admin.js (you may modify this file in order to customize the rendering) 
-		* This function is not supposed to be called from your plugin. This function is called automatically when you are in the admin page of the plugin
-		* 
-		* @access private
-		* @return void
-		*/
-		
-		public function javascript_admin() {
-			$name = 'js/js_admin.js' ; 
-			$url = WP_PLUGIN_URL.'/'.str_replace(basename( $this->path),"",plugin_basename($this->path)) .$name ; 
-			$path = WP_PLUGIN_DIR.'/'.str_replace(basename( $this->path),"",plugin_basename($this->path)) .$name ; 
-			if (file_exists($path)) {
-				if (@filesize($path)>0) {
-					$this->add_js($url) ; 
-				}
-			}
-		}
-		
+				
 		/** ====================================================================================================================================================
 		* Insert the  admin javascript files which is located in the core (you may NOT modify these files) 
 		* This function is not supposed to be called from your plugin. This function is called automatically when you are in the admin page of the plugin
@@ -666,29 +698,40 @@ if (!class_exists('pluginSedLex')) {
 		* @return void
 		*/
 		
-		public function javascript_admin_always() {
-			// For the tabs of the admin page
-			wp_enqueue_script('jquery');   
-			wp_enqueue_script('jquery-ui-core', '', array('jquery'), false );   
-			wp_enqueue_script('jquery-ui-dialog', '', array('jquery'), false );
-			wp_enqueue_script('jquery-ui-tabs', '', array('jquery'), false );
-			wp_enqueue_script( 'jquery-ui-sortable', '', array('jquery'), false );
-			wp_enqueue_script( 'jquery-ui-effects', '', array('jquery', 'jquery-ui'), false );
+		public function javascript_admin() {
+			if (str_replace(basename( __FILE__),"",plugin_basename( __FILE__))==str_replace(basename( $this->path),"",plugin_basename($this->path))) {
+				// For the tabs of the admin page
+				wp_enqueue_script('jquery');   
+				wp_enqueue_script('jquery-ui-core', '', array('jquery'), false );   
+				wp_enqueue_script('jquery-ui-dialog', '', array('jquery'), false );
+				wp_enqueue_script('jquery-ui-tabs', '', array('jquery'), false );
+				wp_enqueue_script( 'jquery-ui-sortable', '', array('jquery'), false );
+				wp_enqueue_script( 'jquery-ui-effects', '', array('jquery', 'jquery-ui'), false );
+				
+				echo '<script> addLoadEvent = function(func){if(typeof jQuery!="undefined")jQuery(document).ready(func);else if(typeof wpOnload!=\'function\'){wpOnload=func;}else{var oldonload=wpOnload;wpOnload=function(){oldonload();func();}}};</script>'."\r\n" ; 
 			
-			echo '<script> addLoadEvent = function(func){if(typeof jQuery!="undefined")jQuery(document).ready(func);else if(typeof wpOnload!=\'function\'){wpOnload=func;}else{var oldonload=wpOnload;wpOnload=function(){oldonload();func();}}};</script>' ; 
-		
-			@chmod(WP_PLUGIN_DIR.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'core/js/', 0755);
-			
-			$dir = @opendir(WP_PLUGIN_DIR.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'core/js/'); 
-			if ($dir !== false) {
-				while($file = readdir($dir)) {
-					if (preg_match('@\.js$@i',$file)) {
-						$path = WP_PLUGIN_DIR.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'core/js/'.$file ; 
-						$url = WP_PLUGIN_URL.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'core/js/'.$file ; 
-						if (@filesize($path)>0) {
-							$this->add_js($url) ; 
-						}				
+				@chmod(WP_PLUGIN_DIR.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'core/js/', 0755);
+				
+				$dir = @opendir(WP_PLUGIN_DIR.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'core/js/'); 
+				if ($dir !== false) {
+					while($file = readdir($dir)) {
+						if (preg_match('@\.js$@i',$file)) {
+							$path = WP_PLUGIN_DIR.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'core/js/'.$file ; 
+							$url = WP_PLUGIN_URL.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'core/js/'.$file ; 
+							if (@filesize($path)>0) {
+								$this->add_js($url) ; 
+							}				
+						}
 					}
+				}
+			}
+			
+			$name = 'js/js_admin.js' ; 
+			$url = WP_PLUGIN_URL.'/'.str_replace(basename( $this->path),"",plugin_basename($this->path)) .$name ; 
+			$path = WP_PLUGIN_DIR.'/'.str_replace(basename( $this->path),"",plugin_basename($this->path)) .$name ; 
+			if (file_exists($path)) {
+				if (@filesize($path)>0) {
+					$this->add_js($url) ; 
 				}
 			}
 		}
@@ -831,24 +874,6 @@ if (!class_exists('pluginSedLex')) {
 			}
 		}
 		
-		/** ====================================================================================================================================================
-		* Insert the  admin css file which is located in css/css_admin.css (you may modify this file in order to customize the rendering) 
-		* This function is not supposed to be called from your plugin. This function is called automatically when you are in the admin page of the plugin
-		* 
-		* @access private
-		* @return void
-		*/
-		
-		public function css_admin() {
-			$name = 'css/css_admin.css' ; 
-			$url = WP_PLUGIN_URL.'/'.str_replace(basename( $this->path),"",plugin_basename($this->path)) .$name ; 
-			$path = WP_PLUGIN_DIR.'/'.str_replace(basename( $this->path),"",plugin_basename($this->path)) .$name ; 
-			if (file_exists($path)) {
-				if (@filesize($path)>0) {
-					$this->add_css($url) ; 
-				}
-			}
-		}
 		
 		/** ====================================================================================================================================================
 		* Insert the  admin css files which is located in the core (you may NOT modify these files) 
@@ -858,24 +883,36 @@ if (!class_exists('pluginSedLex')) {
 		* @return void
 		*/
 		
-		public function css_admin_always() {
-			wp_enqueue_style('wp-admin');
-			wp_enqueue_style('dashboard');
-			wp_enqueue_style('plugin-install');
-			
-			@chmod(WP_PLUGIN_DIR.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'core/css/', 0755);
-			$dir = @opendir(WP_PLUGIN_DIR.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'core/css/'); 
-			if ($dir!==false) {
-				while($file = readdir($dir)) {
-					if (preg_match('@\.css$@i',$file)) {
-						$path = WP_PLUGIN_DIR.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'core/css/'.$file ; 
-						$url = WP_PLUGIN_URL.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'core/css/'.$file ; 
-						if (@filesize($path)>0) {
-							$this->add_css($url) ; 
-						}			
+		public function css_admin() {
+			if (str_replace(basename( __FILE__),"",plugin_basename( __FILE__))==str_replace(basename( $this->path),"",plugin_basename($this->path))) {
+				wp_enqueue_style('wp-admin');
+				wp_enqueue_style('dashboard');
+				wp_enqueue_style('plugin-install');
+				
+				@chmod(WP_PLUGIN_DIR.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'core/css/', 0755);
+				$dir = @opendir(WP_PLUGIN_DIR.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'core/css/'); 
+				if ($dir!==false) {
+					while($file = readdir($dir)) {
+						if (preg_match('@\.css$@i',$file)) {
+							$path = WP_PLUGIN_DIR.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'core/css/'.$file ; 
+							$url = WP_PLUGIN_URL.'/'.str_replace(basename( __FILE__),"",plugin_basename( __FILE__)) .'core/css/'.$file ; 
+							if (@filesize($path)>0) {
+								$this->add_css($url) ; 
+							}			
+						}
 					}
 				}
 			}
+			
+			$name = 'css/css_admin.css' ; 
+			$url = WP_PLUGIN_URL.'/'.str_replace(basename( $this->path),"",plugin_basename($this->path)) .$name ; 
+			$path = WP_PLUGIN_DIR.'/'.str_replace(basename( $this->path),"",plugin_basename($this->path)) .$name ; 
+			if (file_exists($path)) {
+				if (@filesize($path)>0) {
+					$this->add_css($url) ; 
+				}
+			}
+
 		}
 
 		/** ====================================================================================================================================================
@@ -944,6 +981,9 @@ if (!class_exists('pluginSedLex')) {
 				$params->add_param ("adv_trans_server", __('IMAP Server:','SL_framework')) ; 
 				$params->add_comment (sprintf(__('Should be something like %s','SL_framework'), "<code>{imap.domain.fr:143}INBOX</code>")) ; 
 	
+				$params->add_title (__('Debug functions','SL_framework')) ; 
+				$params->add_param ("deprecated", __('Look for deprecated methods/use and display all error/warning/notice in the front page (no message in the front page):','SL_framework')) ; 
+
 				echo $params->flush() ; 
 				$paramSave = ob_get_clean() ; 
 
@@ -954,245 +994,248 @@ if (!class_exists('pluginSedLex')) {
 				$current_core_used = str_replace(WP_PLUGIN_DIR."/",'',dirname(__FILE__)) ; 
 				
 				if ($this->frmk->get_param('adv_param')){
-					$current_fingerprint_core_used = $this->checkCoreOfThePlugin(WP_PLUGIN_DIR."/".$current_core_used."/core.php") ; 
+					$current_fingerprint_core_used = pluginSedLex::checkCoreOfThePlugin(WP_PLUGIN_DIR."/".$current_core_used."/core.php") ; 
 				}
 			}
 						
 			//Information about the SL plugins
 			?>
-				<div class="wrap">
-					<div id="icon-themes" class="icon32"><br/></div>
-					<h2><?php echo __('Summary page for the plugins developped with the SL framework', 'SL_framework')?></h2>
-				</div>
-				<div style="padding:20px;">
-					<?php echo $this->signature; 
-					echo '<p style="text-align:right;font-size:75%;">'.__('The core file used for the SedLex plugins is:', 'SL_framework')." <b>".$current_core_used.'</b></p>' ; 
-					?>
-					<p>&nbsp;</p>
-					<?php
-					
-					$plugins = get_plugins() ; 
-					$sl_count = 0 ; 
-					foreach ($submenu['sedlex.php'] as $ov) {
-						$sl_count ++ ; 
-					}
+			<div class="wrap">
+				<div id="icon-themes" class="icon32"><br/></div>
+				<h2><?php echo __('Summary page for the plugins developped with the SL framework', 'SL_framework')?></h2>
+			</div>
+			<div style="padding:20px;">
+				<?php echo $this->signature; 
+				echo '<p style="text-align:right;font-size:75%;">'.__('The core file used for the SedLex plugins is:', 'SL_framework')." <b>".$current_core_used.'</b></p>' ; 
+				?>
+				<p>&nbsp;</p>
+				<?php
+				
+				$plugins = get_plugins() ; 
+				$sl_count = 0 ; 
+				foreach ($submenu['sedlex.php'] as $ov) {
+					$sl_count ++ ; 
+				}
 ?>
-					<p><?php printf(__("For now, you have installed %d  plugins including %d plugins developped with the 'SL framework':",'SL_framework'), count($plugins), $sl_count-1)?><p/>
+				<p><?php printf(__("For now, you have installed %d  plugins including %d plugins developped with the 'SL framework':",'SL_framework'), count($plugins), $sl_count-1)?><p/>
 <?php
-					
-					//======================================================================================
-					//= Tab listing all the plugins
-					//======================================================================================
-			
-					$tabs = new adminTabs() ; 
-										
-					ob_start() ; 
-						$table = new adminTable() ; 
-						if ($this->frmk->get_param('adv_param')){
-							$table->title(array(__("Plugin name", 'SL_framework'), __("Description", 'SL_framework'), __("SVN Management", 'SL_framework'))) ; 
-						} else {
-							$table->title(array(__("Plugin name", 'SL_framework'), __("Description", 'SL_framework'))) ; 
-						}
+				
+				//======================================================================================
+				//= Tab listing all the plugins
+				//======================================================================================
+		
+				$tabs = new adminTabs() ; 
+									
+				ob_start() ; 
+					$table = new adminTable() ; 
+					if ($this->frmk->get_param('adv_param')){
+						$table->title(array(__("Plugin name", 'SL_framework'), __("Description", 'SL_framework'), __("SVN Management", 'SL_framework'))) ; 
+					} else {
+						$table->title(array(__("Plugin name", 'SL_framework'), __("Description", 'SL_framework'))) ; 
+					}
+					$ligne=0 ; 
+					foreach ($submenu['sedlex.php'] as $i => $ov) {
+						$ligne++ ; 
 
-						foreach ($submenu['sedlex.php'] as $i => $ov) {
-							$ligne++ ; 
-
-							$url = $ov[2] ; 
-							$plugin_name = explode("/",$url) ;
+						$url = $ov[2] ; 
+						$plugin_name = explode("/",$url) ;
+						if (isset($plugin_name[count($plugin_name)-2])) {
 							$plugin_name = $plugin_name[count($plugin_name)-2] ; 
-							
-							if ($i != 0) {
-								$info = $this->get_plugins_data(WP_PLUGIN_DIR."/".$url);
-								ob_start() ; 
-								?>
-									<p><b><?php echo $info['Plugin_Name'] ; ?></b></p>
-									<p><a href='admin.php?page=<?php echo $url  ; ?>'><?php echo __('Settings', 'SL_framework') ; ?></a> | <?php echo Utils::byteSize(Utils::dirSize(dirname(WP_PLUGIN_DIR.'/'.$url ))) ;?></p>
-								<?php
-									if ($this->frmk->get_param('adv_param')){
-										echo "<div id='infoPlugin_".md5($url)."' style='display:none;' ><img src='".WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/ajax-loader.gif'> ".__('Update plugin information...', 'SL_framework')."</div>" ; 
-										?>
-										<script>
-											setTimeout("timePlugin<?php echo md5($url) ?>()", Math.floor(Math.random()*4000)); 
-											function timePlugin<?php echo md5($url) ?>() {
-												jQuery('#infoPlugin_<?php echo md5($url)?>').show() ; 
-												pluginInfo('infoPlugin_<?php echo md5($url) ; ?>', '<?php echo $url ; ?>', '<?php echo $plugin_name ; ?>') ; 
-											}
-										</script>
-										<?php
-									}
-								$cel1 = new adminCell(ob_get_clean()) ; 
-								
-								ob_start() ; 
-									$database = "" ; 
-									if ($info['Database']!="") {
-										$database = "<img src='".WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/database.png"."' alt='".__('There is a SQL database for this plugin', 'SL_framework')."'/>" ; 
-									}
-									?>
-									<p><?php echo str_replace("<ul>", "<ul style='list-style-type:circle; padding-left:1cm;'>", $info['Description']) ; ?></p>
-									<p><?php echo sprintf(__('Version: %s by %s', 'SL_framework'),$info['Version'],$info['Author']) ; ?> (<a href='<?php echo $info['Author_URI'] ; ?>'><?php echo $info['Author_URI'] ; ?></a>)<?php echo $database ; ?></p>
-									<?php
-								$cel2 = new adminCell(ob_get_clean()) ; 
-								
+						} else {
+							$plugin_name = "?" ; 
+						}
+						if ($i != 0) {
+							$info = pluginSedlex::get_plugins_data(WP_PLUGIN_DIR."/".$url);
+							ob_start() ; 
+							?>
+								<p><b><?php echo $info['Plugin_Name'] ; ?></b></p>
+								<p><a href='admin.php?page=<?php echo $url  ; ?>'><?php echo __('Settings', 'SL_framework') ; ?></a> | <?php echo Utils::byteSize(Utils::dirSize(dirname(WP_PLUGIN_DIR.'/'.$url ))) ;?></p>
+							<?php
 								if ($this->frmk->get_param('adv_param')){
-									ob_start() ; 
-									echo "<div id='corePlugin_".md5($url)."'>" ; 
-									echo "</div>" ; 
+									echo "<div id='infoPlugin_".md5($url)."' style='display:none;' ><img src='".WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/ajax-loader.gif'> ".__('Update plugin information...', 'SL_framework')."</div>" ; 
 									?>
 									<script>
-										setTimeout("timeCore<?php echo md5($url) ?>()", Math.floor(Math.random()*4000)+1000); 
-										function timeCore<?php echo md5($url) ?>() {
-											jQuery('#corePluginWait_<?php echo md5($url)?>').show() ; 
-											coreInfo('<?php echo md5($url) ?>', '<?php echo $url ?>', '<?php echo $plugin_name?>', '<?php echo $current_core_used?>', "<?php echo $current_fingerprint_core_used?>", '<?php echo $info['Author']?>', '<?php echo WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/ajax-loader.gif" ; ?>', '<?php echo __("Getting SVN information...", "SL_framework") ; ?>') ; 
+										setTimeout("timePlugin<?php echo md5($url) ?>()", Math.floor(Math.random()*4000)); 
+										function timePlugin<?php echo md5($url) ?>() {
+											jQuery('#infoPlugin_<?php echo md5($url)?>').show() ; 
+											pluginInfo('infoPlugin_<?php echo md5($url) ; ?>', '<?php echo $url ; ?>', '<?php echo $plugin_name ; ?>') ; 
 										}
 									</script>
 									<?php
-									$cel3 = new adminCell( ob_get_clean() ) ; 
 								}
-								
-								if ($this->frmk->get_param('adv_param')){
-									$table->add_line(array($cel1, $cel2, $cel3), '1') ; 
-								} else {
-									$table->add_line(array($cel1, $cel2), '1') ; 
+							$cel1 = new adminCell(ob_get_clean()) ; 
+							
+							ob_start() ; 
+								$database = "" ; 
+								if ($info['Database']!="") {
+									$database = "<img src='".WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/database.png"."' alt='".__('There is a SQL database for this plugin', 'SL_framework')."'/>" ; 
 								}
+								?>
+								<p><?php echo str_replace("<ul>", "<ul style='list-style-type:circle; padding-left:1cm;'>", $info['Description']) ; ?></p>
+								<p><?php echo sprintf(__('Version: %s by %s', 'SL_framework'),$info['Version'],$info['Author']) ; ?> (<a href='<?php echo $info['Author_URI'] ; ?>'><?php echo $info['Author_URI'] ; ?></a>)<?php echo $database ; ?></p>
+								<?php
+							$cel2 = new adminCell(ob_get_clean()) ; 
+							
+							if ($this->frmk->get_param('adv_param')){
+								ob_start() ; 
+								echo "<div id='corePlugin_".md5($url)."'>" ; 
+								echo "</div>" ; 
+								?>
+								<script>
+									setTimeout("timeCore<?php echo md5($url) ?>()", Math.floor(Math.random()*4000)+1000); 
+									function timeCore<?php echo md5($url) ?>() {
+										jQuery('#corePluginWait_<?php echo md5($url)?>').show() ; 
+										coreInfo('<?php echo md5($url) ?>', '<?php echo $url ?>', '<?php echo $plugin_name?>', '<?php echo $current_core_used?>', "<?php echo $current_fingerprint_core_used?>", '<?php echo $info['Author']?>', '<?php echo WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/ajax-loader.gif" ; ?>', '<?php echo __("Getting SVN information...", "SL_framework") ; ?>') ; 
+									}
+								</script>
+								<?php
+								$cel3 = new adminCell( ob_get_clean() ) ; 
+							}
+							
+							if ($this->frmk->get_param('adv_param')){
+								$table->add_line(array($cel1, $cel2, $cel3), '1') ; 
+							} else {
+								$table->add_line(array($cel1, $cel2), '1') ; 
 							}
 						}
-						echo $table->flush() ; 
-					$tabs->add_tab(__('List of SL plugins',  'SL_framework'), ob_get_clean(), WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_list.png" ) ; 
-					
-					if (((is_multisite())&&($blog_id == 1))||(!is_multisite())) {
-
-						//======================================================================================
-						//= Tab for parameters
-						//======================================================================================
-						
-								
-						$tabs->add_tab(__('Parameters of the framework',  'SL_framework'),  $paramSave, WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_param.png") ; 					
-						
-						if ($this->frmk->get_param('adv_doc')==true) {
-							//======================================================================================
-							//= Tab with a zip file for downloading an empty plugin with a quick tuto
-							//======================================================================================
-							ob_start() ; 
-							?>
-							<div class="adminPost">
-							
-							<p><?php echo __("The following description is a quick tutorial on about how to create a plugin with the SL framework. (Please note that the following description is in English for developpers, sorry for this inconvenience)",'SL_framework') ; ?></p>
-							<p>&nbsp;</p>
-							<div class="toc tableofcontent">
-							<h6>Table of content</h6>
-							<p style="text-indent: 0cm;"><a href="#Download_the_laquonbspemptynbspraquo_plugin">Download the "&nbsp;empty&nbsp;" plugin</a></p>
-							<p style="text-indent: 0cm;"><a href="#The_structure_of_the_folder_of_the_plugin">The structure of the folder of the plugin</a></p>
-							<p style="text-indent: 0.5cm;"><a href="#The_laquonbspmy-pluginphpnbspraquo_file">The "&nbsp;my-plugin.php&nbsp;" file</a></p>
-	
-							<p style="text-indent: 0.5cm;"><a href="#The_laquonbspcssnbspraquo_folder">The "&nbsp;css&nbsp;" folder</a></p>
-							<p style="text-indent: 0.5cm;"><a href="#The_laquonbspjsnbspraquo_folder">The "&nbsp;js&nbsp;" folder</a></p>
-							<p style="text-indent: 0.5cm;"><a href="#The_laquonbspimgnbspraquo_folder">The "&nbsp;img&nbsp;" folder</a></p>
-							<p style="text-indent: 0.5cm;"><a href="#The_laquonbsplangnbspraquo_folder">The "&nbsp;lang&nbsp;" folder</a></p>
-							<p style="text-indent: 0.5cm;"><a href="#The_laquonbspcorenbspraquo_folder_and_laquonbspcorephpnbspraquo_file">The "&nbsp;core&nbsp;" folder and "&nbsp;core.php&nbsp;" file</a></p>
-	
-							<p style="text-indent: 0cm;"><a href="#How_to_start_">How to start ?</a></p>
-							</div>
-							<div class="tableofcontent-end"></div>
-							<h2 id="Download_the_laquonbspemptynbspraquo_plugin">Download the "&nbsp;empty&nbsp;" plugin</h2>
-							<p>Please specify the name of the plugin (For instance "&nbsp;My Plugin&nbsp;"): <input type="text" name="namePlugin" id="namePlugin" onkeyup="if (value=='') {document.getElementById('downloadPlugin').disabled=true; }else{document.getElementById('downloadPlugin').disabled=false; }"/></p>
-							<p>&nbsp;</p>
-							<p>Then, you can download the plugin: <input name="downloadPlugin" id="downloadPlugin" class="button-secondary action" value="Download" type="submit" disabled onclick="top.location.href='<?php echo remove_query_arg("noheader",remove_query_arg("download")) ?>&noheader=true&download='+document.getElementById('namePlugin').value ;"></p>
-							<h2 id="The_structure_of_the_folder_of_the_plugin">The structure of the folder of the plugin</h2>
-	
-							<p><img class="aligncenter" src="<?php echo WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/files_and_folders.png" ; ?>" width="800"/></p>
-							<h3 id="The_laquonbspmy-pluginphpnbspraquo_file">The "&nbsp;my-plugin.php&nbsp;" file</h3>
-							<p>NOTA : This file may have a different name (i.e. it depends on the name you just specify above).</p>
-							<p>This file should be the master piece of your plugin: main part of your code should be written in it.</p>
-							<h3 id="The_laquonbspcssnbspraquo_folder">The "&nbsp;css&nbsp;" folder</h3>
-							<p>There is only two files in that folder :</p>
-							<ul>
-							<li><code>css_front.css</code> which is called on the front side of your blog (i.e. the <strong>public side</strong>),</li>
-	
-							<li><code>css_admin.css</code> which is called only on the back side of your blog related to your plugin (i.e. the <strong>admin configuration page of your plugin</strong>).</li>
-							</ul>
-							<p>They are standard CSS files, then you can put whatever CSS code you want in them.</p>
-							<h3 id="The_laquonbspjsnbspraquo_folder">The "&nbsp;js&nbsp;" folder</h3>
-							<p>There is only two files in that folder :</p>
-							<ul>
-							<li><code>js_front.js</code> which is called on the front side of your blog (i.e. the <strong>public side</strong>) and on the back side of your blog (i.e. the <strong>admin side</strong>),</li>
-	
-							<li><code>js_admin.js</code> which is called only on the back side of your blog related to your plugin (i.e. the <strong>admin configuration page of your plugin</strong>).</li>
-							</ul>
-							<p>They are standard JS files, then you can put whatever JS code you want in them.</p>
-							<h3 id="The_laquonbspimgnbspraquo_folder">The "&nbsp;img&nbsp;" folder</h3>
-							<p>You can copy any images in that folder.</p>
-							<h3 id="The_laquonbsplangnbspraquo_folder">The "&nbsp;lang&nbsp;" folder</h3>
-	
-							<p>Copy any internationalization and localization (i18n) files in that folder. These files have extensions such as .po or .mo.</p>
-							<p>Thses files contains translation sof the plugin.</p>
-							<p>To generate such files, you may use <a href="http://sourceforge.net/projects/poedit/" target="_blank">POEdit</a>.</p>
-							<h3 id="The_laquonbspcorenbspraquo_folder_and_laquonbspcorephpnbspraquo_file">The "&nbsp;core&nbsp;" folder and "&nbsp;core.php&nbsp;" file</h3>
-	
-							<p>This folder and file contain code for the framework.</p>
-							<p>I do not recommend to modify their contents.</p>
-							<h2 id="How_to_start_">How to start ?</h2>
-							<p>Programming a plugin is not magic. Thus you should have basic knowledge in:</p>
-							<ul>
-							<li><a href="http://www.php.net" target="_blank">PHP </a></li>
-							<li><a href="http://codex.wordpress.org/Plugins" target="_blank">WordPress&nbsp;</a></li>
-							</ul>
-							<p>You should then open the <code>my-plugin.php</code> file and follow instructions in comments.</p>
-	
-							<p>Moreover, documentation on how to create tables, tabs, etc. are available in the next tab.</p>
-							
-							</div>
-							
-							<?php
-							$tabs->add_tab(__('How to develop a plugin?',  'SL_framework'), ob_get_clean() , WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_how.png") ; 
-							
-							//======================================================================================
-							//= Tab presenting the core documentation
-							//======================================================================================
-												
-							ob_start() ; 
-								$classes = array() ; 
-								
-								// On liste les fichiers includer par le fichier courant
-								$fichier_master = dirname(__FILE__)."/core.php" ; 
-								
-								$lines = file($fichier_master) ;
-								
-								$rc = new phpDoc();
-								foreach ($lines as $lineNumber => $lineContent) {	
-									if (preg_match('/url\.[\'"](.*)[\'"]/',  trim($lineContent),$match)) {
-										$chem = dirname(__FILE__)."/".$match[1] ;
-										$rc->addFile($chem) ; 
-									}
-								}
-								$rc->parse() ; 
-								$rc->flush() ; 
-	
-							$tabs->add_tab(__('Framework documentation',  'SL_framework'), ob_get_clean() , WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_doc.png") ; 
-						}
-						
 					}
+					echo $table->flush() ; 
+				$tabs->add_tab(__('List of SL plugins',  'SL_framework'), ob_get_clean(), WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_list.png" ) ; 
+				
+				if (((is_multisite())&&($blog_id == 1))||(!is_multisite())) {
+
+					//======================================================================================
+					//= Tab for parameters
+					//======================================================================================
 					
-					if (((is_multisite())&&($blog_id == 1))||(!is_multisite())||($this->frmk->get_param('global_allow_translation_by_blogs'))) {
+							
+					$tabs->add_tab(__('Parameters of the framework',  'SL_framework'),  $paramSave, WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_param.png") ; 					
+					
+					if ($this->frmk->get_param('adv_doc')==true) {
+						//======================================================================================
+						//= Tab with a zip file for downloading an empty plugin with a quick tuto
+						//======================================================================================
+						ob_start() ; 
+						?>
+						<div class="adminPost">
+						
+						<p><?php echo __("The following description is a quick tutorial on about how to create a plugin with the SL framework. (Please note that the following description is in English for developpers, sorry for this inconvenience)",'SL_framework') ; ?></p>
+						<p>&nbsp;</p>
+						<div class="toc tableofcontent">
+						<h6>Table of content</h6>
+						<p style="text-indent: 0cm;"><a href="#Download_the_laquonbspemptynbspraquo_plugin">Download the "&nbsp;empty&nbsp;" plugin</a></p>
+						<p style="text-indent: 0cm;"><a href="#The_structure_of_the_folder_of_the_plugin">The structure of the folder of the plugin</a></p>
+						<p style="text-indent: 0.5cm;"><a href="#The_laquonbspmy-pluginphpnbspraquo_file">The "&nbsp;my-plugin.php&nbsp;" file</a></p>
+
+						<p style="text-indent: 0.5cm;"><a href="#The_laquonbspcssnbspraquo_folder">The "&nbsp;css&nbsp;" folder</a></p>
+						<p style="text-indent: 0.5cm;"><a href="#The_laquonbspjsnbspraquo_folder">The "&nbsp;js&nbsp;" folder</a></p>
+						<p style="text-indent: 0.5cm;"><a href="#The_laquonbspimgnbspraquo_folder">The "&nbsp;img&nbsp;" folder</a></p>
+						<p style="text-indent: 0.5cm;"><a href="#The_laquonbsplangnbspraquo_folder">The "&nbsp;lang&nbsp;" folder</a></p>
+						<p style="text-indent: 0.5cm;"><a href="#The_laquonbspcorenbspraquo_folder_and_laquonbspcorephpnbspraquo_file">The "&nbsp;core&nbsp;" folder and "&nbsp;core.php&nbsp;" file</a></p>
+
+						<p style="text-indent: 0cm;"><a href="#How_to_start_">How to start ?</a></p>
+						</div>
+						<div class="tableofcontent-end"></div>
+						<h2 id="Download_the_laquonbspemptynbspraquo_plugin">Download the "&nbsp;empty&nbsp;" plugin</h2>
+						<p>Please specify the name of the plugin (For instance "&nbsp;My Plugin&nbsp;"): <input type="text" name="namePlugin" id="namePlugin" onkeyup="if (value=='') {document.getElementById('downloadPlugin').disabled=true; }else{document.getElementById('downloadPlugin').disabled=false; }"/></p>
+						<p>&nbsp;</p>
+						<p>Then, you can download the plugin: <input name="downloadPlugin" id="downloadPlugin" class="button-secondary action" value="Download" type="submit" disabled onclick="top.location.href='<?php echo remove_query_arg("noheader",remove_query_arg("download")) ?>&noheader=true&download='+document.getElementById('namePlugin').value ;"></p>
+						<h2 id="The_structure_of_the_folder_of_the_plugin">The structure of the folder of the plugin</h2>
+
+						<p><img class="aligncenter" src="<?php echo WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/files_and_folders.png" ; ?>" width="800"/></p>
+						<h3 id="The_laquonbspmy-pluginphpnbspraquo_file">The "&nbsp;my-plugin.php&nbsp;" file</h3>
+						<p>NOTA : This file may have a different name (i.e. it depends on the name you just specify above).</p>
+						<p>This file should be the master piece of your plugin: main part of your code should be written in it.</p>
+						<h3 id="The_laquonbspcssnbspraquo_folder">The "&nbsp;css&nbsp;" folder</h3>
+						<p>There is only two files in that folder :</p>
+						<ul>
+						<li><code>css_front.css</code> which is called on the front side of your blog (i.e. the <strong>public side</strong>),</li>
+
+						<li><code>css_admin.css</code> which is called only on the back side of your blog related to your plugin (i.e. the <strong>admin configuration page of your plugin</strong>).</li>
+						</ul>
+						<p>They are standard CSS files, then you can put whatever CSS code you want in them.</p>
+						<h3 id="The_laquonbspjsnbspraquo_folder">The "&nbsp;js&nbsp;" folder</h3>
+						<p>There is only two files in that folder :</p>
+						<ul>
+						<li><code>js_front.js</code> which is called on the front side of your blog (i.e. the <strong>public side</strong>) and on the back side of your blog (i.e. the <strong>admin side</strong>),</li>
+
+						<li><code>js_admin.js</code> which is called only on the back side of your blog related to your plugin (i.e. the <strong>admin configuration page of your plugin</strong>).</li>
+						</ul>
+						<p>They are standard JS files, then you can put whatever JS code you want in them.</p>
+						<h3 id="The_laquonbspimgnbspraquo_folder">The "&nbsp;img&nbsp;" folder</h3>
+						<p>You can copy any images in that folder.</p>
+						<h3 id="The_laquonbsplangnbspraquo_folder">The "&nbsp;lang&nbsp;" folder</h3>
+
+						<p>Copy any internationalization and localization (i18n) files in that folder. These files have extensions such as .po or .mo.</p>
+						<p>Thses files contains translation sof the plugin.</p>
+						<p>To generate such files, you may use <a href="http://sourceforge.net/projects/poedit/" target="_blank">POEdit</a>.</p>
+						<h3 id="The_laquonbspcorenbspraquo_folder_and_laquonbspcorephpnbspraquo_file">The "&nbsp;core&nbsp;" folder and "&nbsp;core.php&nbsp;" file</h3>
+
+						<p>This folder and file contain code for the framework.</p>
+						<p>I do not recommend to modify their contents.</p>
+						<h2 id="How_to_start_">How to start ?</h2>
+						<p>Programming a plugin is not magic. Thus you should have basic knowledge in:</p>
+						<ul>
+						<li><a href="http://www.php.net" target="_blank">PHP </a></li>
+						<li><a href="http://codex.wordpress.org/Plugins" target="_blank">WordPress&nbsp;</a></li>
+						</ul>
+						<p>You should then open the <code>my-plugin.php</code> file and follow instructions in comments.</p>
+
+						<p>Moreover, documentation on how to create tables, tabs, etc. are available in the next tab.</p>
+						
+						</div>
+						
+						<?php
+						$tabs->add_tab(__('How to develop a plugin?',  'SL_framework'), ob_get_clean() , WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_how.png") ; 
 						
 						//======================================================================================
-						//= Tab for the translation
+						//= Tab presenting the core documentation
 						//======================================================================================
 											
 						ob_start() ; 
-							$plugin = str_replace("/","",str_replace(basename(__FILE__),"",plugin_basename( __FILE__))) ; 
-							$trans = new translationSL("SL_framework", $plugin) ; 
-							$trans->enable_translation() ; 
-						$tabs->add_tab(__('Manage translation of the framework',  'SL_framework'), ob_get_clean() , WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_trad.png") ; 
+							$classes = array() ; 
+							
+							// On liste les fichiers includer par le fichier courant
+							$fichier_master = dirname(__FILE__)."/core.php" ; 
+							
+							$lines = file($fichier_master) ;
+							
+							$rc = new phpDoc();
+							foreach ($lines as $lineNumber => $lineContent) {	
+								if (preg_match('/url\.[\'"](.*)[\'"]/',  trim($lineContent),$match)) {
+									$chem = dirname(__FILE__)."/".$match[1] ;
+									$rc->addFile($chem) ; 
+								}
+							}
+							$rc->parse() ; 
+							$rc->flush() ; 
+
+						$tabs->add_tab(__('Framework documentation',  'SL_framework'), ob_get_clean() , WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_doc.png") ; 
 					}
-									
-					echo $tabs->flush() ; 
 					
-					echo $this->signature; 
+				}
+				
+				if (((is_multisite())&&($blog_id == 1))||(!is_multisite())||($this->frmk->get_param('global_allow_translation_by_blogs'))) {
 					
-					?>
-				</div>
-				<?php
-			}
+					//======================================================================================
+					//= Tab for the translation
+					//======================================================================================
+										
+					ob_start() ; 
+						$plugin = str_replace("/","",str_replace(basename(__FILE__),"",plugin_basename( __FILE__))) ; 
+						$trans = new translationSL("SL_framework", $plugin) ; 
+						$trans->enable_translation() ; 
+					$tabs->add_tab(__('Manage translation of the framework',  'SL_framework'), ob_get_clean() , WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_trad.png") ; 
+				}
+								
+				echo $tabs->flush() ; 
+				
+				echo $this->signature; 
+				
+				?>
+			</div>
+			<?php
+		}
 		
 		/** ====================================================================================================================================================
 		* Callback to get plugin Info
@@ -1205,12 +1248,15 @@ if (!class_exists('pluginSedLex')) {
 			$plugin_name = $_POST['plugin_name'] ;
 			$url = $_POST['url'] ;
 			
-			$info_core = $this->checkCoreOfThePlugin(dirname(WP_PLUGIN_DIR.'/'.$url )."/core.php") ; 
-			$hash_plugin = $this->update_hash_plugin(dirname(WP_PLUGIN_DIR."/".$url)) ; 
+			$info_core = pluginSedLex::checkCoreOfThePlugin(dirname(WP_PLUGIN_DIR.'/'.$url )."/core.php") ; 
+			$hash_plugin = pluginSedLex::update_hash_plugin(dirname(WP_PLUGIN_DIR."/".$url)) ; 
 
 			// $action: query_plugins, plugin_information or hot_tags
 			// $req is an object
+			
 			$action = "plugin_information" ; 
+			
+			$req = new stdClass();
 			$req->slug = $plugin_name;
 			$request = wp_remote_post('http://api.wordpress.org/plugins/info/1.0/', array( 'body' => array('action' => $action, 'request' => serialize($req))) );
 			if ( is_wp_error($request) ) {
@@ -1259,9 +1305,9 @@ if (!class_exists('pluginSedLex')) {
 			$current_fingerprint_core_used = $_POST['current_finger'] ;
 		
 			
-			$info_core = $this->checkCoreOfThePlugin(dirname(WP_PLUGIN_DIR.'/'.$url )."/core.php") ; 
-			$hash_plugin = $this->update_hash_plugin(dirname(WP_PLUGIN_DIR."/".$url)) ; 
-			$info = $this->get_plugins_data(WP_PLUGIN_DIR."/".$url);
+			$info_core = pluginSedLex::checkCoreOfThePlugin(dirname(WP_PLUGIN_DIR.'/'.$url )."/core.php") ; 
+			$hash_plugin = pluginSedLex::update_hash_plugin(dirname(WP_PLUGIN_DIR."/".$url)) ; 
+			$info = pluginSedlex::get_plugins_data(WP_PLUGIN_DIR."/".$url);
 
 			$toBeDone = false ; 
 			$styleDone = 'color:#666666;font-size:75% ; color:grey;' ; 
@@ -1274,6 +1320,8 @@ if (!class_exists('pluginSedLex')) {
 			// 0) Recuperartion de la version sur wordpress
 			
 			$action = "plugin_information" ; 
+			
+			$req = new stdClass();
 			$req->slug = $plugin_name;
 			$request = wp_remote_post('http://api.wordpress.org/plugins/info/1.0/', array( 'body' => array('action' => $action, 'request' => serialize($req))) );
 			if ( is_wp_error($request) ) {
@@ -1296,8 +1344,22 @@ if (!class_exists('pluginSedLex')) {
 			}
 			
 			// 0) Recuperation fichier
-			
-			$readme_remote = @file_get_contents('http://svn.wp-plugins.org/'.$plugin_name.'/trunk/readme.txt' ) ;
+
+			$response = wp_remote_get( 'http://svn.wp-plugins.org/'.$plugin_name.'/trunk/readme.txt' );
+			if( is_wp_error( $response ) ) {
+				echo "<div class='updated fade'><p>".sprintf(__('The file %s cannot be retrieved', 'SL_framework'), '<code>http://svn.wp-plugins.org/'.$plugin_name.'/trunk/readme.txt</code>')."</p></div>" ; 
+			   	$readme_remote = "" ; 
+			} else {
+				if ( 200 == $response['response']['code'] ) {
+					$readme_remote = $response['body'];
+				} else if ( 404 == $response['response']['code'] ) {
+					echo "<div class='updated fade'><p>".sprintf(__('The file %s cannot be found on the server. You have (probably) not commit this plugin yet.', 'SL_framework'), '<code>http://svn.wp-plugins.org/'.$plugin_name.'/trunk/readme.txt</code>')."</p></div>" ; 
+			   		$readme_remote = "" ; 
+				} else {
+					echo "<div class='updated fade'><p>".sprintf(__('The file %s cannot be retrieved. The error is %s.', 'SL_framework'), '<code>http://svn.wp-plugins.org/'.$plugin_name.'/trunk/readme.txt</code>', "<code>".$response['response']['code']."</code>")."</p></div>" ; 
+			   		$readme_remote = "" ; 				
+				}
+			}
 			$readme_local = @file_get_contents(WP_PLUGIN_DIR."/".$plugin_name.'/readme.txt' ) ;
 			
 			// 1) Mise a jour framework
@@ -1305,7 +1367,7 @@ if (!class_exists('pluginSedLex')) {
 			if ($current_fingerprint_core_used != $info_core) {
 				$toBePrint .= "<p style='".$styleToDo."'>" ; 
 				$toBeDone = true ; 
-				$toBePrint .= "<a href='#' onclick='coreUpdate(\"".md5($url)."\", \"".$url."\" , \"".$plugin_name."\" , \"".$current_core_used."\" , \"".str_replace("'", "\"", $current_fingerprint_core_used)."\" , \"".$author."\",  \"".$current_core_used."/".current_core_used.".php\", \"".$url."\", \"".WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/ajax-loader.gif"."\", \"".__("Update of the core ...", "SL_framework")."\") ; return false ; '>";
+				$toBePrint .= "<a href='#' onclick='coreUpdate(\"".md5($url)."\", \"".$url."\" , \"".$plugin_name."\" , \"".$current_core_used."\" , \"".str_replace("'", "\"", $current_fingerprint_core_used)."\" , \"".$author."\",  \"".$current_core_used."/".$current_core_used.".php\", \"".$url."\", \"".WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/ajax-loader.gif"."\", \"".__("Update of the core ...", "SL_framework")."\") ; return false ; '>";
 				$toBePrint .= sprintf(__('1) Update with the core of the %s plugin', 'SL_framework'), $current_core_used) ; 
 				$toBePrint .= "</a>" ; 
 				$toBePrint .= "<img id='wait_corePlugin_".md5($url)."' src='".WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/ajax-loader.gif' style='display:none;'>" ; 
@@ -1379,7 +1441,11 @@ if (!class_exists('pluginSedLex')) {
 			$toBePrint .=  "<p style='".$styleComment."'><a href='#' onclick='coreInfo(\"".$md5."\", \"".$url."\", \"".$plugin_name."\", \"".$current_core_used."\", \"".$current_fingerprint_core_used."\", \"".$author."\", \"".$src_wait."\", \"".$msg_wait."\"); return false ; '>".__('Refresh', 'SL_framework')."</a></p>" ; 
 
 			// Display the TODO zone for developers
-			$toBePrint .=  "<p><textarea id='txt_savetodo_".md5($url)."' style='font:80% courier; width:100%' rows='5'>".stripslashes(htmlentities(utf8_decode(@file_get_contents(WP_PLUGIN_DIR."/".$plugin_name."/core/data/todo.txt")), ENT_QUOTES, "UTF-8"))."</textarea></p>" ; 
+			$content = "" ; 
+			if (is_file(WP_PLUGIN_DIR."/".$plugin_name."/todo.txt")) {
+				$content = @file_get_contents(WP_PLUGIN_DIR."/".$plugin_name."/todo.txt") ; 
+			}
+			$toBePrint .=  "<p><textarea id='txt_savetodo_".md5($url)."' style='font:80% courier; width:100%' rows='5'>".stripslashes(htmlentities(utf8_decode($content), ENT_QUOTES, "UTF-8"))."</textarea></p>" ; 
 			$toBePrint .=  "<p><input onclick='saveTodo(\"".md5($url)."\", \"".$plugin_name."\") ; return false ; ' type='submit' name='submit' class='button-primary validButton' value='".__('Save Todo List', 'SL_framework')."' />" ; 
 			$toBePrint .= "<img id='wait_savetodo_".md5($url)."' src='".WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/ajax-loader.gif' style='display:none;'>" ; 
 			$toBePrint .= "<span id='savedtodo_".md5($url)."' style='display:none;'>".__("Todo list saved!", "SL_framework")."</span>" ; 
@@ -1403,7 +1469,7 @@ if (!class_exists('pluginSedLex')) {
 			$plugin = $_POST['plugin'] ;
 			$todo = $_POST['textTodo'] ;
 			
-			if (file_put_contents(WP_PLUGIN_DIR."/".$plugin."/core/data/todo.txt", utf8_encode($todo))!==FALSE) {
+			if (file_put_contents(WP_PLUGIN_DIR."/".$plugin."/todo.txt", utf8_encode($todo))!==FALSE) {
 				echo "ok" ; 
 			} else {
 				echo "problem" ; 
@@ -1423,7 +1489,7 @@ if (!class_exists('pluginSedLex')) {
 			$path_from_update = $_POST['from'] ;
 			$path_to_update = $_POST['to'] ;
 			
-			$this->checkCoreOfThePlugin(dirname(WP_PLUGIN_DIR."/".$path_from_update)."/core.php") ; 
+			pluginSedLex::checkCoreOfThePlugin(dirname(WP_PLUGIN_DIR."/".$path_from_update)."/core.php") ; 
 		
 			$path_to_update = explode("/", $path_to_update) ; 
 			$path_to_update[count($path_to_update)-1] = "" ; 
@@ -1443,6 +1509,7 @@ if (!class_exists('pluginSedLex')) {
 			Utils::copy_rec(WP_PLUGIN_DIR."/".$path_from_update."core.nfo", WP_PLUGIN_DIR."/".$path_to_update."core.nfo") ; 
 			
 			$this->coreInfo() ; 
+			
 			die() ; 
 		}
 		
@@ -1457,7 +1524,7 @@ if (!class_exists('pluginSedLex')) {
 			// get the arguments
 			$plugin = $_POST['plugin'];
 			
-			$info = $this->get_plugins_data(WP_PLUGIN_DIR."/".$plugin.'/'.$plugin.'.php') ; 
+			$info = pluginSedlex::get_plugins_data(WP_PLUGIN_DIR."/".$plugin.'/'.$plugin.'.php') ; 
 			list($descr1, $descr2) = explode("</p>",$info['Description'],2) ; 
 
 			$title = sprintf(__('Change the plugin version for %s', 'SL_framework'),'<em>'.$plugin.'</em>') ;
@@ -1519,7 +1586,8 @@ if (!class_exists('pluginSedLex')) {
 				$default_text .= "\n" ; 
 				$default_text .= "= Features of the framework =\n" ; 
 				$default_text .= "\n" ; 
-				$default_text .= @file_get_contents(dirname(__FILE__)."/core/data/framework.info"); 
+				if (is_file(dirname(__FILE__)."/core/data/framework.info")) 
+					$default_text .= @file_get_contents(dirname(__FILE__)."/core/data/framework.info"); 
 				$default_text .= "\n" ; 
 				$default_text .= "\n" ; 
 				$default_text .= "== Installation ==\n" ; 
@@ -1585,7 +1653,7 @@ if (!class_exists('pluginSedLex')) {
 			}
 			
 			$current_core_used = str_replace(WP_PLUGIN_DIR."/",'',dirname(__FILE__)) ; 
-			$current_fingerprint_core_used = $this->checkCoreOfThePlugin(WP_PLUGIN_DIR."/".$current_core_used."/core.php") ; 
+			$current_fingerprint_core_used = pluginSedLex::checkCoreOfThePlugin(WP_PLUGIN_DIR."/".$current_core_used."/core.php") ; 
 			$popup = new popupAdmin($title, $content, "", "coreInfo('".md5($plugin."/".$plugin.".php")."', '".$plugin."/".$plugin.".php', '".$plugin."' , '".$current_core_used."', '".$current_fingerprint_core_used."', '".$info['Author']."', \"".WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/ajax-loader.gif"."\", \"".__("Getting SVN information...", "SL_framework")."\") ; ") ; 
 			$popup->render() ; 
 			die() ; 
@@ -1639,7 +1707,7 @@ if (!class_exists('pluginSedLex')) {
 		* @return string hash of the plugin
 		*/
 		
-		function update_hash_plugin($path)  {
+		static function update_hash_plugin($path)  {
 
 			$hash_plugin = Utils::md5_rec($path, array('readme.txt', 'core', 'core.php', 'core.class.php')) ; // Par contre je conserve le core.nfo 
 			
@@ -1752,7 +1820,7 @@ if (!class_exists('pluginSedLex')) {
 		
 		/** ====================================================================================================================================================
 		* Get information on the plugin
-		* For instance <code> $info = $this->get_plugins_data(WP_PLUGIN_DIR.'/my-plugin/my-plugin.php')</code> will return an array with 
+		* For instance <code> $info = pluginSedlex::get_plugins_data(WP_PLUGIN_DIR.'/my-plugin/my-plugin.php')</code> will return an array with 
 		* 	- the folder of the plugin : <code>$info['Dir_Plugin']</code>
 		* 	- the name of the plugin : <code>$info['Plugin_Name']</code>		
 		* 	- the tags of the plugin : <code>$info['Plugin_Tag']</code>
@@ -1767,7 +1835,7 @@ if (!class_exists('pluginSedLex')) {
 		* @return array information on Name, Author, Description ...
 		*/
 
-		public function get_plugins_data($plugin_file='') {
+		static public function get_plugins_data($plugin_file='') {
 			if ($plugin_file == "")
 				$plugin_file = $this->path ; 
 		
@@ -1788,17 +1856,47 @@ if (!class_exists('pluginSedLex')) {
 			}
 			
 			$plugins_allowedtags = array('a' => array('href' => array()),'code' => array(), 'p' => array() ,'ul' => array() ,'li' => array() ,'strong' => array());
-			
-			$plugin_name = wp_kses(trim($plugin_name[1]), $plugins_allowedtags);
-			$plugin_tag = wp_kses(trim($plugin_tag[1]), $plugins_allowedtags);
-			$plugin_uri = wp_kses(trim($plugin_uri[1]), $plugins_allowedtags);
-			$description = wp_kses(trim($description[1]), $plugins_allowedtags);
-			$author = wp_kses(trim($author_name[1]), $plugins_allowedtags);
-			$author_uri = wp_kses(trim($author_uri[1]), $plugins_allowedtags);;
-			$author_email = wp_kses(trim($author_email[1]), $plugins_allowedtags);;
-			$framework_email = wp_kses(trim($framework_email[1]), $plugins_allowedtags);;
-			$version = wp_kses($version, $plugins_allowedtags);
-			$database = trim($plugin_database[1]) ; 
+
+			if (isset($plugin_name[1]))
+				$plugin_name = wp_kses(trim($plugin_name[1]), $plugins_allowedtags);
+			else 
+				$plugin_name = "" ; 
+			if (isset($plugin_tag[1]))
+				$plugin_tag = wp_kses(trim($plugin_tag[1]), $plugins_allowedtags);
+			else 
+				$plugin_tag = "" ; 
+			if (isset($plugin_uri[1]))
+				$plugin_uri = wp_kses(trim($plugin_uri[1]), $plugins_allowedtags);
+			else 
+				$plugin_uri = "" ; 
+			if (isset($description[1]))
+				$description = wp_kses(trim($description[1]), $plugins_allowedtags);
+			else 
+				$description = "" ; 
+			if (isset($author_name[1]))
+				$author = wp_kses(trim($author_name[1]), $plugins_allowedtags);
+			else 
+				$author = "" ; 
+			if (isset($author_uri[1]))
+				$author_uri = wp_kses(trim($author_uri[1]), $plugins_allowedtags);
+			else 
+				$author_uri = "" ; 
+			if (isset($author_email[1]))
+				$author_email = wp_kses(trim($author_email[1]), $plugins_allowedtags);
+			else 
+				$author_email = "" ; 
+			if (isset($framework_email[1]))
+				$framework_email = wp_kses(trim($framework_email[1]), $plugins_allowedtags);
+			else 
+				$framework_email = "" ; 
+			if (isset($version))
+				$version = wp_kses($version, $plugins_allowedtags);
+			else 
+				$version = "" ; 
+			if (isset($plugin_database[1]))
+				$database = trim($plugin_database[1]) ; 
+			else 
+				$database = "" ; 
 			
 			return array('Dir_Plugin'=>basename(dirname($plugin_file)) , 'Plugin_Name' => $plugin_name,'Plugin_Tag' => $plugin_tag, 'Plugin_URI' => $plugin_uri, 'Description' => $description, 'Author' => $author, 'Author_URI' => $author_uri, 'Email' => $author_email, 'Framework_Email' => $framework_email, 'Version' => $version, 'Database' => $database);
 		}
@@ -1811,7 +1909,7 @@ if (!class_exists('pluginSedLex')) {
 		* @return void
 		*/
 		
-		function checkCoreOfThePlugin($path)  {
+		static function checkCoreOfThePlugin($path)  {
 			$resultat = "" ; 
 						
 			// We compute the hash of the core folder
@@ -1918,6 +2016,60 @@ if (!class_exists('pluginSedLex')) {
 				echo "<div class='error fade'><p>".__('There are some issues with folders rights. Please corret them as soon as possible as they could induce bugs and instabilities.','SL_framework')."</p><p>".__('Please see below:','SL_framework')."</p>".$result."</div>" ; 
 			}
 		}
+		
+		/** ====================================================================================================================================================
+		* Get the displayed content
+		* 
+		* @return void
+		*/
+	
+		function the_content_SL($content) {
+			global $post ; 
+			// If it is the loop and an the_except is called, we leave
+			if (!is_single()) {
+				// If page 
+				if (is_page()) {
+					if (method_exists($this,'_modify_content')) {
+						return $this->_modify_content($content, 'page', false) ; 
+					}
+					return $content; 	
+				// else
+				} else {
+					// si excerpt
+					if ( (method_exists($this,'_modify_content')) && (!$this->excerpt_called_SL)) {
+						return $this->_modify_content($content, get_post_type($post->ID), true) ; 
+					}
+					return $content ; 
+				}
+			} else {
+	
+				if ( (method_exists($this,'_modify_content')) && (!$this->excerpt_called_SL)) {
+					return $this->_modify_content($content, get_post_type($post->ID), false) ; 
+				}
+				return $content ; 
+			}
+		}
+		
+		/** ====================================================================================================================================================
+		* Get the excerpt content
+		* 
+		* @return void
+		*/
+		function the_excerpt_ante_SL($content) {
+			$this->excerpt_called_SL=true ; 
+			return $content ; 
+		}
+		
+		function the_excerpt_SL($content) {
+			global $post ; 
+			$this->excerpt_called_SL = false ; 
+			
+			if ( (method_exists($this,'_modify_content')) && (!$this->excerpt_called_SL)) {
+				return $this->_modify_content($content, get_post_type($post->ID), true) ; 
+			}
+			
+			return $content ; 
+		}
 	}
 	
 	/** =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
@@ -1952,6 +2104,7 @@ if (!class_exists('pluginSedLex')) {
 		public function get_default_option($option) {
 			switch ($option) {
 				// Alternative default return values (Please modify)
+				case 'deprecated' 		: return false 		; break ; 
 				case 'adv_param' 		: return false 		; break ; 
 				case 'adv_doc' 			: return false 		; break ; 
 				case 'adv_svn_login' 	: return "" 		; break ; 

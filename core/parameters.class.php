@@ -99,6 +99,16 @@ if (!class_exists("parametersSedLex")) {
 			global $_POST ; 
 			global $_FILES ; 
 			
+			// We reset the value to default
+			//---------------------------------------
+
+			if (isset($_POST['resetOptions'])) {
+				$value = $this->obj->get_default_option($param) ;
+				if ((is_string($value))&&(strpos($value, "*")===0))
+					$value = substr($value, 1) ; 
+				return  $value ; 
+			}
+
 			// We find the correspondance in the array to find the allow and forbid tag
 			//---------------------------------------
 			
@@ -121,6 +131,7 @@ if (!class_exists("parametersSedLex")) {
 			
 			// What is the type of the parameter ?
 			//---------------------------------------
+			
 			$type = "string" ; 
 			if (is_bool($this->obj->get_default_option($param))) $type = "boolean" ; 
 			if (is_int($this->obj->get_default_option($param))) $type = "int" ; 
@@ -140,73 +151,97 @@ if (!class_exists("parametersSedLex")) {
 			
 			// We format the param
 			//---------------------------------------
+
 			$problem_e = "" ; 
 			$problem_w = "" ; 
+						
 			if (isset($_POST['submitOptions'])) {
 								
 				// Is it a boolean ?
 				
 				if ($type=="boolean") {
-					if ($_POST[$param]) {
-						return true ; 
+					if (isset($_POST[$param])) {
+						if ($_POST[$param]) {
+							return true ; 
+						} else {
+							return false ; 
+						}
 					} else {
-						return false ; 
+						if (isset($_POST[$param."_workaround"])) {
+							return false ;
+						} else {
+							return $this->obj->get_default_option($param) ; 
+						}
 					}
 				} 
 				
 				// Is it an integer ?
 				
 				if ($type=="int") {
-					if (Utils::is_really_int($_POST[$param])) {
-						return (int)$_POST[$param] ; 
-					} else {
-						if ($_POST[$param]=="") {
-							return 0 ; 
+					if (isset($_POST[$param])) {
+						if (Utils::is_really_int($_POST[$param])) {
+							return (int)$_POST[$param] ; 
 						} else {
-							return array("error", "<p>".__('Error: the submitted value is not an integer and thus, the parameter has not been updated!', 'SL_framework')."</p>\n") ; 
+							if ($_POST[$param]=="") {
+								return 0 ; 
+							} else {
+								return array("error", "<p>".__('Error: the submitted value is not an integer and thus, the parameter has not been updated!', 'SL_framework')."</p>\n") ; 
+							}
 						}
+					} else {
+						return $this->obj->get_default_option($param) ; 
 					}
 				} 
 				
 				// Is it a string ?
 				
 				if (($type=="string")||($type=="text")||($type=="password")) {
-					$tmp = $_POST[$param] ; 
-					if ($forbid!="") {
-						$tmp = preg_replace($forbid, '', $_POST[$param]) ; 
-					}
-					if (($allow!="")&&(!preg_match($allow, $_POST[$param]))) {
-						return array("error","<p>".__('Error: the submitted string does not match the constrains', 'SL_framework')." (".$allow.")!</p>\n") ; 
+					if (isset($_POST[$param])) {
+						$tmp = $_POST[$param] ; 
+						if ($forbid!="") {
+							$tmp = preg_replace($forbid, '', $_POST[$param]) ; 
+						}
+						if (($allow!="")&&(!preg_match($allow, $_POST[$param]))) {
+							return array("error","<p>".__('Error: the submitted string does not match the constrains', 'SL_framework')." (".$allow.")!</p>\n") ; 
+						} else {
+							return stripslashes($tmp) ; 
+						}
 					} else {
-						return stripslashes($tmp) ; 
+						return $this->obj->get_default_option($param) ;
 					}
 				} 
 				
 				// Is it a list ?
 				
 				if ($type=="list") {
-					$selected = $_POST[$param] ; 
-					$array = $this->obj->get_param($param) ; 
-					$mod = false ; 
-					for ($i=0 ; $i<count($array) ; $i++) {
-						// if the array is a simple array of string
-						if (!is_array($array[$i])) {
-							$tmpa = $array[$i] ; 
-							$array[$i] = str_replace("*","",$array[$i]) ;
-							// On met une etoile si c'est celui qui est selectionne par defaut
-							if ($selected == Utils::create_identifier($array[$i])) {
-								$array[$i] = '*'.$array[$i] ; 
-							}
-						} else {
-							$tmpa = $array[$i][0] ; // The first is the title
-							$array[$i][0] = str_replace("*","",$array[$i][0]) ;
-							// On met une etoile si c'est celui qui est selectionne par defaut
-							if ($selected == $array[$i][1]) { // The second is the identifier
-								$array[$i][0] = '*'.$array[$i][0] ; 
+					if (isset($_POST[$param])) {
+						$selected = $_POST[$param] ; 
+						$array = $this->obj->get_param($param) ; 
+						$mod = false ; 
+						for ($i=0 ; $i<count($array) ; $i++) {
+							// if the array is a simple array of string
+							if (!is_array($array[$i])) {
+								if ( (is_string($array[$i])) && (substr($array[$i], 0, 1)=="*") ) {
+									$array[$i] = substr($array[$i], 1) ; 
+								} 
+								// On met une etoile si c'est celui qui est selectionne par defaut
+								if ($selected == Utils::create_identifier($array[$i])) {
+									$array[$i] = '*'.$array[$i] ; 
+								}
+							} else {
+								if ( (is_string($array[$i][0])) && (substr($array[$i][0], 0, 1)=="*") ) {
+									$array[$i][0] = substr($array[$i][0], 1) ; 
+								} 
+								// On met une etoile si c'est celui qui est selectionne par defaut
+								if ($selected == $array[$i][1]) { // The second is the identifier
+									$array[$i][0] = '*'.$array[$i][0] ; 
+								}
 							}
 						}
+						return $array ; 
+					} else {
+						return $this->obj->get_default_option($param) ; 
 					}
-					return $array ; 
 				} 
 				
 				// Is it a file ?
@@ -214,34 +249,42 @@ if (!class_exists("parametersSedLex")) {
 				if ($type=="file") {
 					// deleted ?
 					$upload_dir = wp_upload_dir();
-					$deleted = $_POST["delete_".$param] ; 
-					if ($deleted=="1") {
-						if (file_exists($upload_dir["basedir"].$this->obj->get_param($param))){
-							@unlink($upload_dir["basedir"].$this->obj->get_param($param)) ; 
-						}
-						return $this->obj->get_default_option($param) ; 
-					}
-					
-					$tmp = $_FILES[$param]['tmp_name'] ; 
-					if ($tmp != "") {
-						if ($_FILES[$param]["error"] > 0) {
-							return 	array("error", "<p>".__('Error: the submitted file can not be uploaded!', 'SL_framework')."</p>\n") ; 
-						} else {
-							$upload_dir = wp_upload_dir();
-							$path = $upload_dir["basedir"].str_replace("[file]","", $this->obj->get_default_option($param)) ; 
-								
-							if (is_uploaded_file($_FILES[$param]['tmp_name'])) {
-								@mkdir($path, 0777, true) ; 
-								if (file_exists($path . $_FILES[$param]["name"])) {
-									@unlink($path . $_FILES[$param]["name"]) ; 
-								} 
-								move_uploaded_file($_FILES[$param]["tmp_name"], $path . $_FILES[$param]["name"]);
-								return str_replace("[file]","", $this->obj->get_default_option($param).  $_FILES[$param]["name"]) ; 
-							} else if (is_file($path . $_FILES[$param]["name"])) {
-								return str_replace("[file]","", $this->obj->get_default_option($param).  $_FILES[$param]["name"]) ; 
-							} else {
-								return 	array("error", "<p>".__('Error: security issue!'.$path . $_FILES[$param]["name"], 'SL_framework')."</p>\n") ; 
+					if (isset($_POST["delete_".$param])) {
+						$deleted = $_POST["delete_".$param] ; 
+						if ($deleted=="1") {
+							if (file_exists($upload_dir["basedir"].$this->obj->get_param($param))){
+								@unlink($upload_dir["basedir"].$this->obj->get_param($param)) ; 
 							}
+							return $this->obj->get_default_option($param) ; 
+						}
+					}
+						
+					if (isset($_FILES[$param])) {
+						$tmp = $_FILES[$param]['tmp_name'] ;
+						if ($tmp != "") {
+							if ($_FILES[$param]["error"] > 0) {
+								return 	array("error", "<p>".__('Error: the submitted file can not be uploaded!', 'SL_framework')."</p>\n") ; 
+							} else {
+								$upload_dir = wp_upload_dir();
+								$path = $upload_dir["basedir"].str_replace("[file]","", $this->obj->get_default_option($param)) ; 
+									
+								if (is_uploaded_file($_FILES[$param]['tmp_name'])) {
+									if (!is_dir($path)) {
+										@mkdir($path, 0777, true) ; 
+									}
+									if (file_exists($path . $_FILES[$param]["name"])) {
+										@unlink($path . $_FILES[$param]["name"]) ; 
+									} 
+									move_uploaded_file($_FILES[$param]["tmp_name"], $path . $_FILES[$param]["name"]);
+									return str_replace("[file]","", $this->obj->get_default_option($param).  $_FILES[$param]["name"]) ; 
+								} else if (is_file($path . $_FILES[$param]["name"])) {
+									return str_replace("[file]","", $this->obj->get_default_option($param).  $_FILES[$param]["name"]) ; 
+								} else {
+									return 	array("error", "<p>".__('Error: security issue!'.$path . $_FILES[$param]["name"], 'SL_framework')."</p>\n") ; 
+								}
+							}
+						} else {
+							return $this->obj->get_param($param) ; 
 						}
 					} else {
 						return $this->obj->get_param($param) ; 
@@ -378,6 +421,18 @@ if (!class_exists("parametersSedLex")) {
 						if (str_replace("[password]","",$this->obj->get_default_option($param)) != $this->obj->get_default_option($param)) $type = "password" ; 
 					}
 					
+					// We reset the param
+					//---------------------------------------
+					
+					$problem_e = "" ; 
+					$problem_w = "" ; 
+					if (isset($_POST['resetOptions'])) {
+						$maj = true ; 
+						$new_param = $this->get_new_value($param) ; 
+						$modified = true ; 
+						$this->obj->set_param($param, $new_param) ; 
+					}
+										
 					// We update the param
 					//---------------------------------------
 					
@@ -389,7 +444,7 @@ if (!class_exists("parametersSedLex")) {
 						$new_param = $this->get_new_value($param) ; 
 						$old_param = $this->obj->get_param($param) ; 
 						
-						if (is_array($new_param) && ($new_param[0]=='error')) {
+						if (is_array($new_param) && (isset($new_param[0])) && ($new_param[0]=='error')) {
 							$problem_e .= $new_param[1] ; 
 							$error = true ; 
 						} else {
@@ -397,9 +452,11 @@ if (!class_exists("parametersSedLex")) {
 							// Warning management
 							
 							if (($type=="string")||($type=="text")||($type=="password")) {
-								if ($new_param!=stripslashes($_POST[$param])) {
-									$problem_w .= "<p>".__('Warning: some characters have been removed because they are not allowed here', 'SL_framework')." (".$forbid.")!</p>\n" ; 
-									$warning = true ; 
+								if (isset($_POST[$param])) {
+									if ($new_param!=stripslashes($_POST[$param])) {
+										$problem_w .= "<p>".__('Warning: some characters have been removed because they are not allowed here', 'SL_framework')." (".$forbid.")!</p>\n" ; 
+										$warning = true ; 
+									}
 								}
 							} 
 							
@@ -434,7 +491,8 @@ if (!class_exists("parametersSedLex")) {
 						} else {
 							$onClick = "" ; 
 						}
-						$cel_value = new adminCell("<p class='paramLine'><input ".$onClick." name='".$param."' id='".$param."' type='checkbox' ".$checked." ></p>") ; 
+						$workaround = "<input type='hidden' value='0' name='".$param."_workaround' id='".$param."_workaround'>" ; 
+						$cel_value = new adminCell("<p class='paramLine'>".$workaround."<input ".$onClick." name='".$param."' id='".$param."' type='checkbox' ".$checked." ></p>") ; 
 						$currentTable->add_line(array($cel_label, $cel_value), '1') ; 
 					}
 					
@@ -534,22 +592,27 @@ if (!class_exists("parametersSedLex")) {
 							<select name='<?php echo $param ; ?>' id='<?php echo $param ; ?>'>
 							<?php 
 							$array = $this->obj->get_param($param);
+							
+							echo "//" ; print_r($array) ; 
+
 							foreach ($array as $a) {
 								if (!is_array($a)) {
 									$selected = "" ; 
-									if (str_replace("*", "", $a) != $a) {
+									if ( (is_string($a)) && (substr($a, 0, 1)=="*") ) {
 										$selected = "selected" ; 
+										$a = substr($a, 1) ; 
 									}
 									?>
-										<option value="<?php echo Utils::create_identifier($a) ; ?>" <?php echo $selected ; ?>><?php echo str_replace("*", "", $a) ; ?></option>
+										<option value="<?php echo Utils::create_identifier($a) ; ?>" <?php echo $selected ; ?>><?php echo $a ; ?></option>
 									<?php
 								} else {
 									$selected = "" ; 
-									if (str_replace("*", "", $a[0]) != $a[0]) {
+									if ( (is_string($a[0])) && (substr($a[0], 0, 1)=="*") ) {
 										$selected = "selected" ; 
+										$a[0] = substr($a[0], 1) ; 
 									}
 									?>
-										<option value="<?php echo $a[1] ; ?>" <?php echo $selected ; ?>><?php echo str_replace("*", "", $a[0]) ; ?></option>
+										<option value="<?php echo $a[1] ; ?>" <?php echo $selected ; ?>><?php echo $a[0] ; ?></option>
 									<?php
 								}
 							}
@@ -631,7 +694,8 @@ if (!class_exists("parametersSedLex")) {
 			
 			?>
 					<div class="submit">
-						<input type="submit" name="submitOptions" class='button-primary validButton' value="<?php echo __('Update', 'SL_framework') ?>" />
+						<input type="submit" name="submitOptions" class='button-primary validButton' value="<?php echo __('Update', 'SL_framework') ?>" />&nbsp;
+						<input type="submit" name="resetOptions" class='button validButton' value="<?php echo __('Reset to default values', 'SL_framework') ?>" />
 					</div>
 				</form>
 			</div>
@@ -653,11 +717,19 @@ if (!class_exists("parametersSedLex")) {
 				</div>
 				<?php
 			} else if (($modified) && ($maj)) {
+				if (!isset($_POST['resetOptions'])) {
 				?>
 				<div class="updated  fade">
 					<p><?php echo __('Parameters have been updated successfully!', 'SL_framework') ?></p>
 				</div>
 				<?php
+				} else {
+				?>
+				<div class="updated  fade">
+					<p><?php echo __('Parameters have been reset to their default values!', 'SL_framework') ?></p>
+				</div>
+				<?php
+				}
 			} 
 			
 			$this->output .= ob_get_contents();
