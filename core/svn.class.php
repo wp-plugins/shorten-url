@@ -907,7 +907,6 @@ if (!class_exists("svnAdmin")) {
 			$info_core = pluginSedLex::checkCoreOfThePlugin(WP_PLUGIN_DIR.'/'.$plugin ."/core.php") ; 
 			$hash_plugin = pluginSedLex::update_hash_plugin(WP_PLUGIN_DIR."/".$plugin) ; 
 			
-			$tabs = new adminTabs($max) ;
 			ob_start() ;
 				echo "<h3>".__('Local to SVN repository', 'SL_framework')."</h3>" ; 
 				echo "<p>".sprintf(__('Comparing %s with %s', 'SL_framework'), "<em>".WP_PLUGIN_DIR."/".$plugin."/</em>", "<em>".$local_cache."/".$plugin."/"."</em>")."</p>" ; 
@@ -929,28 +928,16 @@ if (!class_exists("svnAdmin")) {
 				
 				echo "<p><img id='wait_svn1' src='".WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."img/ajax-loader.gif' style='display:none;'></p>" ; 
 				
-			$tabs->add_tab(__('Local to SVN repository', 'SL_framework'), ob_get_clean() ) ;
-			ob_start() ;
-				echo "<h3>".__('SVN repository to Local', 'SL_framework')."</h3>" ; 
-				echo "<p>".sprintf(__('Comparing %s with %s', 'SL_framework'), "<em>".$local_cache."/".$plugin."/"."</em>", "<em>".WP_PLUGIN_DIR."/".$plugin."/</em>")."</p>" ; 
+				echo "<p>&nbsp;</p>" ; 
+				echo "<p>&nbsp;</p>" ; 
 				
-				$folddiff = new foldDiff($max) ; 
-				$result = $folddiff->diff($local_cache."/".$plugin, WP_PLUGIN_DIR."/".$plugin) ; 
-				$random = $folddiff->render(true, true, true) ; 
-				
-				// Confirmation asked
-				echo "<div id='confirm_to_svn2'>" ; 
-				echo "<h3>".__('Confirmation', 'SL_framework')."</h3>" ; 
-				
-				echo "<p id='svn_button'><input onclick='svnExecute(\"toLocal\", \"".$plugin."\", \"$random\") ; return false ; ' type='submit' name='submit' class='button-primary validButton' value='".__('Yes, the local version will be overwritten with the repository files', 'SL_framework')."' /></p>" ;  
+				echo "<p id='svn_button'><input onclick='svnExecute(\"toLocal\", \"".$plugin."\", \"$random\") ; return false ; ' type='submit' name='submit' class='button validButton' value='".__('SVN to local', 'SL_framework')."' /></p>" ;  
 				
 				echo "<script>jQuery('#innerPopupForm').animate({scrollTop: 0}, 10);</script>\r\n" ; 
 				echo "</div>" ; 
 				
 				echo "<p><img id='wait_svn2' src='".WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."img/ajax-loader.gif' style='display:none;'></p>" ; 
 
-			$tabs->add_tab(__('SVN repository to Local', 'SL_framework'), ob_get_clean() ) ;
-			echo $tabs->flush() ; 
 			
 			echo "<div id='console_svn'></div>\r\n" ; 
 						

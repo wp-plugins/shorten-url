@@ -73,6 +73,9 @@ Have fun !
 
 == Changelog ==
 
+= 1.3.9 =
+* Big issue with excerpt
+
 = 1.3.8 =
 * Update the core
 * Avoid an infinite loop when 404 error
@@ -131,4 +134,4 @@ Have fun !
 Visit http://www.sedlex.fr/cote_geek/
 
  
-InfoVersion:d6139cd4ae19039059d544b2e67b5eaa
+InfoVersion:81bb14d7bcd640d4e61cdaeb2f1e213a

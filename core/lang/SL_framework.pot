@@ -635,66 +635,57 @@ msgstr ""
 msgid "An error occurred during the retrieval of files on the server ! Sorry ..."
 msgstr ""
 
-#: core/svn.class.php:912
-#: core/svn.class.php:932
+#: core/svn.class.php:911
 #@ SL_framework
 msgid "Local to SVN repository"
 msgstr ""
 
-#: core/svn.class.php:913
-#: core/svn.class.php:935
+#: core/svn.class.php:912
 #@ SL_framework
 msgid "Comparing %s with %s"
 msgstr ""
 
-#: core/svn.class.php:921
-#: core/svn.class.php:943
+#: core/svn.class.php:920
 #@ SL_framework
 msgid "Confirmation"
 msgstr ""
 
-#: core/svn.class.php:923
+#: core/svn.class.php:922
 #@ SL_framework
 msgid "Commit comment:"
 msgstr ""
 
-#: core/svn.class.php:925
+#: core/svn.class.php:924
 #@ SL_framework
 msgid "Yes, the SVN version will be deleted and be replaced by the local version"
 msgstr ""
 
 #: core/svn.class.php:934
-#: core/svn.class.php:952
 #@ SL_framework
-msgid "SVN repository to Local"
+msgid "SVN to local"
 msgstr ""
 
-#: core/svn.class.php:945
-#@ SL_framework
-msgid "Yes, the local version will be overwritten with the repository files"
-msgstr ""
-
-#: core/svn.class.php:976
+#: core/svn.class.php:963
 #@ SL_framework
 msgid "Sending to the repository in progress..."
 msgstr ""
 
-#: core/svn.class.php:1283
+#: core/svn.class.php:1270
 #@ SL_framework
 msgid "The commit has ended [ %s ]... You should received an email quickly ! You may close the window or wait for the automatic closing."
 msgstr ""
 
-#: core/svn.class.php:1289
+#: core/svn.class.php:1276
 #@ SL_framework
 msgid "The commit has ended but there is an error!"
 msgstr ""
 
-#: core/svn.class.php:1309
+#: core/svn.class.php:1296
 #@ SL_framework
 msgid "Sending to the local files in progress..."
 msgstr ""
 
-#: core/svn.class.php:1372
+#: core/svn.class.php:1359
 #@ SL_framework
 msgid "The rollback has ended ..."
 msgstr ""
