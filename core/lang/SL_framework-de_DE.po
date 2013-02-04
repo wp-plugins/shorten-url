@@ -4,13 +4,14 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2013-01-07T15:33:54+00:00\n"
+"PO-Revision-Date: 2013-01-31T11:33:03+00:00\n"
 "Last-Translator: reitermarkus <me@reitermark.us>\n"
 "Last-Translator: ThorstenKallnischkies <http://desastre.eu>\n"
 "Last-Translator: blog.xmee.de <blog.xmee.de>\n"
 "Last-Translator: agent <www.simonlang.com>\n"
 "Last-Translator: MathiasS. <>\n"
 "Last-Translator: Mathias <>\n"
+"Last-Translator: FarChris <http://www.pinsight.de>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -764,11 +765,26 @@ msgid "%s file has been created from this file"
 msgstr "%s Datei wurde erzeugt aus dieser Datei"
 
 msgid "If you do not want to loose your translations on the next upgrading of this plugin, it is recommended to send the translation files to the author by clicking %s here %s !"
-msgstr "Wenn du nicht willst das die Übersetzung mit der nächsten Aktualisierung dieses Plugins verloren geht, wird empfohlen die Übersetzungsdatei an den Autor des Plugins zu schicken in dem du here %s drückst."
+msgstr "Wenn du nicht willst das die Übersetzung mit der nächsten Aktualisierung dieses Plugins verloren geht, wird empfohlen die Übersetzungsdatei an den Autor des Plugins zu schicken in dem du hier %s klickst!"
 
 msgid "If you do not want to loose your translations on the next upgrading of this plugin, please save them on your hard disk before upgrading and then restore them after the upgrade !"
 msgstr "Wenn du nicht willst das die Übersetzung mit der nächsten Aktualisierung dieses Plugins verloren geht, speichere sie bitte auf deiner Festplatte bevor du das Plugin aktualisert und stelle sie nach der Aktualisierung wieder her!"
 
 msgid "Summary cached %s"
 msgstr "Zusammenfassung gecached %s"
+
+msgid "Error: the submitted value is not an integer and thus, the parameter has not been updated!"
+msgstr "Fehler: der übergebene Wert ist nicht ganzzahlig (Integer), die Parameter wurden nicht aktualisiert!"
+
+msgid "If you want to modify the language, please go in %s and find %s or %s. The second argument is your language and you may modify it as you want."
+msgstr "Wenn du die Sprache ändern willst, gehe bitte in %s und finde %s oder %s. Das zweite Argument ist die Sprache und könnte geändert werden."
+
+msgid "%s sentences have been newly translated and %s sentences have been modified (the old file has %s translated sentences)."
+msgstr "%s Sätze wurden neu übersetzt und %s Sätze wurden geändert (die alte Datei hatte %s übersetzte Sätze)."
+
+msgid "%s file cannot be created for %s as there is no translated sentence. Please, translate at least one sentence to create a file"
+msgstr "%s Datei kann nicht für %s erstellt werden. Bitte übersetze mindestens einen Satz!"
+
+msgid "This is not mandatory! but it may be a sign that this plugin fits you needs: it makes me happy..."
+msgstr "Dies ist nicht zwingend! Aber es zeigt, dass dieses Plugin Deinen Ansprüchen gerecht wird: Es macht mich glücklich..."
 

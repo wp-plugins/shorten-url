@@ -1,207 +1,207 @@
 Content-Transfer-Encoding: 8bit
 
-#: shorten-url.php:153
+#: shorten-url.php:154
 #@ shorturl
 msgid "The permalink options should not be configured to default in order to enable Short-URL."
 msgstr ""
 
-#: shorten-url.php:154
+#: shorten-url.php:155
 #@ shorturl
 msgid "Please go to %s page to correct it."
 msgstr ""
 
-#: shorten-url.php:197
+#: shorten-url.php:198
 #@ shorturl
 msgid "This plugin helps you sharing your post with short-links."
 msgstr ""
 
-#: shorten-url.php:250
+#: shorten-url.php:251
 #@ shorturl
 msgid "Title of your posts/pages"
 msgstr ""
 
-#: shorten-url.php:250
-#: shorten-url.php:310
+#: shorten-url.php:251
+#: shorten-url.php:311
 #@ shorturl
 msgid "Short URL"
 msgstr ""
 
-#: shorten-url.php:250
+#: shorten-url.php:251
 #@ shorturl
 msgid "Type"
 msgstr ""
 
-#: shorten-url.php:250
-#: shorten-url.php:310
+#: shorten-url.php:251
+#: shorten-url.php:311
 #@ shorturl
 msgid "Number of clicks"
-msgstr ""
-
-#: shorten-url.php:279
-#: shorten-url.php:338
-#@ shorturl
-msgid "Reset"
 msgstr ""
 
 #: shorten-url.php:280
 #: shorten-url.php:339
 #@ shorturl
+msgid "Reset"
+msgstr ""
+
+#: shorten-url.php:281
+#: shorten-url.php:340
+#@ shorturl
 msgid "Edit"
 msgstr ""
 
-#: shorten-url.php:295
+#: shorten-url.php:296
 #@ shorturl
 msgid "Internal Redirections"
 msgstr ""
 
-#: shorten-url.php:310
+#: shorten-url.php:311
 #@ shorturl
 msgid "External URL"
 msgstr ""
 
-#: shorten-url.php:336
+#: shorten-url.php:337
 #@ shorturl
 msgid "Delete"
 msgstr ""
 
-#: shorten-url.php:349
+#: shorten-url.php:350
 #@ shorturl
 msgid "External URL:"
 msgstr ""
 
-#: shorten-url.php:352
-#: shorten-url.php:356
+#: shorten-url.php:353
+#: shorten-url.php:357
 #@ shorturl
 msgid "Add a new URL to shorten"
 msgstr ""
 
-#: shorten-url.php:359
+#: shorten-url.php:360
 #@ shorturl
 msgid "External Redirections"
 msgstr ""
 
-#: shorten-url.php:363
-#: shorten-url.php:394
+#: shorten-url.php:364
+#: shorten-url.php:395
 #@ shorturl
 msgid "Parameters"
 msgstr ""
 
-#: shorten-url.php:367
+#: shorten-url.php:368
 #@ shorturl
 msgid "Do you want to use the following characters?"
 msgstr ""
 
-#: shorten-url.php:368
+#: shorten-url.php:369
 #@ shorturl
 msgid "These parameters will be taken in account only for generation of new links"
 msgstr ""
 
-#: shorten-url.php:369
+#: shorten-url.php:370
 #@ shorturl
 msgid "Lower-case characters ([a-z]):"
 msgstr ""
 
-#: shorten-url.php:370
+#: shorten-url.php:371
 #@ shorturl
 msgid "Upper-case characters ([A-Z]):"
 msgstr ""
 
-#: shorten-url.php:371
+#: shorten-url.php:372
 #@ shorturl
 msgid "Numeric characters ([0-9]):"
 msgstr ""
 
-#: shorten-url.php:373
+#: shorten-url.php:374
 #@ shorturl
 msgid "Do you want to use a prefix before your short URL?"
 msgstr ""
 
-#: shorten-url.php:374
+#: shorten-url.php:375
 #@ shorturl
 msgid "Prefix:"
 msgstr ""
 
-#: shorten-url.php:376
+#: shorten-url.php:377
 #@ shorturl
 msgid "What is the length of your short URL (without the prefix)?"
 msgstr ""
 
-#: shorten-url.php:377
+#: shorten-url.php:378
 #@ shorturl
 msgid "Length:"
 msgstr ""
 
-#: shorten-url.php:379
+#: shorten-url.php:380
 #@ shorturl
 msgid "Customize the short link URL"
 msgstr ""
 
-#: shorten-url.php:380
+#: shorten-url.php:381
 #@ shorturl
 msgid "Remove www:"
 msgstr ""
 
-#: shorten-url.php:381
+#: shorten-url.php:382
 #@ shorturl
 msgid "Therefore, the short URL will begin with %s"
 msgstr ""
 
-#: shorten-url.php:382
+#: shorten-url.php:383
 #@ shorturl
 msgid "Change the root URL of the short link:"
 msgstr ""
 
-#: shorten-url.php:383
+#: shorten-url.php:384
 #@ shorturl
 msgid "If you have a shorter URL pointing to your Wordpress blog, you may configure it here by selecting this option"
 msgstr ""
 
-#: shorten-url.php:384
+#: shorten-url.php:385
 #@ shorturl
 msgid "Your shorter domain URL:"
 msgstr ""
 
-#: shorten-url.php:386
+#: shorten-url.php:387
 #@ shorturl
 msgid "Do you want to automatically shorten links in post/page?"
 msgstr ""
 
-#: shorten-url.php:387
+#: shorten-url.php:388
 #@ shorturl
 msgid "Automatic shorten links:"
 msgstr ""
 
-#: shorten-url.php:388
+#: shorten-url.php:389
 #@ shorturl
 msgid "Regexp filter:"
 msgstr ""
 
-#: shorten-url.php:389
+#: shorten-url.php:390
 #@ shorturl
 msgid "The above regexp filter is to select the page in which the link urls are shorten. For instance, %s (or %s) configures the plugin to shorten all links, for instance, in pages %s and %s"
 msgstr ""
 
-#: shorten-url.php:390
+#: shorten-url.php:391
 #@ shorturl
 msgid "Please enter one regexp per line."
 msgstr ""
 
-#: shorten-url.php:391
+#: shorten-url.php:392
 #@ shorturl
 msgid "If no regexp is entered, links in all pages and posts will be shorten."
 msgstr ""
 
-#: shorten-url.php:400
+#: shorten-url.php:401
 #@ shorturl
 msgid "Manage translations"
 msgstr ""
 
-#: shorten-url.php:406
+#: shorten-url.php:407
 #@ shorturl
 msgid "Give feedback"
 msgstr ""
 
-#: shorten-url.php:411
+#: shorten-url.php:412
 #@ shorturl
 msgid "Other plugins"
 msgstr ""

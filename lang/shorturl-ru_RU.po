@@ -4,8 +4,9 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-01-30T20:40:47+00:00\n"
+"PO-Revision-Date: 2013-01-27T21:49:47+00:00\n"
 "Last-Translator: Pacifik <4888880@gmail.com>\n"
+"Last-Translator: AndreyFedotov <bodega@logins.ru>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -21,13 +22,13 @@ msgstr ""
 "X-Textdomain-Support: yes\n"
 
 msgid "This plugin helps you sharing your post with short-links."
-msgstr "Этот плагин позволяет обмениваться сообщениями с коротким ссылкам."
+msgstr "Этот плагин помогает обмениваться своими записями с помощью коротких ссылок."
 
 msgid "Title of your posts"
 msgstr "Название ваших постов"
 
 msgid "Short URL"
-msgstr "Короткий URL"
+msgstr "Короткая ссылка"
 
 msgid "Reset"
 msgstr "Сброс"
@@ -39,16 +40,16 @@ msgid "Results for Posts URL"
 msgstr "URL ваших сообщений"
 
 msgid "External URL"
-msgstr "Внешние URL"
+msgstr "Внешние ссылки"
 
 msgid "Delete"
 msgstr "Удалить"
 
 msgid "External URL:"
-msgstr "Внешний URL:"
+msgstr "Внешняя ссылка"
 
 msgid "Add a new URL to shorten"
-msgstr "Добавить URL для соращения"
+msgstr "Добавить ссылку для соращения"
 
 msgid "Results for External URL"
 msgstr "Результаты по внешним URL"
@@ -91,4 +92,58 @@ msgstr "Написать автору"
 
 msgid "Other plugins"
 msgstr "Другие плагины"
+
+msgid "The permalink options should not be configured to default in order to enable Short-URL."
+msgstr "Опции пермалинков не должны быть сконфигурированы стандартно перед запуском Short URL"
+
+msgid "Please go to %s page to correct it."
+msgstr "Пожалуйста, зайдите на %s страницу чтобы исправить ее"
+
+msgid "Title of your posts/pages"
+msgstr "Заголовок вашего поста/страницы"
+
+msgid "Type"
+msgstr "Написать"
+
+msgid "Number of clicks"
+msgstr "Количество кликов"
+
+msgid "Internal Redirections"
+msgstr "Внутренние переходы"
+
+msgid "External Redirections"
+msgstr "Внешние переходы"
+
+msgid "Customize the short link URL"
+msgstr "Кастомизируйте короткую ссылку"
+
+msgid "Remove www:"
+msgstr "Убрать www"
+
+msgid "Therefore, the short URL will begin with %s"
+msgstr "Короткая ссылка начнется с %s"
+
+msgid "Change the root URL of the short link:"
+msgstr "Поменять целевую ссылку"
+
+msgid "If you have a shorter URL pointing to your Wordpress blog, you may configure it here by selecting this option"
+msgstr "Если у вас есть короткий домен привязанный к Wordpress блогу вы можете настроить перенаправление включив жту опцию"
+
+msgid "Your shorter domain URL:"
+msgstr "Ваш короткий домен"
+
+msgid "Do you want to automatically shorten links in post/page?"
+msgstr "Хотите ли вы укорачивать ссылки автоматически в ваших записях?"
+
+msgid "Automatic shorten links:"
+msgstr "Автоматически сокращать ссылки"
+
+msgid "Regexp filter:"
+msgstr "Regexp фильтр"
+
+msgid "Please enter one regexp per line."
+msgstr "Пожалуйста введите только один regexp на одну линию"
+
+msgid "If no regexp is entered, links in all pages and posts will be shorten."
+msgstr "если не введен regexp все ссылки будут короткими"
 

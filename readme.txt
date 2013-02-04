@@ -38,11 +38,11 @@ This plugin is compatible with multisite installation. Each blog may manage thei
 * German (Austria) translation provided by AndreasK.
 * German (Germany) translation provided by reitermarkus, navelbrush
 * English (United States), default language
-* Spanish (Spain) translation provided by SebasContre
+* Spanish (Spain) translation provided by SebasContre, JosLuisCruz
 * Farsi (Iran) translation provided by EhsanKing
 * French (France) translation provided by SedLex
 * Portuguese (Brazil) translation provided by Blinky
-* Russian (Russia) translation provided by Pacifik
+* Russian (Russia) translation provided by Pacifik, AndreyFedotov
 * Chinese (People's Republic of China) translation provided by OWenT
 
 = Features of the framework =
@@ -60,7 +60,7 @@ Have fun !
 
 == Installation ==
 
-1. Upload this folder to your plugin directory (for instance '/wp-content/plugins/')
+1. Upload this folder shorten-url to your plugin directory (for instance '/wp-content/plugins/')
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. Navigate to the 'SL plugins' box
 4. All plugins developed with the SL core will be listed in this box
@@ -72,6 +72,9 @@ Have fun !
 2. The configuration page of the plugin 
 
 == Changelog ==
+
+= 1.3.10 =
+* Warning popup
 
 = 1.3.9 =
 * Big issue with excerpt
@@ -134,4 +137,4 @@ Have fun !
 Visit http://www.sedlex.fr/cote_geek/
 
  
-InfoVersion:81bb14d7bcd640d4e61cdaeb2f1e213a
+InfoVersion:839884030f71370b61e7e25a48b0aa44

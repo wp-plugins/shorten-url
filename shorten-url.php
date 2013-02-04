@@ -3,7 +3,8 @@
 Plugin Name: Short URL
 Plugin Tag: shorttag, shortag, bitly, url, short 
 Description: <p>Your pages/posts may have a short url hosted by your own domain.</p><p>Replace the internal function of wordpress <code>get_short_link()</code> by a bit.ly like url. </p><p>Instead of having a short link like http://www.yourdomain.com/?p=3564, your short link will be http://www.yourdomain.com/NgH5z (for instance). </p><p>You can configure: </p><ul><li>the length of the short link, </li><li>if the link is prefixed with a static word, </li><li>the characters used for the short link.</li></ul><p>Moreover, you can manage external links with this plugin. The links in your posts will be automatically replace by the short one if available.</p><p>This plugin is under GPL licence. </p>
-Version: 1.3.9
+Version: 1.3.10
+
 
 Author: SedLex
 Author Email: sedlex@sedlex.fr
@@ -49,6 +50,7 @@ class shorturl extends pluginSedLex {
 		
 		// 
 		add_action('all_admin_notices', array($this,'verify_permalink'));
+		
 
 		add_filter('get_shortlink', array($this,'get_short_link_filter'), 9, 2);
 		add_action('template_redirect',array($this,'redirect_404'), 1);
@@ -151,7 +153,7 @@ class shorturl extends pluginSedLex {
 		if ($rewrite->permalink_structure=='') {
 			echo '<div class="updated">' ; 
 			echo '<p>'.__('The permalink options should not be configured to default in order to enable Short-URL.', $this->pluginID).'</p>' ; 
-			echo '<p>'.sprintf(__('Please go to %s page to correct it.', $this->pluginID), "<a href='/'>Permalink</a>").'</p>' ; 
+			echo '<p>'.sprintf(__('Please go to %s page to correct it.', $this->pluginID), "<a href='".admin_url()."options-permalink.php'>Permalink</a>").'</p>' ; 
 			echo '</div>' ;	
 		}
 	}
@@ -195,6 +197,7 @@ class shorturl extends pluginSedLex {
 		<div style="padding:20px;">
 			<?php echo $this->signature ; ?>
 			<p><?php echo __('This plugin helps you sharing your post with short-links.', $this->pluginID) ; ?></p>
+			
 			<!--debut de personnalisation-->
 		<?php
 		
@@ -620,14 +623,10 @@ class shorturl extends pluginSedLex {
 	function get_short_link_filter($url, $post_id) {
 		global $post;
 		global $wpdb;
-		
+				
 		$table_name = $this->table_name;
 	
 		if (!$post_id && $post) $post_id = $post->ID;
-		if ($post_id) $post = get_post($post_id) ; 
-		
-		//if ($post->post_status != 'publish')
-		//	return "non-published";
 	
 		// We look if the short URL already exists in the database
 		$select = "SELECT short_url FROM {$table_name} WHERE id_post=".$post_id ; 
