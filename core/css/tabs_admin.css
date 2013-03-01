@@ -7,12 +7,12 @@ VersionTabsCss : 1.0
 }
 
 /* Tab navigation */
-.tabsSL ul {
+.tabsSL > ul {
 	margin-bottom: -1px;
 	padding-left: 1.5em;
 }
 
-.tabsSL ul li {
+.tabsSL > ul li {
 	display: inline-block;
 	margin: 0 0.5em 0 0;
 	
@@ -33,20 +33,20 @@ VersionTabsCss : 1.0
 	text-shadow: 0 1px 0 #FFFFFF;
 }
 
-.tabsSL ul li.ui-tabs-active {
+.tabsSL > ul li.ui-tabs-active {
 	background: white;
 	color: black;
 	border-bottom-color: white;
 }
 
-.tabsSL ul li a {
+.tabsSL > ul li a {
 	display: inline-block;
 	padding: 0.5em 1em 0.6em 1em;
 	text-decoration: none;
 	color: #C1C1C1;
 }
 
-.tabsSL ul li.ui-tabs-active a {
+.tabsSL > ul li.ui-tabs-active a {
 	color: black;
 } 
 

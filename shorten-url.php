@@ -3,7 +3,7 @@
 Plugin Name: Short URL
 Plugin Tag: shorttag, shortag, bitly, url, short 
 Description: <p>Your pages/posts may have a short url hosted by your own domain.</p><p>Replace the internal function of wordpress <code>get_short_link()</code> by a bit.ly like url. </p><p>Instead of having a short link like http://www.yourdomain.com/?p=3564, your short link will be http://www.yourdomain.com/NgH5z (for instance). </p><p>You can configure: </p><ul><li>the length of the short link, </li><li>if the link is prefixed with a static word, </li><li>the characters used for the short link.</li></ul><p>Moreover, you can manage external links with this plugin. The links in your posts will be automatically replace by the short one if available.</p><p>This plugin is under GPL licence. </p>
-Version: 1.3.10
+Version: 1.3.11
 
 
 Author: SedLex
@@ -112,10 +112,10 @@ class shorturl extends pluginSedLex {
 		//	id_post mediumint(9) NOT NULL, short_url TEXT DEFAULT '', url_externe VARCHAR( 255 ) NOT NULL DEFAULT '' ,UNIQUE KEY id_post (id_post, url_externe)
 		
 		if($wpdb->get_var("show tables like '$old_table_name'") != $old_table_name) {
-			if ( !$wpdb->get_var("SHOW COLUMNS FROM ".$old_table_name." LIKE 'url_externe'")  ) {
-				$wpdb->query("ALTER TABLE ".$old_table_name." ADD url_externe  VARCHAR( 255 ) NOT NULL DEFAULT '';");
-				$wpdb->query("ALTER TABLE ".$old_table_name." DROP INDEX id_post;") ; 
-				$wpdb->query("ALTER TABLE ".$old_table_name." ADD CONSTRAINT id_post UNIQUE (id_post,url_externe)") ; 
+			if ( !$wpdb->get_var("SHOW COLUMNS FROM ".$table_name." LIKE 'url_externe'")  ) {
+				$wpdb->query("ALTER TABLE ".$table_name." ADD url_externe  VARCHAR( 255 ) NOT NULL DEFAULT '';");
+				$wpdb->query("ALTER TABLE ".$table_name." DROP INDEX id_post;") ; 
+				$wpdb->query("ALTER TABLE ".$table_name." ADD CONSTRAINT id_post UNIQUE (id_post,url_externe)") ; 
 			}
 		}
 		

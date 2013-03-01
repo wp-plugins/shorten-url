@@ -73,6 +73,9 @@ Have fun !
 
 == Changelog ==
 
+= 1.3.11 =
+* Re-add the image button
+
 = 1.3.10 =
 * Warning popup
 
@@ -137,4 +140,4 @@ Have fun !
 Visit http://www.sedlex.fr/cote_geek/
 
  
-InfoVersion:839884030f71370b61e7e25a48b0aa44
+InfoVersion:afb7b1a8a8dde025bac6b4fcb60ea918
