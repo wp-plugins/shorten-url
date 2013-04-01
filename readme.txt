@@ -73,44 +73,25 @@ Have fun !
 
 == Changelog ==
 
-= 1.3.11 =
+= 1.4.0 =
+* The short URL may be displayed in the page
+
+= 1.3.0 -&gt; 1.3.11 =
 * Re-add the image button
-
-= 1.3.10 =
 * Warning popup
-
-= 1.3.9 =
 * Big issue with excerpt
-
-= 1.3.8 =
 * Update the core
 * Avoid an infinite loop when 404 error
-
-= 1.3.7 =
 * Root URL for short link may be modified
-
-= 1.3.6 =
 * Correct a problem in quick move
 * Search URL feature
 * Shorten all links in posts
-
-= 1.3.5 =
 * www may be removed from short URL
-
-= 1.3.4 =
 * Even non published posts have short url
-
-= 1.3.3 =
 * Add http:// if missing
-
-= 1.3.2 =
 * Add a counter of the number of clicks on links
 * The links may be ordered
-
-= 1.3.1 =
 * Update of Russian translation
-
-= 1.3.0 =
 * Major release of the framework
 
 = 1.2.0 -&gt; 1.2.3 =
@@ -140,4 +121,4 @@ Have fun !
 Visit http://www.sedlex.fr/cote_geek/
 
  
-InfoVersion:afb7b1a8a8dde025bac6b4fcb60ea918
+InfoVersion:a325f237197cfea1dc0b019a53aac34a

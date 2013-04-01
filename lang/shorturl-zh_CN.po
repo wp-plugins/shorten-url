@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-10-08T06:18:54+00:00\n"
+"PO-Revision-Date: 2013-03-07T07:02:52+00:00\n"
 "Last-Translator: OWenT <http://www.owent.net>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -102,7 +102,7 @@ msgid "Number of clicks"
 msgstr "点击量"
 
 msgid "Internal Redirections"
-msgstr "内部跳转"
+msgstr "内部链接"
 
 msgid "External Redirections"
 msgstr "外部跳转"
@@ -114,7 +114,7 @@ msgid "Remove www:"
 msgstr "移除URL前的www"
 
 msgid "Therefore, the short URL will begin with %s"
-msgstr "因此，短链接将以%s开始"
+msgstr "选中此项，短链接将以%s开始"
 
 msgid "Change the root URL of the short link:"
 msgstr "修改短链接服务URL"
@@ -145,4 +145,10 @@ msgstr "请每行输入一个正则表达式"
 
 msgid "If no regexp is entered, links in all pages and posts will be shorten."
 msgstr "如果没有输入任何表达式，所有的文章/页面都将生成短链接"
+
+msgid "The permalink options should not be configured to default in order to enable Short-URL."
+msgstr "要启动Short-URL插件，固定链接设置不能被设为默认值"
+
+msgid "Please go to %s page to correct it."
+msgstr "请到 %s 页来修复此问题"
 

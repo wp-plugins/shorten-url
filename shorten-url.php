@@ -3,7 +3,8 @@
 Plugin Name: Short URL
 Plugin Tag: shorttag, shortag, bitly, url, short 
 Description: <p>Your pages/posts may have a short url hosted by your own domain.</p><p>Replace the internal function of wordpress <code>get_short_link()</code> by a bit.ly like url. </p><p>Instead of having a short link like http://www.yourdomain.com/?p=3564, your short link will be http://www.yourdomain.com/NgH5z (for instance). </p><p>You can configure: </p><ul><li>the length of the short link, </li><li>if the link is prefixed with a static word, </li><li>the characters used for the short link.</li></ul><p>Moreover, you can manage external links with this plugin. The links in your posts will be automatically replace by the short one if available.</p><p>This plugin is under GPL licence. </p>
-Version: 1.3.11
+Version: 1.4.0
+
 
 
 Author: SedLex
@@ -175,6 +176,22 @@ class shorturl extends pluginSedLex {
 			case 'changeroot_url' 		: return "" 	; break ; 
 			case 'catch_url' 		: return false 		; break ; 
 			case 'catch_url_filter' 		: return "*" 		; break ; 
+			
+			case 'display_top_in_excerpt' 			: return false ; break ; 
+			case 'display_bottom_in_excerpt' 			: return false ; break ; 
+			case 'display_top_in_post' 			: return false ; break ; 
+			case 'display_bottom_in_post' 			: return false ; break ; 
+			case 'display_top_in_page' 			: return false ; break ; 
+			case 'display_bottom_in_page' 			: return false ; break ; 
+			case 'html'						: return "*<div class='shorten_url'>
+   The short URL of the present article is: %short_url%
+</div>" 	; break ; 
+			case 'css'	 					: return "*.shorten_url { 
+	padding: 10px 10px 10px 10px ; 
+	border: 1px solid #AAAAAA ; 
+	background-color: #EEEEEE ; 
+}" 	; break ; 
+		
 		}
 		return null ;
 	}
@@ -393,6 +410,17 @@ class shorturl extends pluginSedLex {
 					$params->add_comment(__('Please enter one regexp per line.',$this->pluginID)) ; 
 					$params->add_comment(__('If no regexp is entered, links in all pages and posts will be shorten.',$this->pluginID)) ; 
 
+					$params->add_title(__('Display the short URL?',$this->pluginID)) ; 
+					$params->add_param('display_top_in_post', "".__('At the top of posts:',$this->pluginID)) ; 
+					$params->add_param('display_bottom_in_post', "".__('At the bottom of posts:',$this->pluginID)) ; 
+					$params->add_param('display_top_in_page', "".__('At the top of pages:',$this->pluginID)) ; 
+					$params->add_param('display_bottom_in_page', "".__('At the bottom of pages:',$this->pluginID)) ; 
+					$params->add_param('html', __('Displayed HTML:',$this->pluginID)) ; 
+					$params->add_comment_default_value('html') ; 
+					$params->add_comment(sprintf(__('Note that %s will be automatically replaced by the shorten URL.', $this->pluginID), "<code>%short_url%</code>")) ; 
+					$params->add_param('css', __('CSS:',$this->pluginID)) ; 
+					$params->add_comment_default_value('css') ; 
+					
 					$params->flush() ; 
 			$tabs->add_tab(__('Parameters',  $this->pluginID), ob_get_clean() , WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_param.png") ; 	
 					
@@ -700,6 +728,19 @@ class shorturl extends pluginSedLex {
 	}
 	
 	/** ====================================================================================================================================================
+	* Init css for the public side
+	* If you want to load a style sheet, please type :
+	*	<code>$this->add_inline_css($css_text);</code>
+	*	<code>$this->add_css($css_url_file);</code>
+	*
+	* @return void
+	*/
+	
+	function _public_css_load() {	
+		$this->add_inline_css($this->get_param('css')) ; 
+	}
+
+	/** ====================================================================================================================================================
 	* Called when the content is displayed
 	*
 	* @param string $content the content which will be displayed
@@ -709,8 +750,55 @@ class shorturl extends pluginSedLex {
 	*/
 	
 	function _modify_content($content, $type, $excerpt) {	
-		$out = preg_replace_callback('#<a([^>]*?)href="([^"]*?)"([^>]*?)>([^<]*?)</a>#i', array($this,"replace_by_short_link"), $content);
-		return $out;
+		global $post ; 
+		$return = preg_replace_callback('#<a([^>]*?)href="([^"]*?)"([^>]*?)>([^<]*?)</a>#i', array($this,"replace_by_short_link"), $content);
+		
+		// If it is the loop and an the_except is called, we leave
+		if ($excerpt) {
+			// Excerpt
+			if ($this->get_param('display_bottom_in_excerpt')) {
+				$return =  $return.$this->display_url($post) ;  
+			}
+			if ($this->get_param('display_top_in_excerpt')) {
+				$return =  $this->display_url($post).$return ; 
+			}
+			return $return; 
+		} else {
+			// Page
+			if ($type=="page") {
+				if ($this->get_param('display_bottom_in_page')) {
+					$return =  $return.$this->display_url($post) ;  
+				}
+				if ($this->get_param('display_top_in_page')) {
+					$return =  $this->display_url($post).$return ; 
+				}
+				return $return; 				
+			}
+			// Post
+			if ($type=="post") {
+				if ($this->get_param('display_bottom_in_post')) {
+					$return =  $return.$this->display_url($post) ;  
+				}
+				if ($this->get_param('display_top_in_post')) {
+					$return =  $this->display_url($post).$return ; 
+				}
+				return $return; 				
+			}
+		}
+		
+		return $return ; 		
+	}
+	
+	/** ====================================================================================================================================================
+	* Display short URL in post / page
+	*
+	* @param object the post
+	* @return string html to be displayed
+	*/
+	
+	function display_url($post) {
+		$short = wp_get_shortlink($post->ID) ;
+		return str_replace('%short_url%', "<a href='$short'>$short</a>", $this->get_param('html')) ; 
 	}
 	
 	/** ====================================================================================================================================================
