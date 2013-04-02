@@ -73,6 +73,9 @@ Have fun !
 
 == Changelog ==
 
+= 1.4.1 =
+* Some page may be excluded
+
 = 1.4.0 =
 * The short URL may be displayed in the page
 
@@ -121,4 +124,4 @@ Have fun !
 Visit http://www.sedlex.fr/cote_geek/
 
  
-InfoVersion:a325f237197cfea1dc0b019a53aac34a
+InfoVersion:4a720f4fe07aa12afa8fcdd83d0905b5

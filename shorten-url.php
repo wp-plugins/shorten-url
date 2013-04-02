@@ -3,7 +3,7 @@
 Plugin Name: Short URL
 Plugin Tag: shorttag, shortag, bitly, url, short 
 Description: <p>Your pages/posts may have a short url hosted by your own domain.</p><p>Replace the internal function of wordpress <code>get_short_link()</code> by a bit.ly like url. </p><p>Instead of having a short link like http://www.yourdomain.com/?p=3564, your short link will be http://www.yourdomain.com/NgH5z (for instance). </p><p>You can configure: </p><ul><li>the length of the short link, </li><li>if the link is prefixed with a static word, </li><li>the characters used for the short link.</li></ul><p>Moreover, you can manage external links with this plugin. The links in your posts will be automatically replace by the short one if available.</p><p>This plugin is under GPL licence. </p>
-Version: 1.4.0
+Version: 1.4.1
 
 
 
@@ -183,6 +183,7 @@ class shorturl extends pluginSedLex {
 			case 'display_bottom_in_post' 			: return false ; break ; 
 			case 'display_top_in_page' 			: return false ; break ; 
 			case 'display_bottom_in_page' 			: return false ; break ; 
+			case 'exclude' : return "*" 		; break ; 
 			case 'html'						: return "*<div class='shorten_url'>
    The short URL of the present article is: %short_url%
 </div>" 	; break ; 
@@ -420,6 +421,9 @@ class shorturl extends pluginSedLex {
 					$params->add_comment(sprintf(__('Note that %s will be automatically replaced by the shorten URL.', $this->pluginID), "<code>%short_url%</code>")) ; 
 					$params->add_param('css', __('CSS:',$this->pluginID)) ; 
 					$params->add_comment_default_value('css') ; 
+					$params->add_param('exclude', __('Page to be excluded:',$this->pluginID)) ; 
+					$params->add_comment(sprintf(__("Please enter one entry per line. If the page %s is to be excluded, you may enter %s.",  $this->pluginID), "<code>http://yourdomain.tld/contact/</code>","<code>contact</code>")) ; 
+					$params->add_comment(sprintf(__("For instance, %s and %s will exclude the home page.",  $this->pluginID), "<code>^$</code>","<code>^/$</code>")) ; 
 					
 					$params->flush() ; 
 			$tabs->add_tab(__('Parameters',  $this->pluginID), ob_get_clean() , WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_param.png") ; 	
@@ -753,6 +757,22 @@ class shorturl extends pluginSedLex {
 		global $post ; 
 		$return = preg_replace_callback('#<a([^>]*?)href="([^"]*?)"([^>]*?)>([^<]*?)</a>#i', array($this,"replace_by_short_link"), $content);
 		
+		// We check whether there is an exclusion
+		$exclu = $this->get_param('exclude') ;
+		$exclu = explode("\n", $exclu) ;
+		foreach ($exclu as $e) {
+			$e = trim(str_replace("\r", "", $e)) ; 
+			if ($e!="") {
+				$e = "#".$e."#i"; 
+				if (preg_match($e, get_permalink($post->ID))) {
+					return $return ; 
+				}
+				if (preg_match($e, $_SERVER['REQUEST_URI'])) {
+					return $return ; 
+				}				
+			}
+		}
+
 		// If it is the loop and an the_except is called, we leave
 		if ($excerpt) {
 			// Excerpt
