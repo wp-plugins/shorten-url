@@ -3,7 +3,7 @@
 Author: SedLex
 Contributors: SedLex
 Author URI: http://www.sedlex.fr/
-Plugin URI: http://wordpress.org/extend/plugins/shorten-url/
+Plugin URI: http://wordpress.org/plugins/shorten-url/
 Tags: shorttag, shortag, bitly, url, short
 Requires at least: 3.0
 Tested up to: 3.5
@@ -39,9 +39,10 @@ This plugin is compatible with multisite installation. Each blog may manage thei
 * German (Germany) translation provided by reitermarkus, navelbrush
 * English (United States), default language
 * Spanish (Spain) translation provided by SebasContre, JosLuisCruz
-* Farsi (Iran) translation provided by EhsanKing
-* French (France) translation provided by SedLex
-* Portuguese (Brazil) translation provided by Blinky
+* Farsi (Iran) translation provided by EhsanKing, sehrama.ir
+* French (France) translation provided by SedLex, jlmcreation
+* Indonesian (Indonesia) translation provided by Adhityawicaksana
+* Portuguese (Brazil) translation provided by Blinky, TonyFranco
 * Russian (Russia) translation provided by Pacifik, AndreyFedotov
 * Chinese (People's Republic of China) translation provided by OWenT
 
@@ -72,6 +73,9 @@ Have fun !
 2. The configuration page of the plugin 
 
 == Changelog ==
+
+= 1.4.2 =
+* Some issue when the number of articles were too big
 
 = 1.4.1 =
 * Some page may be excluded
@@ -124,4 +128,4 @@ Have fun !
 Visit http://www.sedlex.fr/cote_geek/
 
  
-InfoVersion:4a720f4fe07aa12afa8fcdd83d0905b5
+InfoVersion:293ca8c4562f07cef46ba16d9f3db786

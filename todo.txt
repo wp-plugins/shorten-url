@@ -1,0 +1,1 @@
+Modify WP_PLUGIN_URL by plugin_dir_url()

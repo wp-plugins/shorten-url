@@ -3,15 +3,12 @@
 Plugin Name: Short URL
 Plugin Tag: shorttag, shortag, bitly, url, short 
 Description: <p>Your pages/posts may have a short url hosted by your own domain.</p><p>Replace the internal function of wordpress <code>get_short_link()</code> by a bit.ly like url. </p><p>Instead of having a short link like http://www.yourdomain.com/?p=3564, your short link will be http://www.yourdomain.com/NgH5z (for instance). </p><p>You can configure: </p><ul><li>the length of the short link, </li><li>if the link is prefixed with a static word, </li><li>the characters used for the short link.</li></ul><p>Moreover, you can manage external links with this plugin. The links in your posts will be automatically replace by the short one if available.</p><p>This plugin is under GPL licence. </p>
-Version: 1.4.1
-
-
-
+Version: 1.4.2
 Author: SedLex
 Author Email: sedlex@sedlex.fr
 Framework Email: sedlex@sedlex.fr
 Author URI: http://www.sedlex.fr/
-Plugin URI: http://wordpress.org/extend/plugins/shorten-url/
+Plugin URI: http://wordpress.org/plugins/shorten-url/
 License: GPL3
 */
 
@@ -245,23 +242,35 @@ class shorturl extends pluginSedLex {
 				$filter = explode(" ", $table->current_filter()) ; 
 												
 				// Get all posts / pages to be 
-				query_posts('post_type=any&posts_per_page=-1');
+				$count_posts = wp_count_posts('all');
+				$paged=1 ; 
+				
 				$result = array() ; 
-				while (have_posts()) {
-					the_post();
-					// we check if the title match the filter
-					$match = true ; 
-					$title = get_the_title() ; 
-					foreach ($filter as $fi) {
-						if ($fi!="") {
-							if (strpos($title, $fi)===FALSE) {
-								$match = false ; 
-								break ; 
+				
+				while (true) {
+					query_posts('post_type=any&posts_per_page=100&paged='.$paged);
+					if (!have_posts()) {
+						break;
+					}
+					
+					$paged ++ ; 
+					
+					while (have_posts()) {
+						the_post();
+						// we check if the title match the filter
+						$match = true ; 
+						$title = get_the_title() ; 
+						foreach ($filter as $fi) {
+							if ($fi!="") {
+								if (strpos($title, $fi)===FALSE) {
+									$match = false ; 
+									break ; 
+								}
 							}
 						}
-					}
-					if ($match) {
-						$result[] = array(get_the_ID(), $title, wp_get_shortlink(), get_post_type(), $wpdb->get_var("SELECT nb_hits FROM {$table_name} WHERE id_post='".get_the_ID()."'")) ; 
+						if ($match) {
+							$result[] = array(get_the_ID(), $title, wp_get_shortlink(), get_post_type(), $wpdb->get_var("SELECT nb_hits FROM {$table_name} WHERE id_post='".get_the_ID()."'")) ; 
+						}
 					}
 				}
 				

@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-05-09T15:12:31+00:00\n"
+"PO-Revision-Date: 2013-06-04T13:42:57+00:00\n"
 "Last-Translator: reitermarkus <http://reitermark.us/>\n"
 "Last-Translator: navelbrush <www.bauchnabelbuerste.de>\n"
 "Language-Team: \n"
@@ -92,4 +92,10 @@ msgstr "Feedback geben"
 
 msgid "Other plugins"
 msgstr "Andere Plugins"
+
+msgid "Title of your posts/pages"
+msgstr "Titel Deines Posts / Deiner Seite"
+
+msgid "Number of clicks"
+msgstr "Anzahl an Clicks"
 
