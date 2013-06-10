@@ -74,6 +74,9 @@ Have fun !
 
 == Changelog ==
 
+= 1.4.4 =
+* A new keyword %short_url_without_link% is available to display short link without any html link
+
 = 1.4.3 =
 * The short URL may be displayed in the excerpt
 
@@ -131,4 +134,4 @@ Have fun !
 Visit http://www.sedlex.fr/cote_geek/
 
  
-InfoVersion:f4622536c94f92d3062019734ebc9f98
+InfoVersion:dcde82966c68b51b099769117ee28d6d

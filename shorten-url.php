@@ -3,7 +3,7 @@
 Plugin Name: Short URL
 Plugin Tag: shorttag, shortag, bitly, url, short 
 Description: <p>Your pages/posts may have a short url hosted by your own domain.</p><p>Replace the internal function of wordpress <code>get_short_link()</code> by a bit.ly like url. </p><p>Instead of having a short link like http://www.yourdomain.com/?p=3564, your short link will be http://www.yourdomain.com/NgH5z (for instance). </p><p>You can configure: </p><ul><li>the length of the short link, </li><li>if the link is prefixed with a static word, </li><li>the characters used for the short link.</li></ul><p>Moreover, you can manage external links with this plugin. The links in your posts will be automatically replace by the short one if available.</p><p>This plugin is under GPL licence. </p>
-Version: 1.4.3
+Version: 1.4.4
 Author: SedLex
 Author Email: sedlex@sedlex.fr
 Framework Email: sedlex@sedlex.fr
@@ -430,6 +430,7 @@ class shorturl extends pluginSedLex {
 					$params->add_param('html', __('Displayed HTML:',$this->pluginID)) ; 
 					$params->add_comment_default_value('html') ; 
 					$params->add_comment(sprintf(__('Note that %s will be automatically replaced by the shorten URL.', $this->pluginID), "<code>%short_url%</code>")) ; 
+					$params->add_comment(sprintf(__('In addition, %s will be replaced by the shorten URL withour any html link.', $this->pluginID), "<code>%short_url_without_link%</code>")) ; 
 					$params->add_param('css', __('CSS:',$this->pluginID)) ; 
 					$params->add_comment_default_value('css') ; 
 					$params->add_param('exclude', __('Page to be excluded:',$this->pluginID)) ; 
@@ -829,7 +830,7 @@ class shorturl extends pluginSedLex {
 	
 	function display_url($post) {
 		$short = wp_get_shortlink($post->ID) ;
-		return str_replace('%short_url%', "<a href='$short'>$short</a>", $this->get_param('html')) ; 
+		return str_replace('%short_url_without_link%', "$short", str_replace('%short_url%', "<a href='$short'>$short</a>", $this->get_param('html'))) ; 
 	}
 	
 	/** ====================================================================================================================================================
