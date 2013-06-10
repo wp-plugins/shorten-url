@@ -3,7 +3,7 @@
 Plugin Name: Short URL
 Plugin Tag: shorttag, shortag, bitly, url, short 
 Description: <p>Your pages/posts may have a short url hosted by your own domain.</p><p>Replace the internal function of wordpress <code>get_short_link()</code> by a bit.ly like url. </p><p>Instead of having a short link like http://www.yourdomain.com/?p=3564, your short link will be http://www.yourdomain.com/NgH5z (for instance). </p><p>You can configure: </p><ul><li>the length of the short link, </li><li>if the link is prefixed with a static word, </li><li>the characters used for the short link.</li></ul><p>Moreover, you can manage external links with this plugin. The links in your posts will be automatically replace by the short one if available.</p><p>This plugin is under GPL licence. </p>
-Version: 1.4.2
+Version: 1.4.3
 Author: SedLex
 Author Email: sedlex@sedlex.fr
 Framework Email: sedlex@sedlex.fr
@@ -425,6 +425,8 @@ class shorturl extends pluginSedLex {
 					$params->add_param('display_bottom_in_post', "".__('At the bottom of posts:',$this->pluginID)) ; 
 					$params->add_param('display_top_in_page', "".__('At the top of pages:',$this->pluginID)) ; 
 					$params->add_param('display_bottom_in_page', "".__('At the bottom of pages:',$this->pluginID)) ; 
+					$params->add_param('display_top_in_excerpt', "".__('At the top of excerpt:',$this->pluginID)) ; 
+					$params->add_param('display_bottom_in_excerpt', "".__('At the bottom of excerpt:',$this->pluginID)) ; 
 					$params->add_param('html', __('Displayed HTML:',$this->pluginID)) ; 
 					$params->add_comment_default_value('html') ; 
 					$params->add_comment(sprintf(__('Note that %s will be automatically replaced by the shorten URL.', $this->pluginID), "<code>%short_url%</code>")) ; 

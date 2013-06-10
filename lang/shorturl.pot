@@ -81,7 +81,7 @@ msgid "External Redirections"
 msgstr ""
 
 #: shorten-url.php:393
-#: shorten-url.php:438
+#: shorten-url.php:440
 #@ shorturl
 msgid "Parameters"
 msgstr ""
@@ -218,45 +218,55 @@ msgstr ""
 
 #: shorten-url.php:428
 #@ shorturl
-msgid "Displayed HTML:"
+msgid "At the top of excerpt:"
+msgstr ""
+
+#: shorten-url.php:429
+#@ shorturl
+msgid "At the bottom of excerpt:"
 msgstr ""
 
 #: shorten-url.php:430
 #@ shorturl
-msgid "Note that %s will be automatically replaced by the shorten URL."
+msgid "Displayed HTML:"
 msgstr ""
 
-#: shorten-url.php:431
+#: shorten-url.php:432
 #@ shorturl
-msgid "CSS:"
+msgid "Note that %s will be automatically replaced by the shorten URL."
 msgstr ""
 
 #: shorten-url.php:433
 #@ shorturl
-msgid "Page to be excluded:"
-msgstr ""
-
-#: shorten-url.php:434
-#@ shorturl
-msgid "Please enter one entry per line. If the page %s is to be excluded, you may enter %s."
+msgid "CSS:"
 msgstr ""
 
 #: shorten-url.php:435
 #@ shorturl
+msgid "Page to be excluded:"
+msgstr ""
+
+#: shorten-url.php:436
+#@ shorturl
+msgid "Please enter one entry per line. If the page %s is to be excluded, you may enter %s."
+msgstr ""
+
+#: shorten-url.php:437
+#@ shorturl
 msgid "For instance, %s and %s will exclude the home page."
 msgstr ""
 
-#: shorten-url.php:444
+#: shorten-url.php:446
 #@ shorturl
 msgid "Manage translations"
 msgstr ""
 
-#: shorten-url.php:450
+#: shorten-url.php:452
 #@ shorturl
 msgid "Give feedback"
 msgstr ""
 
-#: shorten-url.php:455
+#: shorten-url.php:457
 #@ shorturl
 msgid "Other plugins"
 msgstr ""

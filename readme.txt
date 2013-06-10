@@ -74,6 +74,9 @@ Have fun !
 
 == Changelog ==
 
+= 1.4.3 =
+* The short URL may be displayed in the excerpt
+
 = 1.4.2 =
 * Some issue when the number of articles were too big
 
@@ -128,4 +131,4 @@ Have fun !
 Visit http://www.sedlex.fr/cote_geek/
 
  
-InfoVersion:293ca8c4562f07cef46ba16d9f3db786
+InfoVersion:f4622536c94f92d3062019734ebc9f98
