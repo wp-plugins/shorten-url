@@ -74,6 +74,9 @@ Have fun !
 
 == Changelog ==
 
+= 1.4.5 =
+* Now compatible with full HTTPS site
+
 = 1.4.4 =
 * A new keyword %short_url_without_link% is available to display short link without any html link
 
@@ -134,4 +137,4 @@ Have fun !
 Visit http://www.sedlex.fr/cote_geek/
 
  
-InfoVersion:dcde82966c68b51b099769117ee28d6d
+InfoVersion:18ab6986e09ccf3e179dfb187ac1dd00

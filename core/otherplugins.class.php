@@ -173,11 +173,11 @@ if (!class_exists("otherPlugins")) {
 				echo  "<div class='inline'>".sprintf(__('Rating: %s', 'SL_framework' ), $res->rating)." &nbsp; &nbsp; </div> " ; 
 				echo "<div class='star-holder inline'>" ; 
 				echo "<div class='star star-rating' style='width: ".$res->rating."px'></div>" ; 
-				echo "<div class='star star5'><img src='".WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."img/star.gif' alt='5 stars' /></div>" ; 
-				echo "<div class='star star4'><img src='".WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."img/star.gif' alt='4 stars' /></div>" ; 
-				echo "<div class='star star3'><img src='".WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."img/star.gif' alt='3 stars' /></div>" ; 
-				echo "<div class='star star2'><img src='".WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."img/star.gif' alt='2 stars' /></div>" ; 
-				echo "<div class='star star1'><img src='".WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."img/star.gif' alt='1 stars' /></div>" ; 
+				echo "<div class='star star5'><img src='".plugin_dir_url("/").'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."img/star.gif' alt='5 stars' /></div>" ; 
+				echo "<div class='star star4'><img src='".plugin_dir_url("/").'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."img/star.gif' alt='4 stars' /></div>" ; 
+				echo "<div class='star star3'><img src='".plugin_dir_url("/").'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."img/star.gif' alt='3 stars' /></div>" ; 
+				echo "<div class='star star2'><img src='".plugin_dir_url("/").'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."img/star.gif' alt='2 stars' /></div>" ; 
+				echo "<div class='star star1'><img src='".plugin_dir_url("/").'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."img/star.gif' alt='1 stars' /></div>" ; 
 				echo "</div> " ; 
 				echo " <div class='inline'> &nbsp; (".sprintf(__("by %s persons", 'SL_framework' ),$res->num_ratings).")</div>";
 				echo "<br class='clearBoth' />" ; 

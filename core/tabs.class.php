@@ -117,7 +117,7 @@ if (!class_exists("adminTabs")) {
 			
 			for ($i=0 ; $i<count($this->title) ; $i++) {
 				if ($this->image[$i]=="") {
-					$this->image[$i] = WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."img/tab_empty.png" ; 
+					$this->image[$i] = plugin_dir_url("/").'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."img/tab_empty.png" ; 
 				}
 ?>					<li><a href="#tab-<?php echo md5($all.$this->title[$i]) ?>"><img style='vertical-align:middle;' src='<?php echo $this->image[$i] ?>'> <?php echo $this->title[$i] ?></a></li>		
 <?php

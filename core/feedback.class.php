@@ -76,7 +76,7 @@ if (!class_exists("feedbackSL")) {
 				
 				echo "<p id='feedback_submit'><input id='feedback_submit_button' disabled type='submit' name='add' class='button-primary validButton' onclick='send_feedback(\"".$this->plugin."\", \"".$this->pluginID."\");return false;' value='".__('Send feedback','SL_framework')."' /></p>" ; 
 				
-				$x = WP_PLUGIN_URL.'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__)) ; 
+				$x = plugin_dir_url("/").'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__)) ; 
 				echo "<img id='wait_feedback' src='".$x."/img/ajax-loader.gif' style='display:none;'>" ; 
 			} else {
 				echo "<p>".__('No email have been provided for the author of this plugin. Therefore, the feedback is impossible', 'SL_framework')."</p>" ; 

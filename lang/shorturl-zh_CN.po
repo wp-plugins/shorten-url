@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2013-03-07T07:02:52+00:00\n"
+"PO-Revision-Date: 2013-06-12T08:56:41+00:00\n"
 "Last-Translator: OWenT <http://www.owent.net>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -151,4 +151,46 @@ msgstr "要启动Short-URL插件，固定链接设置不能被设为默认值"
 
 msgid "Please go to %s page to correct it."
 msgstr "请到 %s 页来修复此问题"
+
+msgid "Display the short URL?"
+msgstr "显示短链接?"
+
+msgid "At the top of posts:"
+msgstr "在文章顶部"
+
+msgid "At the bottom of posts:"
+msgstr "在文章底部"
+
+msgid "At the top of pages:"
+msgstr "在页面顶部"
+
+msgid "At the bottom of pages:"
+msgstr "在页面底部"
+
+msgid "At the top of excerpt:"
+msgstr "在摘要顶部"
+
+msgid "At the bottom of excerpt:"
+msgstr "在摘要底部"
+
+msgid "Displayed HTML:"
+msgstr "显示HTML"
+
+msgid "Note that %s will be automatically replaced by the shorten URL."
+msgstr "注意: %s 会被自动替换为短链接"
+
+msgid "In addition, %s will be replaced by the shorten URL withour any html link."
+msgstr "PS: %s 会被替换为不带任何HTML标签的短链接地址"
+
+msgid "CSS:"
+msgstr "样式表:"
+
+msgid "Page to be excluded:"
+msgstr "排除的页面"
+
+msgid "Please enter one entry per line. If the page %s is to be excluded, you may enter %s."
+msgstr "请输入要排除的页面,每行一条(如果要排除页面 %s ,输入 %s)"
+
+msgid "For instance, %s and %s will exclude the home page."
+msgstr "例如: %s 和 %s 将会把主页排除"
 
