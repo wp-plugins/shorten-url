@@ -6,14 +6,14 @@ Author URI: http://www.sedlex.fr/
 Plugin URI: http://wordpress.org/plugins/shorten-url/
 Tags: shorttag, shortag, bitly, url, short
 Requires at least: 3.0
-Tested up to: 3.5
+Tested up to: 3.8.1
 Stable tag: trunk
 
-Your pages/posts may have a short url hosted by your own domain.
+Your article (including custom type) may have a short url hosted by your own domain.
 
 == Description ==
 
-Your pages/posts may have a short url hosted by your own domain.
+Your article (including custom type) may have a short url hosted by your own domain.
 
 Replace the internal function of wordpress get_short_link() by a bit.ly like url. 
 
@@ -35,14 +35,16 @@ This plugin is compatible with multisite installation. Each blog may manage thei
 
 = Localization =
 
+* Arabic (U.A.E.) translation provided by ZILZAL
+* Arabic (Saudi Arabia) translation provided by ZILZAL
 * German (Austria) translation provided by AndreasK.
-* German (Germany) translation provided by reitermarkus, navelbrush
+* German (Germany) translation provided by reitermarkus, navelbrush, HenningKlocke
 * English (United States), default language
 * Spanish (Spain) translation provided by SebasContre, JosLuisCruz
-* Farsi (Iran) translation provided by EhsanKing, sehrama.ir
+* Farsi (Iran) translation provided by EhsanKing, sehrama.ir, HamidEslami, Yhayakhaledi
 * French (France) translation provided by SedLex, jlmcreation
 * Indonesian (Indonesia) translation provided by Adhityawicaksana
-* Portuguese (Brazil) translation provided by Blinky, TonyFranco
+* Portuguese (Brazil) translation provided by Blinky, TonyFranco, ViniciusSantos, Bruno
 * Russian (Russia) translation provided by Pacifik, AndreyFedotov
 * Chinese (People's Republic of China) translation provided by OWenT
 
@@ -74,22 +76,17 @@ Have fun !
 
 == Changelog ==
 
-= 1.4.5 =
+= 1.5.0 =
+* NEW: the shortlink may point to another domain
+* NEW: support of custom page
+* Various enhancements
+
+= 1.4.0 -&gt; 1.4.5 =
 * Now compatible with full HTTPS site
-
-= 1.4.4 =
 * A new keyword %short_url_without_link% is available to display short link without any html link
-
-= 1.4.3 =
 * The short URL may be displayed in the excerpt
-
-= 1.4.2 =
 * Some issue when the number of articles were too big
-
-= 1.4.1 =
 * Some page may be excluded
-
-= 1.4.0 =
 * The short URL may be displayed in the page
 
 = 1.3.0 -&gt; 1.3.11 =
@@ -137,4 +134,4 @@ Have fun !
 Visit http://www.sedlex.fr/cote_geek/
 
  
-InfoVersion:18ab6986e09ccf3e179dfb187ac1dd00
+InfoVersion:f43c6fb753f2624152b027f2e0dd0a95

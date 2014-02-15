@@ -77,12 +77,12 @@ if (!class_exists("translationSL")) {
 		static function get_php_files($root, $other='') {
 			
 			@chmod($root."/".$other, 0755) ; 
-			$dir=opendir($root."/".$other);
+			$dir=@scandir($root."/".$other);
 			
 			$folder = array() ; 
 			$php = array() ; 
 			
-			while ($f = readdir($dir)) {
+			foreach($dir as $f) {
 				if (is_dir($root."/".$other.$f)) {
 					if (preg_match("/^[^.].*/i", $f)) {
 						if (!preg_match("/^templates/i", $f)) {
@@ -785,7 +785,7 @@ if (!class_exists("translationSL")) {
 				if ($isEmailAuthor=="true") {
 					$url_to_send  ="<a href='#' onclick='send_trans(\"".$plugin."\",\"".$domain."\", \"".$isFramework."\", \"".$lang."\")'>" ; 
 					$url_to_send2  ="</a>" ; 
-					echo "<p><img src='".plugin_dir_url("/")."/".$plugin."/core/img/info.png'/>".sprintf(__("If you do not want to loose your translations on the next upgrading of this plugin, it is recommended to send the translation files to the author by clicking %s here %s !", 'SL_framework'), $url_to_send, $url_to_send2)."</p>";
+					echo "<p><span class='tobehiddenOnSent'><img src='".plugin_dir_url("/")."/".$plugin."/core/img/info.png'/>".sprintf(__("If you do not want to loose your translations on the next upgrading of this plugin, it is recommended to send the translation files to the author by clicking %s here %s !", 'SL_framework'), $url_to_send, $url_to_send2)."</span></p>";
 				} else {
 					echo "<p><img src='".plugin_dir_url("/")."/".$plugin."/core/img/warning.png'/>".__("If you do not want to loose your translations on the next upgrading of this plugin, please save them on your hard disk before upgrading and then restore them after the upgrade !", 'SL_framework')."</p>";
 				}
@@ -989,13 +989,13 @@ if (!class_exists("translationSL")) {
 			$plugin_lien = $plugin;
 						
 			@chmod($path."/lang/", 0755) ; 
-			$dir = @opendir($path."/lang/"); 
+			$dir = @scandir($path."/lang/"); 
 			$dom = $domain ; 
 
 			$file = array() ; 
 			$signature_files = array() ; 
 			
-			while(false !== ($item = readdir($dir))) {
+			foreach($dir as $item) {
 				if ('.' == $item || '..' == $item)
 					continue;
 				if (preg_match("/([a-z]{2}_[A-Z]{2})\.mo$/", $item, $h)) {
@@ -1004,7 +1004,6 @@ if (!class_exists("translationSL")) {
 				}
 			}
 			
-			closedir($dir);
 			if (!in_array('en_US', $file)) $file[] = 'en_US';
 			sort($file);
 			
@@ -1023,16 +1022,15 @@ if (!class_exists("translationSL")) {
 			}
 			
 			// We delete all cache file
-			$dir = @opendir(WP_CONTENT_DIR."/sedlex/translations/"); 
+			$dir = @scandir(WP_CONTENT_DIR."/sedlex/translations/"); 
 			if ($dir !== false) {
-				while(false !== ($item = readdir($dir))) {
+				foreach($dir as $item) {
 					if ('.' == $item || '..' == $item)
 						continue;
 					if (preg_match("/".$domain.".*\.html$/", $item, $h)) {
 						unlink (WP_CONTENT_DIR."/sedlex/translations/".$item);
 					}
 				}
-				closedir($dir);
 			}
 				
 			// we reconstruct the cache file
@@ -1112,7 +1110,7 @@ if (!class_exists("translationSL")) {
 							$signature_files .= $domain."-".$f.".mo".filesize($path."/lang/".$domain."-".$f.".mo");
 							$cel_lang->add_action(__('Modify','SL_framework'), "modify_trans('".$plugin_lien."','".$domain."', 'false', '".$f."')" ) ; 
 							if (($isEmailAuthor=="true") && (strlen($nameTranslator)>3) && (strpos($info['translators'], $nameTranslator)>0)) {
-								$cel_lang->add_action(__('Send to the author of the plugin','SL_framework'), "send_trans(\"".$plugin_lien."\",\"".$domain."\", \"false\", \"".$f."\")") ; 
+								$cel_lang->add_action("<span class='tobehiddenOnSent'>".__('Send to the author of the plugin','SL_framework')."</span>", "send_trans(\"".$plugin_lien."\",\"".$domain."\", \"false\", \"".$f."\")") ; 
 							}
 						}
 						if ($f!="en_US") {
@@ -1178,10 +1176,10 @@ if (!class_exists("translationSL")) {
 			$plugin_lien = $plugin;
 						
 			@chmod($path."/lang/", 0755) ; 
-			$dir = @opendir($path."/lang/"); 
+			$dir = @scandir($path."/lang/"); 
 
 			$file = array() ; 
-			while(false !== ($item = readdir($dir))) {
+			foreach($dir as $item) {
 				if ('.' == $item || '..' == $item)
 					continue;
 				if (preg_match("/([a-z]{2}_[A-Z]{2})\.po$/", $item, $h)) {
@@ -1189,7 +1187,6 @@ if (!class_exists("translationSL")) {
 				}
 			}
 			
-			closedir($dir);
 			if (!in_array('en_US', $file)) $file[] = 'en_US';
 			asort($file);
 
@@ -1304,13 +1301,13 @@ if (!class_exists("translationSL")) {
 			$plugin_lien = $plugin;
 			
 			@chmod($path."/core/lang/", 0755) ; 
-			$dir = @opendir($path."/core/lang/"); 
+			$dir = @scandir($path."/core/lang/"); 
 			$dom = "SL_framework" ;
 
 			$file = array() ; 
 			$signature_files = array() ; 
 			
-			while(false !== ($item = readdir($dir))) {
+			foreach($dir as $item) {
 				if ('.' == $item || '..' == $item)
 					continue;
 				if (preg_match("/([a-z]{2}_[A-Z]{2})\.mo$/", $item, $h)) {
@@ -1319,7 +1316,6 @@ if (!class_exists("translationSL")) {
 				}
 			}
 			
-			closedir($dir);
 			if (!in_array('en_US', $file)) $file[] = 'en_US';
 			sort($file);
 			
@@ -1338,15 +1334,14 @@ if (!class_exists("translationSL")) {
 			}
 			
 			// We delete all cache file
-			$dir = @opendir(WP_CONTENT_DIR."/sedlex/translations"); 
-			while(false !== ($item = readdir($dir))) {
+			$dir = @scandir(WP_CONTENT_DIR."/sedlex/translations"); 
+			foreach($dir as $item) {
 				if ('.' == $item || '..' == $item)
 					continue;
 				if (preg_match("/SL_framework.*\.html$/", $item, $h)) {
 					unlink (WP_CONTENT_DIR."/sedlex/translations/".$item);
 				}
 			}
-			closedir($dir);
 			
 			// We reconstruct the cache file
 			$signature_files = get_locale() ; 
@@ -1421,7 +1416,7 @@ if (!class_exists("translationSL")) {
 							$signature_files .= "SL_framework-".$f.".mo".filesize($path."/core/lang/SL_framework-".$f.".mo") ; 
 							$cel_lang->add_action(__('Modify','SL_framework'), "modify_trans('".$plugin_lien."','".$domain."', '".$plugin_frame."', '".$f."')" ) ; 
 							if (($isEmailAuthor=="true") && (strlen($nameTranslator)>3) && (strpos($info['translators'], $nameTranslator)>0)) {
-								$cel_lang->add_action(__('Send to the author of the framework','SL_framework'), "send_trans('".$plugin_lien."','".$domain."', '".$plugin_frame."' , \"".$f."\")") ; 
+								$cel_lang->add_action("<span class='tobehiddenOnSent'>".__('Send to the author of the framework','SL_framework')."</span>", "send_trans('".$plugin_lien."','".$domain."', '".$plugin_frame."' , \"".$f."\")") ; 
 							}
 						}
 						if ($f!="en_US") {

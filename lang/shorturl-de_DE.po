@@ -4,9 +4,10 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2013-06-04T13:42:57+00:00\n"
+"PO-Revision-Date: 2013-11-11T14:39:42+00:00\n"
 "Last-Translator: reitermarkus <http://reitermark.us/>\n"
 "Last-Translator: navelbrush <www.bauchnabelbuerste.de>\n"
+"Last-Translator: HenningKlocke <internet-workflow.de>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -98,4 +99,67 @@ msgstr "Titel Deines Posts / Deiner Seite"
 
 msgid "Number of clicks"
 msgstr "Anzahl an Clicks"
+
+msgid "Please go to %s page to correct it."
+msgstr "Bitte Seite %s aufrufen, um sie zu korrigieren."
+
+msgid "Type"
+msgstr "Typ"
+
+msgid "Internal Redirections"
+msgstr "Interne Verlinkung"
+
+msgid "External Redirections"
+msgstr "Externe Verlinkung"
+
+msgid "Customize the short link URL"
+msgstr "Verändere die Kurz-URL"
+
+msgid "Remove www:"
+msgstr "Entferne das www."
+
+msgid "Change the root URL of the short link:"
+msgstr "Verändere die Haupt-URL des Kurz-Links"
+
+msgid "Automatic shorten links:"
+msgstr "Automatisch die Links kürzen."
+
+msgid "Regexp filter:"
+msgstr "Regexp-Filter:"
+
+msgid "The permalink options should not be configured to default in order to enable Short-URL."
+msgstr "Die Permalink Struktur sollte nicht auf &quot;default&quot; (Standard) eingestellt sein, damit Short-URL funktioniert."
+
+msgid "If you have a shorter URL pointing to your Wordpress blog, you may configure it here by selecting this option"
+msgstr "Wenn Du eine kürzere Webadresse hast, die auf Deinen Wordpress Blog umgeleitet wird, kannst Du diese benutzen, indem Du sie hier einträgst."
+
+msgid "Your shorter domain URL:"
+msgstr "Deine kürzere Webadresse/ URL"
+
+msgid "At the top of posts:"
+msgstr "Über den Beiträgen."
+
+msgid "At the bottom of posts:"
+msgstr "Unter den Beiträgen."
+
+msgid "At the top of pages:"
+msgstr "Oben auf den Seiten."
+
+msgid "At the bottom of pages:"
+msgstr "Unten auf den Seiten."
+
+msgid "At the top of excerpt:"
+msgstr "Über dem Text-Auszug."
+
+msgid "At the bottom of excerpt:"
+msgstr "Unter dem Text-Auszug."
+
+msgid "Displayed HTML:"
+msgstr "Angezeigter HTML-Code:"
+
+msgid "CSS:"
+msgstr "css:"
+
+msgid "Page to be excluded:"
+msgstr "Seiten, die ausgeschlossen werden sollen."
 

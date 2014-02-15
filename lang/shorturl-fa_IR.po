@@ -4,9 +4,11 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2013-03-31T09:18:21+00:00\n"
+"PO-Revision-Date: 2014-01-12T10:03:37+00:00\n"
 "Last-Translator: EhsanKing <ehsankingehsan@gmail.com>\n"
 "Last-Translator: sehrama.ir <sehrama.ir>\n"
+"Last-Translator: HamidEslami <hammmyd@gmail.com>\n"
+"Last-Translator: Yhayakhaledi <apraianeh@gmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -116,4 +118,64 @@ msgstr "آیا مایلید به صورت خودکار پیوندهای ورود
 
 msgid "Automatic shorten links:"
 msgstr "پیوندهای کوتاه شده‌ی خودکار"
+
+msgid "The permalink options should not be configured to default in order to enable Short-URL."
+msgstr "برای فعال کردن قابلیت کوتاه‌کردن URL، پیوند ثابت (یکتا) نباید روی پیش‌فرض تنظیم شده باشد."
+
+msgid "Please go to %s page to correct it."
+msgstr "برای اصلاح، لطفا به صفحه‌ی %s بروید."
+
+msgid "Therefore, the short URL will begin with %s"
+msgstr "سپس، URL کوتاه با %s شروع خواهد شد"
+
+msgid "Change the root URL of the short link:"
+msgstr "تغییر شاخه‌ی اصلی URL لینک کوتاه:"
+
+msgid "If you have a shorter URL pointing to your Wordpress blog, you may configure it here by selecting this option"
+msgstr "اگر URL کوتاه‌تری به این بلاگ/سایت متصل است، می‌توانید آن را در این‌جا با انتخاب این گزینه، تنظیم کنید"
+
+msgid "Regexp filter:"
+msgstr "فیلتر عبارات منظم"
+
+msgid "Please enter one regexp per line."
+msgstr "لطفا در هر خط یک عبارت منظم وارد کنید"
+
+msgid "If no regexp is entered, links in all pages and posts will be shorten."
+msgstr "اگر هیچ عبارت منظمی وارد نشود، لینک‌های درون تمامی برگه‌ها و نوشته‌ها کوتاه خواهد شد."
+
+msgid "At the top of posts:"
+msgstr "نمایش در بالای مطلب کامل:"
+
+msgid "At the bottom of posts:"
+msgstr "نمایش در پایین مطلب کامل:"
+
+msgid "At the top of pages:"
+msgstr "نمایش در بالای صفحات:"
+
+msgid "At the bottom of pages:"
+msgstr "نمایش در پایین صفحات:"
+
+msgid "At the top of excerpt:"
+msgstr "نمایش در بالای خلاصه مطلب:"
+
+msgid "At the bottom of excerpt:"
+msgstr "نمایش در پایین خلاصه مطلب:"
+
+msgid "Displayed HTML:"
+msgstr "HTML نمایش داده شده:"
+
+msgid "Note that %s will be automatically replaced by the shorten URL."
+msgstr "لازم است بدانید که %s به صورت خودکار توسط URL کوتاه‌شده جای‌گزین می‌شود."
+
+msgid "In addition, %s will be replaced by the shorten URL withour any html link."
+msgstr "علاوه بر آن، %s بدون هیچ لینک HTML توسط URL کوتاه‌شده جای‌گزین خواهد شد."
+
+msgid "CSS:"
+msgstr "سی اس اس:"
+
+msgid "Page to be excluded:"
+msgstr "از این صفحات چشم پوشی شود:"
+
+msgid "For instance, %s and %s will exclude the home page."
+msgstr "برای نمونه، %s و %s صفحه‌ی اصلی را جدا خواهند کرد."
 

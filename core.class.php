@@ -805,7 +805,8 @@ if (!class_exists('pluginSedLex')) {
 				
 				@chmod(WP_CONTENT_DIR."/sedlex/inline_scripts/".$md5.".js", 0755);
 				
-				$url = plugin_dir_url("/").'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__)).'core/load-scripts.php?c=0&load='.$md5 ; 
+				//$url = plugin_dir_url("/").'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__)).'core/load-scripts.php?c=0&load='.$md5 ; 
+				$url = content_url("/").'sedlex/inline_scripts/'.$md5.".js" ; 
 				wp_enqueue_script('sedlex_scripts', $url, array() ,date('Ymd'));
 				$sedlex_list_scripts = array(); 
 			}
@@ -1026,7 +1027,8 @@ if (!class_exists('pluginSedLex')) {
 				
 				@chmod(WP_CONTENT_DIR."/sedlex/inline_styles/".$md5.".css", 0755);
 				
-				$url = plugin_dir_url("/").'/'.str_replace(basename(__FILE__),"",plugin_basename( __FILE__)).'core/load-styles.php?c=0&load='.$md5 ; 
+				//$url = plugin_dir_url("/").'/'.str_replace(basename(__FILE__),"",plugin_basename( __FILE__)).'core/load-styles.php?c=0&load='.$md5 ; 
+				$url = content_url("/").'sedlex/inline_styles/'.$md5.".css" ; 
 				wp_enqueue_style('sedlex_styles', $url, array() ,date('Ymd'));
 
 				$sedlex_list_styles = array(); 

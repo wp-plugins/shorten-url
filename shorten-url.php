@@ -2,8 +2,9 @@
 /*
 Plugin Name: Short URL
 Plugin Tag: shorttag, shortag, bitly, url, short 
-Description: <p>Your pages/posts may have a short url hosted by your own domain.</p><p>Replace the internal function of wordpress <code>get_short_link()</code> by a bit.ly like url. </p><p>Instead of having a short link like http://www.yourdomain.com/?p=3564, your short link will be http://www.yourdomain.com/NgH5z (for instance). </p><p>You can configure: </p><ul><li>the length of the short link, </li><li>if the link is prefixed with a static word, </li><li>the characters used for the short link.</li></ul><p>Moreover, you can manage external links with this plugin. The links in your posts will be automatically replace by the short one if available.</p><p>This plugin is under GPL licence. </p>
-Version: 1.4.5
+Description: <p>Your article (including custom type) may have a short url hosted by your own domain.</p><p>Replace the internal function of wordpress <code>get_short_link()</code> by a bit.ly like url. </p><p>Instead of having a short link like http://www.yourdomain.com/?p=3564, your short link will be http://www.yourdomain.com/NgH5z (for instance). </p><p>You can configure: </p><ul><li>the length of the short link, </li><li>if the link is prefixed with a static word, </li><li>the characters used for the short link.</li></ul><p>Moreover, you can manage external links with this plugin. The links in your posts will be automatically replace by the short one if available.</p><p>This plugin is under GPL licence. </p>
+Version: 1.5.0
+
 
 Author: SedLex
 Author Email: sedlex@sedlex.fr
@@ -47,9 +48,7 @@ class shorturl extends pluginSedLex {
 		add_action('wp_ajax_cancel_link_external', array($this,'cancel_link_external'));
 		add_action('wp_ajax_delete_link_external', array($this,'delete_link_external'));
 		
-		// 
 		add_action('all_admin_notices', array($this,'verify_permalink'));
-		
 
 		add_filter('get_shortlink', array($this,'get_short_link_filter'), 9, 2);
 		add_action('template_redirect',array($this,'redirect_404'), 1);
@@ -175,12 +174,16 @@ class shorturl extends pluginSedLex {
 			case 'catch_url' 		: return false 		; break ; 
 			case 'catch_url_filter' 		: return "*" 		; break ; 
 			
+			case 'typepage' 			: return "post,page" ; break ; 
+
 			case 'display_top_in_excerpt' 			: return false ; break ; 
 			case 'display_bottom_in_excerpt' 			: return false ; break ; 
 			case 'display_top_in_post' 			: return false ; break ; 
 			case 'display_bottom_in_post' 			: return false ; break ; 
 			case 'display_top_in_page' 			: return false ; break ; 
 			case 'display_bottom_in_page' 			: return false ; break ; 
+			case 'display_top_in_custom' 			: return false ; break ; 
+			case 'display_bottom_in_custom' 			: return false ; break ; 
 			case 'exclude' : return "*" 		; break ; 
 			case 'html'						: return "*<div class='shorten_url'>
    The short URL of the present article is: %short_url%
@@ -242,14 +245,13 @@ class shorturl extends pluginSedLex {
 				// on construit le filtre pour la requete
 				$filter = explode(" ", $table->current_filter()) ; 
 												
-				// Get all posts / pages to be 
-				$count_posts = wp_count_posts('all');
 				$paged=1 ; 
 				
 				$result = array() ; 
-				
+								
 				while (true) {
-					query_posts('post_type=any&posts_per_page=100&paged='.$paged);
+					query_posts(array('post_type' => explode(',', $this->get_param('typepage')), 'posts_per_page' => 100, 'paged'=>$paged));
+
 					if (!have_posts()) {
 						break;
 					}
@@ -278,7 +280,7 @@ class shorturl extends pluginSedLex {
 				$count = count($result);
 				$table->set_nb_all_Items($count) ; 
 
-				$table->title(array(__('Title of your posts/pages', $this->pluginID), __('Short URL', $this->pluginID), __('Type', $this->pluginID), __('Number of clicks', $this->pluginID)) ) ; 
+				$table->title(array(__('Title of your articles', $this->pluginID), __('Short URL', $this->pluginID), __('Type', $this->pluginID), __('Number of clicks', $this->pluginID)) ) ; 
 
 				
 				// We order the posts page according to the choice of the user
@@ -406,6 +408,11 @@ class shorturl extends pluginSedLex {
 					
 					$params->add_title(__('What is the length of your short URL (without the prefix)?',$this->pluginID)) ; 
 					$params->add_param('length', __('Length:',$this->pluginID)) ; 
+					
+					$params->add_title(__('What are the short links that are to be displayed?',$this->pluginID)) ; 
+					$params->add_param('typepage', __('Types (separated with comma):',$this->pluginID)) ; 
+					$params->add_comment(sprintf(__('For instance %s',$this->pluginID), "<code>page,post</code>")) ; 
+					$params->add_comment(__('Note that ALL page will be shorten, but only this types will be displayed in the first tab of this plugin.',$this->pluginID)) ; 
 
 					$params->add_title(__('Customize the short link URL',$this->pluginID)) ; 
 					$params->add_param('removewww', __('Remove www:',$this->pluginID)) ; 
@@ -414,29 +421,33 @@ class shorturl extends pluginSedLex {
 					$params->add_comment(__('If you have a shorter URL pointing to your Wordpress blog, you may configure it here by selecting this option',$this->pluginID)) ; 
 					$params->add_param('changeroot_url', __('Your shorter domain URL:',$this->pluginID)) ; 
 					
-					$params->add_title(__('Do you want to automatically shorten links in post/page?',$this->pluginID)) ; 
+					$params->add_title(__('Do you want to automatically shorten links in article?',$this->pluginID)) ; 
 					$params->add_param('catch_url', __('Automatic shorten links:',$this->pluginID), "", "", array('catch_url_filter')) ; 
 					$params->add_param('catch_url_filter', __('Regexp filter:',$this->pluginID)) ; 
 					$params->add_comment(sprintf(__('The above regexp filter is to select the page in which the link urls are shorten. For instance, %s (or %s) configures the plugin to shorten all links, for instance, in pages %s and %s',$this->pluginID), "<code>.*cat_select.*</code>","<code>cat_select</code>", "<code>http://domain.tld/cat_select/</code>", "<code>http://domain.tld/level/cat_select/child/</code>")) ; 
 					$params->add_comment(__('Please enter one regexp per line.',$this->pluginID)) ; 
 					$params->add_comment(__('If no regexp is entered, links in all pages and posts will be shorten.',$this->pluginID)) ; 
 
-					$params->add_title(__('Display the short URL?',$this->pluginID)) ; 
+					$params->add_title(__('Where to display the short URL?',$this->pluginID)) ; 
 					$params->add_param('display_top_in_post', "".__('At the top of posts:',$this->pluginID)) ; 
 					$params->add_param('display_bottom_in_post', "".__('At the bottom of posts:',$this->pluginID)) ; 
 					$params->add_param('display_top_in_page', "".__('At the top of pages:',$this->pluginID)) ; 
 					$params->add_param('display_bottom_in_page', "".__('At the bottom of pages:',$this->pluginID)) ; 
+					$params->add_param('display_top_in_custom', "".__('At the top of custom type article:',$this->pluginID)) ; 
+					$params->add_param('display_bottom_in_custom', "".__('At the bottom of custom type article:',$this->pluginID)) ; 
 					$params->add_param('display_top_in_excerpt', "".__('At the top of excerpt:',$this->pluginID)) ; 
 					$params->add_param('display_bottom_in_excerpt', "".__('At the bottom of excerpt:',$this->pluginID)) ; 
+					$params->add_param('exclude', __('Page to be excluded:',$this->pluginID)) ; 
+					$params->add_comment(sprintf(__("Please enter one entry per line. If the article %s is to be excluded, you may enter %s.",  $this->pluginID), "<code>http://yourdomain.tld/contact/</code>","<code>contact</code>")) ; 
+					$params->add_comment(sprintf(__("For instance, %s and %s will exclude the home page.",  $this->pluginID), "<code>^$</code>","<code>^/$</code>")) ; 
+
+					$params->add_title(__('Appearance of such display',$this->pluginID)) ; 
 					$params->add_param('html', __('Displayed HTML:',$this->pluginID)) ; 
 					$params->add_comment_default_value('html') ; 
 					$params->add_comment(sprintf(__('Note that %s will be automatically replaced by the shorten URL.', $this->pluginID), "<code>%short_url%</code>")) ; 
 					$params->add_comment(sprintf(__('In addition, %s will be replaced by the shorten URL withour any html link.', $this->pluginID), "<code>%short_url_without_link%</code>")) ; 
 					$params->add_param('css', __('CSS:',$this->pluginID)) ; 
 					$params->add_comment_default_value('css') ; 
-					$params->add_param('exclude', __('Page to be excluded:',$this->pluginID)) ; 
-					$params->add_comment(sprintf(__("Please enter one entry per line. If the page %s is to be excluded, you may enter %s.",  $this->pluginID), "<code>http://yourdomain.tld/contact/</code>","<code>contact</code>")) ; 
-					$params->add_comment(sprintf(__("For instance, %s and %s will exclude the home page.",  $this->pluginID), "<code>^$</code>","<code>^/$</code>")) ; 
 					
 					$params->flush() ; 
 			$tabs->add_tab(__('Parameters',  $this->pluginID), ob_get_clean() , plugin_dir_url("/").'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_param.png") ; 	
@@ -477,7 +488,7 @@ class shorturl extends pluginSedLex {
 		// get the arguments
 		$idLink = $_POST['idLink'];
 		// Empty the database for the given idLink
-		$q = "DELETE  FROM {$table_name} WHERE id_post=".$idLink ; 
+		$q = "DELETE FROM {$table_name} WHERE id_post=".$idLink ; 
 		$wpdb->query( $q ) ;
 		// Create a new entry
 		$link = $this->get_short_link_filter(get_permalink($idLink), $idLink) ; 
@@ -582,7 +593,7 @@ class shorturl extends pluginSedLex {
 		
 		// Empty the database for the given idLink
 		
-		$q = "UPDATE  {$table_name} SET short_url = '".$link."' WHERE id_post=0 AND MD5(short_url)='".$idLink."'"  ;
+		$q = "UPDATE {$table_name} SET short_url = '".$link."' WHERE id_post=0 AND MD5(short_url)='".$idLink."'"  ;
 		$wpdb->query( $q ) ;
 
 		// Return the new URL to the interface
@@ -708,7 +719,7 @@ class shorturl extends pluginSedLex {
 
 
 	/** ====================================================================================================================================================
-	* Redirect to the true page
+	* Redirect to the true article
 	* 
 	* @return void
 	*/
@@ -817,13 +828,23 @@ class shorturl extends pluginSedLex {
 				}
 				return $return; 				
 			}
+			// Custom
+			if (($type!="post")&&($type!="page")) {
+				if ($this->get_param('display_bottom_in_custom')) {
+					$return =  $return.$this->display_url($post) ;  
+				}
+				if ($this->get_param('display_top_in_custom')) {
+					$return =  $this->display_url($post).$return ; 
+				}
+				return $return; 				
+			}
 		}
 		
 		return $return ; 		
 	}
 	
 	/** ====================================================================================================================================================
-	* Display short URL in post / page
+	* Display short URL in article
 	*
 	* @param object the post
 	* @return string html to be displayed
