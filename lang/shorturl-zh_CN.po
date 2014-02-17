@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2013-06-12T08:56:41+00:00\n"
+"PO-Revision-Date: 2014-02-16T10:43:19+00:00\n"
 "Last-Translator: OWenT <http://www.owent.net>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -54,10 +54,10 @@ msgid "Results for External URL"
 msgstr "外部链接结果"
 
 msgid "Parameters"
-msgstr "配置"
+msgstr "参数"
 
 msgid "Do you want to use the following characters?"
-msgstr "设置短链接使用的字符"
+msgstr "您要使用这些字符吗？"
 
 msgid "These parameters will be taken in account only for generation of new links"
 msgstr "这些参数仅在新生成的链接中有效"
@@ -72,7 +72,7 @@ msgid "Numeric characters ([0-9]):"
 msgstr "数字([0-9]):"
 
 msgid "Do you want to use a prefix before your short URL?"
-msgstr "设置短链接前缀"
+msgstr "您的短链接需要前缀码？"
 
 msgid "Prefix:"
 msgstr "前缀："
@@ -193,4 +193,37 @@ msgstr "请输入要排除的页面,每行一条(如果要排除页面 %s ,输�
 
 msgid "For instance, %s and %s will exclude the home page."
 msgstr "例如: %s 和 %s 将会把主页排除"
+
+msgid "Title of your articles"
+msgstr "文章标题"
+
+msgid "What are the short links that are to be displayed?"
+msgstr "需要显示的短链接是？"
+
+msgid "Types (separated with comma):"
+msgstr "类型(使用逗号分隔)"
+
+msgid "For instance %s"
+msgstr "实例 %s"
+
+msgid "Note that ALL page will be shorten, but only this types will be displayed in the first tab of this plugin."
+msgstr "注意:所有的页面都会创建短链接，但只有这些类型会被显示在插件的第一个tab中"
+
+msgid "Do you want to automatically shorten links in article?"
+msgstr "您希望在文章中自动生成短链接吗？"
+
+msgid "Where to display the short URL?"
+msgstr "在什么位置展现短链接？"
+
+msgid "At the top of custom type article:"
+msgstr "在自定义类型顶部"
+
+msgid "At the bottom of custom type article:"
+msgstr "在自定义类型底部"
+
+msgid "Please enter one entry per line. If the article %s is to be excluded, you may enter %s."
+msgstr "请每行输入一条，如果要排除文章 %s, 您可以输入 %s"
+
+msgid "Appearance of such display"
+msgstr "显示外观"
 
