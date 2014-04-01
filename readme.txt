@@ -76,6 +76,13 @@ Have fun !
 
 == Changelog ==
 
+= 1.5.1 =
+* NEW: new look
+* NEW: comment for external link
+* NEW: export / import function
+* BUG: avoid problem with &
+* BUG: avoid problem when too many articles 
+
 = 1.5.0 =
 * NEW: the shortlink may point to another domain
 * NEW: support of custom page
@@ -134,4 +141,4 @@ Have fun !
 Visit http://www.sedlex.fr/cote_geek/
 
  
-InfoVersion:7470d4450983fd0cac43f23154ced953
+InfoVersion:e94f517b1e59b62d2cc77338e3eecb4e

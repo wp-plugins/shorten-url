@@ -3,9 +3,7 @@
 Plugin Name: Short URL
 Plugin Tag: shorttag, shortag, bitly, url, short 
 Description: <p>Your article (including custom type) may have a short url hosted by your own domain.</p><p>Replace the internal function of wordpress <code>get_short_link()</code> by a bit.ly like url. </p><p>Instead of having a short link like http://www.yourdomain.com/?p=3564, your short link will be http://www.yourdomain.com/NgH5z (for instance). </p><p>You can configure: </p><ul><li>the length of the short link, </li><li>if the link is prefixed with a static word, </li><li>the characters used for the short link.</li></ul><p>Moreover, you can manage external links with this plugin. The links in your posts will be automatically replace by the short one if available.</p><p>This plugin is under GPL licence. </p>
-Version: 1.5.0
-
-
+Version: 1.5.1
 Author: SedLex
 Author Email: sedlex@sedlex.fr
 Framework Email: sedlex@sedlex.fr
@@ -29,7 +27,7 @@ class shorturl extends pluginSedLex {
 		global $wpdb ; 
 		// Configuration
 		$this->pluginName = 'Short URL' ; 
-		$this->tableSQL = "id_post mediumint(9) NOT NULL, nb_hits mediumint(9), short_url TEXT DEFAULT '', url_externe VARCHAR( 255 ) NOT NULL DEFAULT '',UNIQUE KEY id_post (id_post, url_externe)" ; 
+		$this->tableSQL = "id_post mediumint(9) NOT NULL, nb_hits mediumint(9), short_url TEXT DEFAULT '', url_externe VARCHAR( 255 ) NOT NULL DEFAULT '', comment TEXT DEFAULT '', UNIQUE KEY id_post (id_post, url_externe)" ; 
 		$this->path = __FILE__ ; 
 		$this->table_name = $wpdb->prefix . "pluginSL_" . get_class() ; 
 		$this->pluginID = get_class() ; 
@@ -49,6 +47,8 @@ class shorturl extends pluginSedLex {
 		add_action('wp_ajax_delete_link_external', array($this,'delete_link_external'));
 		
 		add_action('all_admin_notices', array($this,'verify_permalink'));
+		
+		add_action('init', array( $this, 'export_short_url'), 1);
 
 		add_filter('get_shortlink', array($this,'get_short_link_filter'), 9, 2);
 		add_action('template_redirect',array($this,'redirect_404'), 1);
@@ -138,6 +138,12 @@ class shorturl extends pluginSedLex {
 			$wpdb->query("ALTER TABLE ".$table_name." ADD nb_hits mediumint(9);");
 		}
 		
+		// This update aims at adding the comment fields 
+		if ( !$wpdb->get_var("SHOW COLUMNS FROM ".$table_name." LIKE 'comment'")  ) {
+			$wpdb->query("ALTER TABLE ".$table_name." ADD comment TEXT;");
+		}
+
+		
 	}
 	
 	/** ====================================================================================================================================================
@@ -173,6 +179,8 @@ class shorturl extends pluginSedLex {
 			case 'changeroot_url' 		: return "" 	; break ; 
 			case 'catch_url' 		: return false 		; break ; 
 			case 'catch_url_filter' 		: return "*" 		; break ; 
+
+			case 'maxnb' 		: return 1000 		; break ; 
 			
 			case 'typepage' 			: return "post,page" ; break ; 
 
@@ -197,6 +205,38 @@ class shorturl extends pluginSedLex {
 		}
 		return null ;
 	}
+	
+	/** ====================================================================================================================================================
+	* Test if a shorth url file should be exported
+	* 
+	* @return void
+	*/
+	
+	function export_short_url() {
+		global $wpdb;
+		$wpdb->show_errors() ; 
+		$table_name = $this->table_name;
+
+		if (isset($_POST['export'])) {
+			header("Content-Type: application/force-download; name=\"export_shorturl_".date("Ymd").".txt\"");
+			header("Content-Transfer-Encoding: binary");
+			header("Content-Disposition: attachment; filename=\"export_shorturl_".date("Ymd").".txt\"");
+			header("Expires: 0");
+			header("Cache-Control: no-cache, must-revalidate");
+			header("Pragma: no-cache");
+
+			// lignes du tableau
+			// boucle sur les differents elements
+			$query = 'SELECT id_post, nb_hits, short_url, url_externe, comment FROM '.$table_name.' ORDER BY url_externe ASC' ; 
+			$result = $wpdb->get_results($query) ; 
+
+			foreach ($result as $r) {
+				echo $r->id_post.",".$r->nb_hits.",".$r->short_url.",".$r->url_externe.",".$r->comment."\n" ;
+			}
+			
+			exit ; 
+		}	
+	}
 
 
 	/** ====================================================================================================================================================
@@ -209,16 +249,44 @@ class shorturl extends pluginSedLex {
 		$table_name = $this->table_name;
 	
 		?>
-		<div class="wrap">
-			<div id="icon-themes" class="icon32"><br></div>
+		<div class="plugin-titleSL">
 			<h2><?php echo $this->pluginName ?></h2>
 		</div>
-		<div style="padding:20px;">
+		
+		<div class="plugin-contentSL">		
 			<?php echo $this->signature ; ?>
+
 			<p><?php echo __('This plugin helps you sharing your post with short-links.', $this->pluginID) ; ?></p>
 			
 			<!--debut de personnalisation-->
 		<?php
+		
+		// Store the url if the user submit a file...
+		if (isset($_POST['import'])) {
+			if (is_file($_FILES['fileImport']['tmp_name'])) {
+				$lines = @file($_FILES['fileImport']['tmp_name']) ; 
+				$success = true ; 
+				$nb_import = 0 ; 
+				foreach ($lines as $l) {
+					$element = explode (",",$l) ; 
+					$query = "INSERT INTO ".$this->table_name." (id_post, nb_hits, short_url, url_externe, comment) VALUES('".mysql_real_escape_string($element[0])."','".mysql_real_escape_string($element[1])."','".mysql_real_escape_string($element[2])."','".mysql_real_escape_string($element[3])."','".mysql_real_escape_string($element[4])."');" ; 
+					if ($wpdb->query($query) === FALSE) {
+						$success = false ; 
+					} else {
+						$nb_import ++ ;
+					}
+				}
+				if ($success==false) {
+					if ($nb_import==0) {
+						echo '<div class="error fade"><p>'.__('An error occurs when updating the database.', $this->pluginID).'</p></div>' ; 
+					} else {
+						echo '<div class="error fade"><p>'.sprintf(__('An error occurs when updating the database. Nevertheless %s sentences has been imported successfully.', $this->pluginID), $nb_import).'</p></div>' ; 
+					}
+				} else {
+					echo '<div class="updated fade"><p>'.sprintf(__('%s short URL have been added to the database.', $this->pluginID), $nb_import).'</p></div>' ; 
+				}
+			}
+		}
 		
 			// On verifie que les droits sont corrects
 			$this->check_folder_rights( array() ) ; 
@@ -233,7 +301,7 @@ class shorturl extends pluginSedLex {
 			$tabs = new adminTabs() ; 
 			
 			// Mise en place de la barre de navigation
-
+			
 			ob_start() ; 
 				// on identifie la racine des short links
 				
@@ -248,11 +316,13 @@ class shorturl extends pluginSedLex {
 				$paged=1 ; 
 				
 				$result = array() ; 
+				
+				$nb_url = 0 ; 
 								
 				while (true) {
 					query_posts(array('post_type' => explode(',', $this->get_param('typepage')), 'posts_per_page' => 100, 'paged'=>$paged));
-
-					if (!have_posts()) {
+					$nb_url += 100 ; 
+					if ((!have_posts())||($nb_url>=$this->get_param('maxnb'))) {
 						break;
 					}
 					
@@ -275,6 +345,12 @@ class shorturl extends pluginSedLex {
 							$result[] = array(get_the_ID(), $title, wp_get_shortlink(), get_post_type(), $wpdb->get_var("SELECT nb_hits FROM {$table_name} WHERE id_post='".get_the_ID()."'")) ; 
 						}
 					}
+				}
+				
+				if ($nb_url>=$this->get_param('maxnb')) {
+					echo '<div class="updated">' ; 
+					echo '<p>'.sprintf(__('The number of displayed URL cannot exceed %s. Thus the number of url is limited to this number.', $this->pluginID), $this->get_param('maxnb')).'</p>' ; 
+					echo '</div>' ;					
 				}
 				
 				$count = count($result);
@@ -325,29 +401,45 @@ class shorturl extends pluginSedLex {
 					$table->add_line(array($cel1, $cel2, $cel3, $cel4), $r[0]) ; 
 				}
 				echo $table->flush() ;
+				
+				ob_start() ; 
+					?>
+					<form method='post' enctype='multipart/form-data' action='<?php echo $_SERVER["REQUEST_URI"]?>'>
+						<label for='fileImport'><?php echo __('Select the file:', $this->pluginID) ; ?></label>
+						<input name='fileImport' id='fileImport' type='file'/><br/>
+						<div class="submit">
+							<input type="submit" name="import" class='button-primary validButton' value="<?php echo __('Import a file with shorturls', $this->pluginID) ; ?>" />
+							<input type="submit" name="export" class='button-primary validButton' value="<?php echo __('Export the shorturls', $this->pluginID) ; ?>" />
+						</div>
+					</form>
+					<?php
+				$box = new boxAdmin (__('Import/Export Short URL', $this->pluginID), ob_get_clean()) ; 
+				echo $box->flush() ; 
+
 			$tabs->add_tab(__('Internal Redirections',  $this->pluginID), ob_get_clean() ) ; 
 			
 			ob_start() ; 
 			
 				if (isset($_POST['add'])) {
 					$url_ext = str_replace("'", "", $_POST['url_externe']) ; 
+					$comment = str_replace("'", "", $_POST['comment']) ; 
 					if (!preg_match("/^http/i", $url_ext)) {
 						$url_ext = "http://".$url_ext  ; 
 					}
-					$this->add_external_link($url_ext) ; 
+					$this->add_external_link($url_ext, $comment) ; 
 				}
 			
 				$maxnb = 20 ; 
 				
 				$table = new adminTable($count, $maxnb, true, true) ; 
-				$table->title(array(__('External URL', $this->pluginID), __('Short URL', $this->pluginID), __('Number of clicks', $this->pluginID)) ) ; 
+				$table->title(array(__('External URL', $this->pluginID), __('Short URL', $this->pluginID), __('Comment', $this->pluginID), __('Number of clicks', $this->pluginID)) ) ; 
 				
 				// on construit le filtre pour la requête
 				$filter = explode(" ", $table->current_filter()) ; 
 				$filter_words = "" ; 
 				foreach ($filter as $fi) {
 					$filter_words .= " AND " ; 
-					$filter_words .= "url_externe like '%".$fi."%'" ; 
+					$filter_words .= "(url_externe like '%".$fi."%' OR comment like '%".$fi."%')" ; 
 				}
 				
 				$count = $wpdb->get_var("SELECT COUNT(*) FROM ".$table_name." WHERE id_post=0 ".$filter_words." AND url_externe<>''; ") ; 
@@ -370,17 +462,20 @@ class shorturl extends pluginSedLex {
 					$cel2 = new adminCell("<span id='lien_external".$id_temp."'><a href='".$this->get_home_url()."/".$r->short_url."'>".$this->get_home_url()."/".$r->short_url."</a></span>") ; 
 					$cel2->add_action(__("Reset", $this->pluginID), "resetLink_external('".$id_temp."')") ; 
 					$cel2->add_action(__("Edit", $this->pluginID), "forceLink_external('".$id_temp."')") ; 
-					$cel3 = new adminCell($r->nb_hits) ; 	
+					$cel3 = new adminCell("<p>".$r->comment."</p>") ; 	
+					$cel4 = new adminCell($r->nb_hits) ; 	
 
-					$table->add_line(array($cel1, $cel2, $cel3), $id_temp) ; 
+					$table->add_line(array($cel1, $cel2, $cel3, $cel4), $id_temp) ; 
 				}
 				echo $table->flush() ;
 				
 				ob_start() ; 
 					?>
-					<form method='post' action='<?echo remove_query_arg("filter_".$table->id, $_SERVER["REQUEST_URI"])?>'>
+					<form method='post' action='<?php echo remove_query_arg("filter_".$table->id, $_SERVER["REQUEST_URI"])?>'>
 						<label for='url_externe'><?php echo __('External URL:', $this->pluginID) ; ?></label>
 						<input name='url_externe' id='url_externe' type='text' value='' size='40'/><br/>
+						<label for='comment'><?php echo __('Comments:', $this->pluginID) ; ?></label>
+						<input name='comment' id='comment' type='text' value='' size='40'/><br/>
 						<div class="submit">
 							<input type="submit" name="add" class='button-primary validButton' value="<?php echo __('Add a new URL to shorten', $this->pluginID) ; ?>" />
 						</div>
@@ -388,12 +483,26 @@ class shorturl extends pluginSedLex {
 					<?php
 				$box = new boxAdmin (__('Add a new URL to shorten', $this->pluginID), ob_get_clean()) ; 
 				echo $box->flush() ; 
+				
+				ob_start() ; 
+					?>
+					<form method='post' enctype='multipart/form-data' action='<?php echo $_SERVER["REQUEST_URI"]?>'>
+						<label for='fileImport'><?php echo __('Select the file:', $this->pluginID) ; ?></label>
+						<input name='fileImport' id='fileImport' type='file'/><br/>
+						<div class="submit">
+							<input type="submit" name="import" class='button-primary validButton' value="<?php echo __('Import a file with shorturls', $this->pluginID) ; ?>" />
+							<input type="submit" name="export" class='button-primary validButton' value="<?php echo __('Export the shorturls', $this->pluginID) ; ?>" />
+						</div>
+					</form>
+					<?php
+				$box = new boxAdmin (__('Import/Export Short URL', $this->pluginID), ob_get_clean()) ; 
+				echo $box->flush() ; 
 
 			$tabs->add_tab(__('External Redirections',  $this->pluginID), ob_get_clean() ) ; 	
 			
 			ob_start() ; 
 				?>
-					<h3 class="hide-if-js"><? echo __('Parameters',$this->pluginID) ?></h3>
+					<h3 class="hide-if-js"><?php echo __('Parameters',$this->pluginID) ?></h3>
 				
 					<?php
 					$params = new parametersSedLex($this, 'tab-parameters') ; 
@@ -448,6 +557,10 @@ class shorturl extends pluginSedLex {
 					$params->add_comment(sprintf(__('In addition, %s will be replaced by the shorten URL withour any html link.', $this->pluginID), "<code>%short_url_without_link%</code>")) ; 
 					$params->add_param('css', __('CSS:',$this->pluginID)) ; 
 					$params->add_comment_default_value('css') ; 
+					
+					$params->add_title(__('Advanced options',$this->pluginID)) ; 
+					$params->add_param('maxnb', __('Max number of displayed internal redirection:',$this->pluginID)) ; 
+					
 					
 					$params->flush() ; 
 			$tabs->add_tab(__('Parameters',  $this->pluginID), ob_get_clean() , plugin_dir_url("/").'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_param.png") ; 	
@@ -742,11 +855,13 @@ class shorturl extends pluginSedLex {
 						$temp_url = $wpdb->get_var( $select ) ;
 						$wpdb->query("UPDATE {$table_name} SET nb_hits = IFNULL(nb_hits, 0) + 1 WHERE short_url='".$param[count($param)-1]."'") ;
 						header("HTTP/1.1 301 Moved Permanently");
+						$temp_url = str_replace("&amp;", "&", $temp_url);
 						header("Location: ".$temp_url );
 						exit();
 					} else {
 						$wpdb->query("UPDATE {$table_name} SET nb_hits = IFNULL(nb_hits, 0) + 1 WHERE id_post=".$temp_id) ;
 						header("HTTP/1.1 301 Moved Permanently");
+						$temp_url = str_replace("&amp;", "&", $temp_url);
 						header("Location: ".get_permalink($temp_id));
 						exit();
 					}
@@ -881,7 +996,7 @@ class shorturl extends pluginSedLex {
 						$regexp = explode("\n", trim($this->get_param('catch_url_filter'))) ; 
 						foreach ($regexp as $r) {
 							if (preg_match("/".$r."/i", $_SERVER['REQUEST_URI'])) {
-								$result = $this->add_external_link($match[2]) ; 
+								$result = $this->add_external_link($match[2], "") ; 
 								return '<a'.$match[1].'href="'.$this->get_home_url()."/".$result.'"'.$match[3].'>'.$match[4].'</a>';
 							}
 						}
@@ -899,7 +1014,7 @@ class shorturl extends pluginSedLex {
 	* @return the short_url
 	*/	
 	
-	function add_external_link($link) {
+	function add_external_link($link, $comment) {
 		global $wpdb ; 
 		$table_name = $this->table_name;
 		// We add the shortlink
@@ -908,12 +1023,15 @@ class shorturl extends pluginSedLex {
 		$car_nombr = $this->get_param('num_char') ; 
 		$car_longu = $this->get_param('length') ;
 		$temp_url = "" ; 
-		
+
 		$url_ext = addslashes(str_replace("'", "", $link)) ; 
-		
+		$comment = addslashes(str_replace("'", "", $comment)) ; 
+				
 		$char = ($car_maxus ? "ABCDEFGHIJKLMNOPQRSTUVWXYZ" : "" ).($car_minus ? "abcdefghijklmnopqrstuvwxyz" : "" ).($car_nombr ? "1234567890" : "" ) ; 
 		$ok = false ; 
+		
 		while (!$ok) {
+
 			$result = $this->get_param('prefix').Utils::rand_str($car_longu , $char) ; 
 			$select = "SELECT id_post FROM {$table_name} WHERE short_url='".$result."'" ; 
 			$temp_id = $wpdb->get_var( $select ) ;
@@ -922,7 +1040,7 @@ class shorturl extends pluginSedLex {
 				$ok = true ; 
 				$sql = "DELETE FROM {$table_name} WHERE url_externe='".$url_ext."'" ; 
 				$wpdb->query( $sql ) ;
-				$sql = "INSERT INTO {$table_name} (id_post, short_url, url_externe) VALUES ('0', '" . $result . "', '".$url_ext."')" ; 
+				$sql = "INSERT INTO {$table_name} (id_post, short_url, url_externe, comment) VALUES ('0', '" . $result . "', '".$url_ext."', '".$comment."')" ; 
 				$wpdb->query( $sql ) ;
 				return $result ; 
 			}
