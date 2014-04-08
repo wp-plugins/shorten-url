@@ -3,7 +3,7 @@
 Plugin Name: Short URL
 Plugin Tag: shorttag, shortag, bitly, url, short 
 Description: <p>Your article (including custom type) may have a short url hosted by your own domain.</p><p>Replace the internal function of wordpress <code>get_short_link()</code> by a bit.ly like url. </p><p>Instead of having a short link like http://www.yourdomain.com/?p=3564, your short link will be http://www.yourdomain.com/NgH5z (for instance). </p><p>You can configure: </p><ul><li>the length of the short link, </li><li>if the link is prefixed with a static word, </li><li>the characters used for the short link.</li></ul><p>Moreover, you can manage external links with this plugin. The links in your posts will be automatically replace by the short one if available.</p><p>This plugin is under GPL licence. </p>
-Version: 1.5.1
+Version: 1.5.2
 Author: SedLex
 Author Email: sedlex@sedlex.fr
 Framework Email: sedlex@sedlex.fr
@@ -27,7 +27,7 @@ class shorturl extends pluginSedLex {
 		global $wpdb ; 
 		// Configuration
 		$this->pluginName = 'Short URL' ; 
-		$this->tableSQL = "id_post mediumint(9) NOT NULL, nb_hits mediumint(9), short_url TEXT DEFAULT '', url_externe VARCHAR( 255 ) NOT NULL DEFAULT '', comment TEXT DEFAULT '', UNIQUE KEY id_post (id_post, url_externe)" ; 
+		$this->tableSQL = "id_post mediumint(9) NOT NULL, nb_hits mediumint(9), short_url TEXT, url_externe TEXT, comment TEXT" ; 
 		$this->path = __FILE__ ; 
 		$this->table_name = $wpdb->prefix . "pluginSL_" . get_class() ; 
 		$this->pluginID = get_class() ; 
@@ -141,6 +141,14 @@ class shorturl extends pluginSedLex {
 		// This update aims at adding the comment fields 
 		if ( !$wpdb->get_var("SHOW COLUMNS FROM ".$table_name." LIKE 'comment'")  ) {
 			$wpdb->query("ALTER TABLE ".$table_name." ADD comment TEXT;");
+		}
+		// This update aims at removing the key 'id_post'
+		if ( !$wpdb->get_var("SHOW INDEX FROM ".$table_name." WHERE  where key_name='id_post'")  ) {
+			$wpdb->query("ALTER TABLE ".$table_name." DROP INDEX id_post;");
+		}
+		// This update aims at converting url_externe into text
+		if ("varchar"==$wpdb->get_var("SELECT data_type FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '".$table_name."' and column_name='url_externe';")  ) {
+			$wpdb->query("ALTER TABLE ".$table_name." MODIFY url_externe TEXT ;");
 		}
 
 		
@@ -980,10 +988,10 @@ class shorturl extends pluginSedLex {
 		global $wpdb;
 		$table_name = $this->table_name;
 		
-		$match[2] = addslashes(str_replace("'", "", $match[2])) ; 
+		$temp_match2 = addslashes(str_replace("'", "", $match[2])) ; 
 		
 		// Search for existing short link
-		$short = $wpdb->get_var( "SELECT short_url FROM {$table_name} WHERE id_post=0 AND url_externe='".$match[2]."'"); 
+		$short = $wpdb->get_var( "SELECT short_url FROM {$table_name} WHERE id_post=0 AND url_externe='".$temp_match2."'"); 
 		if ($short != "") {
 			return '<a'.$match[1].'href="'.$this->get_home_url()."/".$short.'"'.$match[3].'>'.$match[4].'</a>';
 		} else {
@@ -1030,19 +1038,25 @@ class shorturl extends pluginSedLex {
 		$char = ($car_maxus ? "ABCDEFGHIJKLMNOPQRSTUVWXYZ" : "" ).($car_minus ? "abcdefghijklmnopqrstuvwxyz" : "" ).($car_nombr ? "1234567890" : "" ) ; 
 		$ok = false ; 
 		
-		while (!$ok) {
+		// Search for existing short link
+		$short = $wpdb->get_var( "SELECT short_url FROM {$table_name} WHERE id_post=0 AND url_externe='".$url_ext."'"); 
+		if ($short != "") {
+			return $short ; 
+		} else {
+			while (!$ok) {
 
-			$result = $this->get_param('prefix').Utils::rand_str($car_longu , $char) ; 
-			$select = "SELECT id_post FROM {$table_name} WHERE short_url='".$result."'" ; 
-			$temp_id = $wpdb->get_var( $select ) ;
+				$result = $this->get_param('prefix').Utils::rand_str($car_longu , $char) ; 
+				$select = "SELECT id_post FROM {$table_name} WHERE short_url='".$result."'" ; 
+				$temp_id = $wpdb->get_var( $select ) ;
 			
-			if (($temp_id==null)||($temp_id===false)||(!is_numeric($temp_id))) {
-				$ok = true ; 
-				$sql = "DELETE FROM {$table_name} WHERE url_externe='".$url_ext."'" ; 
-				$wpdb->query( $sql ) ;
-				$sql = "INSERT INTO {$table_name} (id_post, short_url, url_externe, comment) VALUES ('0', '" . $result . "', '".$url_ext."', '".$comment."')" ; 
-				$wpdb->query( $sql ) ;
-				return $result ; 
+				if (($temp_id==null)||($temp_id===false)||(!is_numeric($temp_id))) {
+					$ok = true ; 
+					$sql = "DELETE FROM {$table_name} WHERE url_externe='".$url_ext."'" ; 
+					$wpdb->query( $sql ) ;
+					$sql = "INSERT INTO {$table_name} (id_post, short_url, url_externe, comment) VALUES ('0', '" . $result . "', '".$url_ext."', '".$comment."')" ; 
+					$wpdb->query( $sql ) ;
+					return $result ; 
+				}
 			}
 		}
 	
