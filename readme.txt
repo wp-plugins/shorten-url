@@ -76,6 +76,9 @@ Have fun !
 
 == Changelog ==
 
+= 1.5.4 =
+* BUG: Oups ... sorry
+
 = 1.5.3 =
 * BUG: convert url_externe into text to remove the 255 characters limitations
 
@@ -148,4 +151,4 @@ Have fun !
 Visit http://www.sedlex.fr/cote_geek/
 
  
-InfoVersion:a0dae91b5dfdeafe6977bc24517c3341
+InfoVersion:86f8c1974efd0e3e58f58831c86fed19
