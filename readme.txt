@@ -76,10 +76,12 @@ Have fun !
 
 == Changelog ==
 
+= 1.5.3 =
+* BUG: convert url_externe into text to remove the 255 characters limitations
+
 = 1.5.2 =
 * BUG: do not test correctly diplicate entries for external link (now, only one shortlink may be available per external link)
 * BUG: Remove the key of the MySQL table ; 
-* BUG: convert url_externe into text to remove the 255 characters limitations
 
 = 1.5.1 =
 * NEW: new look
@@ -146,4 +148,4 @@ Have fun !
 Visit http://www.sedlex.fr/cote_geek/
 
  
-InfoVersion:6cd4ffe1ac2461d36c10cd827333f81c
+InfoVersion:238e0cb43030b55f7540709592bc0712

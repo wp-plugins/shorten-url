@@ -3,7 +3,7 @@
 Plugin Name: Short URL
 Plugin Tag: shorttag, shortag, bitly, url, short 
 Description: <p>Your article (including custom type) may have a short url hosted by your own domain.</p><p>Replace the internal function of wordpress <code>get_short_link()</code> by a bit.ly like url. </p><p>Instead of having a short link like http://www.yourdomain.com/?p=3564, your short link will be http://www.yourdomain.com/NgH5z (for instance). </p><p>You can configure: </p><ul><li>the length of the short link, </li><li>if the link is prefixed with a static word, </li><li>the characters used for the short link.</li></ul><p>Moreover, you can manage external links with this plugin. The links in your posts will be automatically replace by the short one if available.</p><p>This plugin is under GPL licence. </p>
-Version: 1.5.2
+Version: 1.5.3
 Author: SedLex
 Author Email: sedlex@sedlex.fr
 Framework Email: sedlex@sedlex.fr
@@ -147,10 +147,7 @@ class shorturl extends pluginSedLex {
 			$wpdb->query("ALTER TABLE ".$table_name." DROP INDEX id_post;");
 		}
 		// This update aims at converting url_externe into text
-		if ("varchar"==$wpdb->get_var("SELECT data_type FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '".$table_name."' and column_name='url_externe';")  ) {
-			$wpdb->query("ALTER TABLE ".$table_name." MODIFY url_externe TEXT ;");
-		}
-
+		$wpdb->query("ALTER TABLE ".$table_name." MODIFY url_externe TEXT ;");
 		
 	}
 	
