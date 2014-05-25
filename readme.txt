@@ -6,7 +6,7 @@ Author URI: http://www.sedlex.fr/
 Plugin URI: http://wordpress.org/plugins/shorten-url/
 Tags: shorttag, shortag, bitly, url, short
 Requires at least: 3.0
-Tested up to: 3.8.1
+Tested up to: 3.9.1
 Stable tag: trunk
 
 Your article (including custom type) may have a short url hosted by your own domain.
@@ -35,7 +35,7 @@ This plugin is compatible with multisite installation. Each blog may manage thei
 
 = Localization =
 
-* Arabic (U.A.E.) translation provided by ZILZAL
+* Arabic (U.A.E.) translation provided by ZILZAL, alaaasly
 * Arabic (Saudi Arabia) translation provided by ZILZAL
 * German (Austria) translation provided by AndreasK.
 * German (Germany) translation provided by reitermarkus, navelbrush, HenningKlocke
@@ -50,14 +50,9 @@ This plugin is compatible with multisite installation. Each blog may manage thei
 
 = Features of the framework =
 
-This plugin uses the SL framework. This framework eases the creation of new plugins by providing incredible tools and frames.
+This plugin uses the SL framework. This framework eases the creation of new plugins by providing tools and frames (see dev-toolbox plugin for more info).
 
-For instance, a new created plugin comes with
-
-* A translation interface to simplify the localization of the text of the plugin ; 
-* An embedded SVN client (subversion) to easily commit/update the plugin in wordpress.org repository ; 
-* A detailled documentation of all available classes and methodes ; 
-* etc.
+You may easily translate the text of the plugin and submit it to the developer, send a feedback, or choose the location of the plugin in the admin panel.
 
 Have fun !
 
@@ -76,24 +71,19 @@ Have fun !
 
 == Changelog ==
 
-= 1.5.4 =
-* BUG: Oups ... sorry
+= 1.6.0 =
+* NEW: redirection through an internal page if wanted
+* NEW: HOW TO
 
-= 1.5.3 =
+= 1.5.0 -&gt; 1.5.4 =
 * BUG: convert url_externe into text to remove the 255 characters limitations
-
-= 1.5.2 =
 * BUG: do not test correctly diplicate entries for external link (now, only one shortlink may be available per external link)
 * BUG: Remove the key of the MySQL table ; 
-
-= 1.5.1 =
 * NEW: new look
 * NEW: comment for external link
 * NEW: export / import function
 * BUG: avoid problem with &
 * BUG: avoid problem when too many articles 
-
-= 1.5.0 =
 * NEW: the shortlink may point to another domain
 * NEW: support of custom page
 * Various enhancements
@@ -151,4 +141,4 @@ Have fun !
 Visit http://www.sedlex.fr/cote_geek/
 
  
-InfoVersion:6f90aa0d75ebdd0af99e8e0b5613b9f2
+InfoVersion:fce769d17e151d1b00208ec29732357bf4fdf10a

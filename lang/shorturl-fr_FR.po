@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2013-05-06T11:28:45+00:00\n"
+"PO-Revision-Date: 2014-05-23T06:44:15+00:00\n"
 "Last-Translator: SedLex <http://www.sedlex.fr/>\n"
 "Last-Translator: jlmcreation <http://www.jlmcreation.fr>\n"
 "Language-Team: \n"
@@ -134,4 +134,46 @@ msgstr "S&#039;il vous plaît entrer une expression rationnelle par ligne."
 
 msgid "If no regexp is entered, links in all pages and posts will be shorten."
 msgstr "Si aucune expression rationnelle est entré, des liens dans toutes les pages et les messages seront raccourcir."
+
+msgid "The permalink options should not be configured to default in order to enable Short-URL."
+msgstr "Les options de ce permalien ne doivent pas être configurés pour défaut afin de permettre à court URL."
+
+msgid "Please go to %s page to correct it."
+msgstr "S&#039;il vous plaît aller à la page %s pour la corriger."
+
+msgid "An error occurs when updating the database."
+msgstr "Une erreur se produit lorsque la mise à jour a la base de données."
+
+msgid "Where to display the short URL?"
+msgstr "Où voir le court URL?"
+
+msgid "At the top of posts:"
+msgstr "Au sommet de messages:"
+
+msgid "At the bottom of posts:"
+msgstr "Au bas de messages:"
+
+msgid "At the top of pages:"
+msgstr "Au sommet de pages:"
+
+msgid "At the bottom of pages:"
+msgstr "Au bas de pages:"
+
+msgid "At the top of custom type article:"
+msgstr "Au sommet de type personnalisé article:"
+
+msgid "At the bottom of custom type article:"
+msgstr "Au bas de type personnalisé article:"
+
+msgid "At the top of excerpt:"
+msgstr "Au sommet de l&#039;extrait:"
+
+msgid "At the bottom of excerpt:"
+msgstr "Au bas de l&#039;extrait:"
+
+msgid "Page to be excluded:"
+msgstr "Page à exclure:"
+
+msgid "Max number of displayed internal redirection:"
+msgstr "Le nombre maximum de redirection interne affichée:"
 

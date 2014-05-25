@@ -3,7 +3,7 @@
 Plugin Name: Short URL
 Plugin Tag: shorttag, shortag, bitly, url, short 
 Description: <p>Your article (including custom type) may have a short url hosted by your own domain.</p><p>Replace the internal function of wordpress <code>get_short_link()</code> by a bit.ly like url. </p><p>Instead of having a short link like http://www.yourdomain.com/?p=3564, your short link will be http://www.yourdomain.com/NgH5z (for instance). </p><p>You can configure: </p><ul><li>the length of the short link, </li><li>if the link is prefixed with a static word, </li><li>the characters used for the short link.</li></ul><p>Moreover, you can manage external links with this plugin. The links in your posts will be automatically replace by the short one if available.</p><p>This plugin is under GPL licence. </p>
-Version: 1.5.4
+Version: 1.6.0
 Author: SedLex
 Author Email: sedlex@sedlex.fr
 Framework Email: sedlex@sedlex.fr
@@ -47,6 +47,9 @@ class shorturl extends pluginSedLex {
 		add_action('wp_ajax_delete_link_external', array($this,'delete_link_external'));
 		
 		add_action('all_admin_notices', array($this,'verify_permalink'));
+
+		// Redirection
+		add_filter('the_content', array($this,'check_redirection'));
 		
 		add_action('init', array( $this, 'export_short_url'), 1);
 
@@ -187,6 +190,10 @@ class shorturl extends pluginSedLex {
 
 			case 'maxnb' 		: return 1000 		; break ; 
 			
+			case 'redirect_page' 		: return "[page]" 		; break ; 
+			case 'redirect_sec' 		: return 10 		; break ; 
+			case 'redirect_only_external' 		: return true 	; break ; 
+			
 			case 'typepage' 			: return "post,page" ; break ; 
 
 			case 'display_top_in_excerpt' 			: return false ; break ; 
@@ -252,7 +259,7 @@ class shorturl extends pluginSedLex {
 	function configuration_page() {
 		global $wpdb;
 		$table_name = $this->table_name;
-	
+		
 		?>
 		<div class="plugin-titleSL">
 			<h2><?php echo $this->pluginName ?></h2>
@@ -260,8 +267,6 @@ class shorturl extends pluginSedLex {
 		
 		<div class="plugin-contentSL">		
 			<?php echo $this->signature ; ?>
-
-			<p><?php echo __('This plugin helps you sharing your post with short-links.', $this->pluginID) ; ?></p>
 			
 			<!--debut de personnalisation-->
 		<?php
@@ -274,7 +279,7 @@ class shorturl extends pluginSedLex {
 				$nb_import = 0 ; 
 				foreach ($lines as $l) {
 					$element = explode (",",$l) ; 
-					$query = "INSERT INTO ".$this->table_name." (id_post, nb_hits, short_url, url_externe, comment) VALUES('".mysql_real_escape_string($element[0])."','".mysql_real_escape_string($element[1])."','".mysql_real_escape_string($element[2])."','".mysql_real_escape_string($element[3])."','".mysql_real_escape_string($element[4])."');" ; 
+					$query = "INSERT INTO ".$this->table_name." (id_post, nb_hits, short_url, url_externe, comment) VALUES('".mysqli_real_escape_string($element[0])."','".mysqli_real_escape_string($element[1])."','".mysqli_real_escape_string($element[2])."','".mysqli_real_escape_string($element[3])."','".mysqli_real_escape_string($element[4])."');" ; 
 					if ($wpdb->query($query) === FALSE) {
 						$success = false ; 
 					} else {
@@ -303,7 +308,7 @@ class shorturl extends pluginSedLex {
 			//
 			//==========================================================================================
 	
-			$tabs = new adminTabs() ; 
+			$tabs = new SLFramework_Tabs() ; 
 			
 			// Mise en place de la barre de navigation
 			
@@ -313,7 +318,7 @@ class shorturl extends pluginSedLex {
 				echo '<script language="javascript">var site="'.$this->get_home_url().'"</script>' ; 
 				
 				$maxnb = 20 ; 
-				$table = new adminTable(0, $maxnb, true, true) ; 
+				$table = new SLFramework_Table(0, $maxnb, true, true) ; 
 				
 				// on construit le filtre pour la requete
 				$filter = explode(" ", $table->current_filter()) ; 
@@ -366,9 +371,9 @@ class shorturl extends pluginSedLex {
 				
 				// We order the posts page according to the choice of the user
 				if ($table->current_orderdir()=="ASC") {
-					$result = Utils::multicolumn_sort($result, $table->current_ordercolumn(), true) ;  
+					$result = SLFramework_Utils::multicolumn_sort($result, $table->current_ordercolumn(), true) ;  
 				} else { 
-					$result = Utils::multicolumn_sort($result, $table->current_ordercolumn(), false) ;  
+					$result = SLFramework_Utils::multicolumn_sort($result, $table->current_ordercolumn(), false) ;  
 				}
 				
 				// We limit the result to the requested zone
@@ -418,7 +423,7 @@ class shorturl extends pluginSedLex {
 						</div>
 					</form>
 					<?php
-				$box = new boxAdmin (__('Import/Export Short URL', $this->pluginID), ob_get_clean()) ; 
+				$box = new SLFramework_Box (__('Import/Export Short URL', $this->pluginID), ob_get_clean()) ; 
 				echo $box->flush() ; 
 
 			$tabs->add_tab(__('Internal Redirections',  $this->pluginID), ob_get_clean() ) ; 
@@ -436,7 +441,7 @@ class shorturl extends pluginSedLex {
 			
 				$maxnb = 20 ; 
 				
-				$table = new adminTable($count, $maxnb, true, true) ; 
+				$table = new SLFramework_Table($count, $maxnb, true, true) ; 
 				$table->title(array(__('External URL', $this->pluginID), __('Short URL', $this->pluginID), __('Comment', $this->pluginID), __('Number of clicks', $this->pluginID)) ) ; 
 				
 				// on construit le filtre pour la requête
@@ -461,7 +466,7 @@ class shorturl extends pluginSedLex {
 				$res = $wpdb->get_results("SELECT * FROM ".$table_name." WHERE id_post=0 ".$filter_words." AND url_externe<>'' ".$orderby." LIMIT ".($maxnb*($table->current_page()-1)).", ".$maxnb." ; ") ; 
 				
 				foreach($res as $r) {
-					$id_temp = md5($r->short_url) ; 
+					$id_temp = sha1($r->short_url) ; 
 					$cel1 = new adminCell("<a href='".$r->url_externe."'>".$r->url_externe."</a><img src='".plugin_dir_url("/").'/'.str_replace(basename( __FILE__),"",plugin_basename(__FILE__))."img/ajax-loader.gif' id='wait_external".$id_temp."' style='display: none;' />") ; 	
 					$cel1->add_action(__("Delete", $this->pluginID), "deleteLink_external('".$id_temp."')") ; 
 					$cel2 = new adminCell("<span id='lien_external".$id_temp."'><a href='".$this->get_home_url()."/".$r->short_url."'>".$this->get_home_url()."/".$r->short_url."</a></span>") ; 
@@ -486,7 +491,7 @@ class shorturl extends pluginSedLex {
 						</div>
 					</form>
 					<?php
-				$box = new boxAdmin (__('Add a new URL to shorten', $this->pluginID), ob_get_clean()) ; 
+				$box = new SLFramework_Box (__('Add a new URL to shorten', $this->pluginID), ob_get_clean()) ; 
 				echo $box->flush() ; 
 				
 				ob_start() ; 
@@ -500,17 +505,48 @@ class shorturl extends pluginSedLex {
 						</div>
 					</form>
 					<?php
-				$box = new boxAdmin (__('Import/Export Short URL', $this->pluginID), ob_get_clean()) ; 
+				$box = new SLFramework_Box (__('Import/Export Short URL', $this->pluginID), ob_get_clean()) ; 
 				echo $box->flush() ; 
 
 			$tabs->add_tab(__('External Redirections',  $this->pluginID), ob_get_clean() ) ; 	
 			
+			// HOW To
+			ob_start() ;
+
+				echo "<p>".__("This plugin helps you sharing your post with short-links.", $this->pluginID)."</p>" ; 
+			$howto1 = new SLFramework_Box (__("Purpose of that plugin", $this->pluginID), ob_get_clean()) ; 
+			ob_start() ;
+				echo "<p>".sprintf(__('When the function %s is called, this plugin replace the normal short links by a special crafted short links.', $this->pluginID), "<code>wp_get_shortlink</code>")."</p>" ; 
+				echo "<p>".sprintf(__('The short URL may be for instance %s of %s (the length of the short link may be configured).', $this->pluginID), "<code>http://domain.tld/Fh67aa</code>", "<code>http://domain.tld/ZhbaG</code>")."</p>" ; 
+				echo "<p>".__('.', $this->pluginID)."</p>" ; 
+			$howto2 = new SLFramework_Box (__("How it works?", $this->pluginID), ob_get_clean()) ; 
+			ob_start() ;
+				echo "<p>".__('To display the shorten URL, you just have to choose the position of the display (top, bottom, etc.) in the configuration tab.', $this->pluginID)."</p>" ; 
+				echo "<p>".sprintf(__('You may also display the shorten URL whereever you want by using the %s function (for instance in your theme).', $this->pluginID), "<code>wp_get_shortlink</code>", "<code>http://domain.tld/ZhbaG</code>")."</p>" ; 
+			$howto3 = new SLFramework_Box (__("How to display the short URL?", $this->pluginID), ob_get_clean()) ; 
+			ob_start() ;
+				echo "<p>".__('When your server see the request short URL, it will automatically redirect to the normal page.', $this->pluginID)."</p>" ; 
+				echo "<p>".__('You may also choose to redirect the short URL through an internal page:', $this->pluginID)."</p>" ; 
+				echo "<ul style='list-style-type: disc;padding-left:40px;'>" ; 
+					echo "<li><p>".__("You just have to choose a specially crafted page to display during the redirection;", $this->pluginID)."</p></li>" ; 
+					echo "<li><p>".sprintf(__("In the page, you may insert %s to display the number of seconds remaining;", $this->pluginID),"<code>[short_url_second]</code>")."</p></li>" ; 
+					echo "<li><p>".sprintf(__("You may also insert %s to display the URL of the page to where the redirection will be performed;", $this->pluginID),"<code>[short_url_redirect]</code>")."</p></li>" ; 
+				echo "</ul>" ; 
+			$howto4 = new SLFramework_Box (__("How to redirect works?", $this->pluginID), ob_get_clean()) ; 
+
+			ob_start() ;
+				 echo $howto1->flush() ; 
+				 echo $howto2->flush() ; 
+				 echo $howto3->flush() ; 
+				 echo $howto4->flush() ; 
+			$tabs->add_tab(__('How To',  $this->pluginID), ob_get_clean() , plugin_dir_url("/").'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_how.png") ; 				
+
 			ob_start() ; 
 				?>
 					<h3 class="hide-if-js"><?php echo __('Parameters',$this->pluginID) ?></h3>
 				
 					<?php
-					$params = new parametersSedLex($this, 'tab-parameters') ; 
+					$params = new SLFramework_Parameters($this, 'tab-parameters') ; 
 					$params->add_title(__('Do you want to use the following characters?',$this->pluginID)) ; 
 					$params->add_comment(__('These parameters will be taken in account only for generation of new links',$this->pluginID)) ; 
 					$params->add_param('low_char', __('Lower-case characters ([a-z]):',$this->pluginID)) ; 
@@ -563,6 +599,11 @@ class shorturl extends pluginSedLex {
 					$params->add_param('css', __('CSS:',$this->pluginID)) ; 
 					$params->add_comment_default_value('css') ; 
 					
+					$params->add_title(__('Redirect first internally',$this->pluginID)) ; 
+					$params->add_param('redirect_page', __('Redirect the short link before to an internal page:',$this->pluginID)) ; 
+					$params->add_param('redirect_sec', __('Number of second before the redirection:',$this->pluginID)) ; 
+					$params->add_param('redirect_only_external', __('Redirect through this internal page only the external redirection:',$this->pluginID)) ; 
+					
 					$params->add_title(__('Advanced options',$this->pluginID)) ; 
 					$params->add_param('maxnb', __('Max number of displayed internal redirection:',$this->pluginID)) ; 
 					
@@ -572,18 +613,18 @@ class shorturl extends pluginSedLex {
 					
 			ob_start() ; 
 				$plugin = str_replace("/","",str_replace(basename(__FILE__),"",plugin_basename( __FILE__))) ; 
-				$trans = new translationSL($this->pluginID, $plugin) ; 
+				$trans = new SLFramework_Translation($this->pluginID, $plugin) ; 
 				$trans->enable_translation() ; 
 			$tabs->add_tab(__('Manage translations',  $this->pluginID), ob_get_clean() , plugin_dir_url("/").'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_trad.png") ; 	
 
 			ob_start() ; 
 				$plugin = str_replace("/","",str_replace(basename(__FILE__),"",plugin_basename( __FILE__))) ; 
-				$trans = new feedbackSL($plugin, $this->pluginID) ; 
+				$trans = new SLFramework_Feedback($plugin, $this->pluginID) ; 
 				$trans->enable_feedback() ; 
 			$tabs->add_tab(__('Give feedback',  $this->pluginID), ob_get_clean() , plugin_dir_url("/").'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_mail.png") ; 	
 			
 			ob_start() ; 
-				$trans = new otherPlugins("sedLex", array('wp-pirates-search')) ; 
+				$trans = new SLFramework_OtherPlugins("sedLex", array('wp-pirates-search')) ; 
 				$trans->list_plugins() ; 
 			$tabs->add_tab(__('Other plugins',  $this->pluginID), ob_get_clean() , plugin_dir_url("/").'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_plug.png") ; 	
 
@@ -639,7 +680,7 @@ class shorturl extends pluginSedLex {
 		$char = ($car_maxus ? "ABCDEFGHIJKLMNOPQRSTUVWXYZ" : "" ).($car_minus ? "abcdefghijklmnopqrstuvwxyz" : "" ).($car_nombr ? "1234567890" : "" ) ; 
 		$ok = false ; 
 		while (!$ok) {
-			$result = $this->get_param('prefix').Utils::rand_str($car_longu , $char) ; 
+			$result = $this->get_param('prefix').SLFramework_Utils::rand_str($car_longu , $char) ; 
 			$select = "SELECT id_post FROM {$table_name} WHERE short_url='".$result."'" ; 
 			$temp_id = $wpdb->get_var( $select ) ;
 			if (($temp_id==null)||($temp_id===false)||($temp_id==NULL)||(!is_numeric($temp_id))) {
@@ -648,12 +689,12 @@ class shorturl extends pluginSedLex {
 		}
 		
 		// Empty the database for the given idLink
-		$q = "UPDATE  {$table_name} SET short_url = '".$result."' WHERE id_post=0 AND MD5(short_url)='".$idLink."'"  ;
+		$q = "UPDATE  {$table_name} SET short_url = '".$result."' WHERE id_post=0 AND sha1(short_url)='".$idLink."'"  ;
 		$wpdb->query( $q ) ;
 		
 		// Return the new URL to the interface
 		$old_id = $idLink ; 
-		$new_id = md5($result) ; 
+		$new_id = sha1($result) ; 
 		$link = $this->get_home_url()."/".$wpdb->get_var("SELECT short_url FROM {$table_name} WHERE id_post=0 AND short_url='".$result."'") ;
 		?>
 		<a href="<?php echo $link; ?>"><?php echo $link ; ?></a>
@@ -711,12 +752,12 @@ class shorturl extends pluginSedLex {
 		
 		// Empty the database for the given idLink
 		
-		$q = "UPDATE {$table_name} SET short_url = '".$link."' WHERE id_post=0 AND MD5(short_url)='".$idLink."'"  ;
+		$q = "UPDATE {$table_name} SET short_url = '".$link."' WHERE id_post=0 AND sha1(short_url)='".$idLink."'"  ;
 		$wpdb->query( $q ) ;
 
 		// Return the new URL to the interface
 		$old_id = $idLink ; 
-		$new_id = md5($link) ; 
+		$new_id = sha1($link) ; 
 		$link = $this->get_home_url()."/".$wpdb->get_var("SELECT short_url FROM {$table_name} WHERE id_post=0 AND short_url='".$link."'") ;
 		?>
 		<a href="<?php echo $link; ?>"><?php echo $link ; ?></a>
@@ -762,7 +803,7 @@ class shorturl extends pluginSedLex {
 		// get the arguments
 		$idLink = $_POST['idLink'];
 		// Get a entry
-		$link =  home_url()."/".$wpdb->get_var("SELECT short_url FROM {$table_name} WHERE id_post=0 AND MD5(short_url)='".$idLink."'") ;
+		$link =  home_url()."/".$wpdb->get_var("SELECT short_url FROM {$table_name} WHERE id_post=0 AND sha1(short_url)='".$idLink."'") ;
 		// Return the new URL to the interface
 		?>
 		<a href="<?php echo $link; ?>"><?php echo $link ; ?></a>
@@ -782,7 +823,7 @@ class shorturl extends pluginSedLex {
 		// get the arguments
 		$idLink = $_POST['idLink'];
 		// Delete a entry
-		$q = "DELETE FROM {$table_name} WHERE id_post=0 AND MD5(short_url)='".$idLink."'"  ;
+		$q = "DELETE FROM {$table_name} WHERE id_post=0 AND sha1(short_url)='".$idLink."'"  ;
 		$wpdb->query( $q ) ;
 		die();
 	}
@@ -820,7 +861,7 @@ class shorturl extends pluginSedLex {
 		$char = ($car_maxus ? "ABCDEFGHIJKLMNOPQRSTUVWXYZ" : "" ).($car_minus ? "abcdefghijklmnopqrstuvwxyz" : "" ).($car_nombr ? "1234567890" : "" ) ; 
 		$ok = false ; 
 		while (!$ok) {
-			$result = $this->get_param('prefix').Utils::rand_str($car_longu , $char) ; 
+			$result = $this->get_param('prefix').SLFramework_Utils::rand_str($car_longu , $char) ; 
 			$select = "SELECT id_post FROM {$table_name} WHERE short_url='".$result."'" ; 
 			$temp_id = $wpdb->get_var( $select ) ;
 			if (($temp_id==null)||($temp_id===false)||((!is_numeric($temp_id))&&($post_id!=0))) {
@@ -849,16 +890,40 @@ class shorturl extends pluginSedLex {
 		
 		if(is_404()) {
 			$param = explode("/", $_SERVER['REQUEST_URI']) ; 
-			if (preg_match("/^([a-zA-Z0-9_.-])*$/",$param[count($param)-1],$matches)==1) {
-				$select = "SELECT id_post FROM {$table_name} WHERE short_url='".$param[count($param)-1]."'" ; 
+			
+			$short_url = "" ; 
+			if (isset($param[count($param)-1])) {
+				$short_url = $param[count($param)-1] ; 
+			}
+			
+			// Au cas ou il y a un / a la fin
+			if (trim($short_url)=="") {
+				if (isset($param[count($param)-2])) {
+					$short_url = $param[count($param)-2] ; 
+				}
+			}
+
+			if (preg_match("/^([a-zA-Z0-9_.-])+$/",$short_url,$matches)==1) {
+				$page = get_post($this->get_param('redirect_page')) ; 
+				if ($page) {
+					$select = "SELECT url_externe FROM {$table_name} WHERE short_url='".$short_url."'" ; 
+					$temp_url = $wpdb->get_var( $select ) ;
+					if (($temp_url=="")&&($this->get_param('redirect_only_external'))) {
+						// url interne, il ne faut pas rediriger vers la page de redirection interne...
+					} else {
+						header("Location: ".add_query_arg( array('redirect' => $short_url), get_permalink($page->ID)));
+						exit();
+					}
+				}
+				$select = "SELECT id_post FROM {$table_name} WHERE short_url='".$short_url."'" ; 
 				$temp_id = $wpdb->get_var( $select ) ;
 				if (($temp_id==null)||($temp_id===false)) {
 					return ; 
 				} else if (is_numeric($temp_id)) {
 					if ($temp_id==0) {
-						$select = "SELECT url_externe FROM {$table_name} WHERE short_url='".$param[count($param)-1]."'" ; 
+						$select = "SELECT url_externe FROM {$table_name} WHERE short_url='".$short_url."'" ; 
 						$temp_url = $wpdb->get_var( $select ) ;
-						$wpdb->query("UPDATE {$table_name} SET nb_hits = IFNULL(nb_hits, 0) + 1 WHERE short_url='".$param[count($param)-1]."'") ;
+						$wpdb->query("UPDATE {$table_name} SET nb_hits = IFNULL(nb_hits, 0) + 1 WHERE short_url='".$short_url."'") ;
 						header("HTTP/1.1 301 Moved Permanently");
 						$temp_url = str_replace("&amp;", "&", $temp_url);
 						header("Location: ".$temp_url );
@@ -866,14 +931,77 @@ class shorturl extends pluginSedLex {
 					} else {
 						$wpdb->query("UPDATE {$table_name} SET nb_hits = IFNULL(nb_hits, 0) + 1 WHERE id_post=".$temp_id) ;
 						header("HTTP/1.1 301 Moved Permanently");
-						$temp_url = str_replace("&amp;", "&", $temp_url);
-						header("Location: ".get_permalink($temp_id));
+						$temp_url = str_replace("&amp;", "&", get_permalink($temp_id));
+						header("Location: ".$temp_url);
 						exit();
 					}
 				}
 			} 
 		}
 	}
+	
+	/** ====================================================================================================================================================
+	* Redirect to the true article
+	* 
+	* @return void
+	*/
+	
+	function check_redirection($content) {
+		global $wpdb ; 
+		
+		$table_name = $this->table_name;
+		
+		if (isset($_GET['redirect'])) {
+			$short_url = $_GET['redirect'] ;  
+			if (preg_match("/^([a-zA-Z0-9_.-])+$/",$short_url,$matches)==1) {
+				$select = "SELECT id_post FROM {$table_name} WHERE short_url='".$short_url."'" ; 
+				$temp_id = $wpdb->get_var( $select ) ;
+				if (($temp_id==null)||($temp_id===false)) {
+					return $content; 
+				} else if (is_numeric($temp_id)) {
+					if ($temp_id==0) {
+						$select = "SELECT url_externe FROM {$table_name} WHERE short_url='".$short_url."'" ; 
+						$temp_url = $wpdb->get_var( $select ) ;
+						$wpdb->query("UPDATE {$table_name} SET nb_hits = IFNULL(nb_hits, 0) + 1 WHERE short_url='".$short_url."'") ;
+						$temp_url = str_replace("&amp;", "&", $temp_url);
+						$content = str_replace("[short_url_second]", "<span class='short_url_second' id='short_url_second'>".$this->get_param('redirect_sec')."</span>", $content) ; 
+						$content = str_replace("[short_url_url]", "<span class='short_url_url'><a href='".$temp_url."'>".$temp_url."</a></span>", $content) ; 
+						$content .= "<script>
+							function refreshSeconds_ShorthURL(){ 
+								var nb = parseInt(document.getElementById('short_url_second').innerHTML); 
+								if (nb!=0) { 
+									nb=nb-1 ; 
+									document.getElementById('short_url_second').innerHTML = nb ;
+									setTimeout(function(){refreshSeconds_ShorthURL()}, 1000) ; 
+								} 
+							} 
+							setTimeout(function(){refreshSeconds_ShorthURL()}, 1000) ; 
+				</script>" ; 
+						return $content."<script>setTimeout(function(){ window.location = '".$temp_url."'; }, ".($this->get_param('redirect_sec')*1000).");</script>" ; 
+					} else {
+						$wpdb->query("UPDATE {$table_name} SET nb_hits = IFNULL(nb_hits, 0) + 1 WHERE id_post=".$temp_id) ;
+						$temp_url = str_replace("&amp;", "&", get_permalink($temp_id));
+						$content = str_replace("[short_url_second]", "<span class='short_url_second'>".$this->get_param('redirect_sec')."</span>", $content) ; 
+						$content = str_replace("[short_url_url]", "<span class='short_url_url'><a href='".$temp_url."'>".$temp_url."</a></span>", $content) ; 
+						$content .= "<script>
+							function refreshSeconds_ShorthURL(){ 
+								var nb = parseInt(document.getElementById('short_url_second').innerHTML); 
+								if (nb!=0) { 
+									nb=nb-1 ; 
+									document.getElementById('short_url_second').innerHTML = nb ;
+									setTimeout(function(){refreshSeconds_ShorthURL()}, 1000) ; 
+								} 
+							} 
+							setTimeout(function(){refreshSeconds_ShorthURL()}, 1000) ; 
+				</script>" ; 
+						return $content."<script>setTimeout(function(){ window.location = '".$temp_url."'; }, ".($this->get_param('redirect_sec')*1000).");</script>" ; 
+					}
+				}			
+			}
+		}
+		return $content ; 
+	}
+	
 	
 	/** ====================================================================================================================================================
 	* Init css for the public side
@@ -899,7 +1027,7 @@ class shorturl extends pluginSedLex {
 	
 	function _modify_content($content, $type, $excerpt) {	
 		global $post ; 
-		$return = preg_replace_callback('#<a([^>]*?)href="([^"]*?)"([^>]*?)>([^<]*?)</a>#i', array($this,"replace_by_short_link"), $content);
+		$return = preg_replace_callback('#<a([^>]*?)href="([^"]*?)"([^>]*?)>(.*?)</a>#i', array($this,"replace_by_short_link"), $content);
 		
 		// We check whether there is an exclusion
 		$exclu = $this->get_param('exclude') ;
@@ -1042,7 +1170,7 @@ class shorturl extends pluginSedLex {
 		} else {
 			while (!$ok) {
 
-				$result = $this->get_param('prefix').Utils::rand_str($car_longu , $char) ; 
+				$result = $this->get_param('prefix').SLFramework_Utils::rand_str($car_longu , $char) ; 
 				$select = "SELECT id_post FROM {$table_name} WHERE short_url='".$result."'" ; 
 				$temp_id = $wpdb->get_var( $select ) ;
 			
@@ -1056,7 +1184,6 @@ class shorturl extends pluginSedLex {
 				}
 			}
 		}
-	
 	}
 	
 	
@@ -1083,8 +1210,6 @@ class shorturl extends pluginSedLex {
 		}
 		return $home_url  ; 
 	}
-
-
 }
 
 $shorturl = shorturl::getInstance();

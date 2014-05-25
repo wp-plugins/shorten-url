@@ -4,8 +4,9 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2013-09-30T10:41:09+00:00\n"
+"PO-Revision-Date: 2014-05-25T08:20:33+00:00\n"
 "Last-Translator: ZILZAL <http://kolalnastv.com>\n"
+"Last-Translator: alaaasly <areeh.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -24,7 +25,7 @@ msgid "The permalink options should not be configured to default in order to ena
 msgstr "من اجل تفعيل الرابط المختصر يجب ان لا تكون الروابط الدائمة في الوضع الافتراضي"
 
 msgid "Please go to %s page to correct it."
-msgstr "الرجاء الذهاب الى صفحة %s  لتصحيحها"
+msgstr "الرجاء الذهاب الى صفحة %s لتصحيحها"
 
 msgid "This plugin helps you sharing your post with short-links."
 msgstr "هذه الاضافة تساعدك على مشاركة مقالاتك برابط مختصر"
@@ -144,13 +145,13 @@ msgid "At the bottom of excerpt:"
 msgstr "في نهاية النبذة المختصرة ؟"
 
 msgid "Displayed HTML:"
-msgstr "الـHTML  المعروض:"
+msgstr "الـHTML المعروض:"
 
 msgid "Note that %s will be automatically replaced by the shorten URL."
 msgstr "لاحظ ان %s سيتم استبداله تلقائياً بالرابط المختصر"
 
 msgid "In addition, %s will be replaced by the shorten URL withour any html link."
-msgstr "ايضاً , %s  سيتم استبداله بالرابط المختصر بدون روابط الـHTML"
+msgstr "ايضاً , %s سيتم استبداله بالرابط المختصر بدون روابط الـHTML"
 
 msgid "CSS:"
 msgstr "CSS:"
@@ -159,7 +160,7 @@ msgid "Page to be excluded:"
 msgstr "الصفحات المستثناة:"
 
 msgid "For instance, %s and %s will exclude the home page."
-msgstr "حالياً , %s  و %s  سيتم استثنائهم من الصفحة الرئيسية"
+msgstr "حالياً , %s و %s سيتم استثنائهم من الصفحة الرئيسية"
 
 msgid "Manage translations"
 msgstr "ادارة الترجمات"
