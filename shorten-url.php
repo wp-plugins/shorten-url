@@ -3,7 +3,8 @@
 Plugin Name: Short URL
 Plugin Tag: shorttag, shortag, bitly, url, short 
 Description: <p>Your article (including custom type) may have a short url hosted by your own domain.</p><p>Replace the internal function of wordpress <code>get_short_link()</code> by a bit.ly like url. </p><p>Instead of having a short link like http://www.yourdomain.com/?p=3564, your short link will be http://www.yourdomain.com/NgH5z (for instance). </p><p>You can configure: </p><ul><li>the length of the short link, </li><li>if the link is prefixed with a static word, </li><li>the characters used for the short link.</li></ul><p>Moreover, you can manage external links with this plugin. The links in your posts will be automatically replace by the short one if available.</p><p>This plugin is under GPL licence. </p>
-Version: 1.6.0
+Version: 1.6.1
+
 Author: SedLex
 Author Email: sedlex@sedlex.fr
 Framework Email: sedlex@sedlex.fr
@@ -279,7 +280,7 @@ class shorturl extends pluginSedLex {
 				$nb_import = 0 ; 
 				foreach ($lines as $l) {
 					$element = explode (",",$l) ; 
-					$query = "INSERT INTO ".$this->table_name." (id_post, nb_hits, short_url, url_externe, comment) VALUES('".mysqli_real_escape_string($element[0])."','".mysqli_real_escape_string($element[1])."','".mysqli_real_escape_string($element[2])."','".mysqli_real_escape_string($element[3])."','".mysqli_real_escape_string($element[4])."');" ; 
+					$query = "INSERT INTO ".$this->table_name." (id_post, nb_hits, short_url, url_externe, comment) VALUES('".esc_sql($element[0])."','".esc_sql($element[1])."','".esc_sql($element[2])."','".esc_sql($element[3])."','".esc_sql($element[4])."');" ; 
 					if ($wpdb->query($query) === FALSE) {
 						$success = false ; 
 					} else {

@@ -71,6 +71,9 @@ Have fun !
 
 == Changelog ==
 
+= 1.6.1 =
+* BUG: The import function were not working ... now solved
+
 = 1.6.0 =
 * NEW: redirection through an internal page if wanted
 * NEW: HOW TO
@@ -141,4 +144,4 @@ Have fun !
 Visit http://www.sedlex.fr/cote_geek/
 
  
-InfoVersion:6c0ba263bd4ba8e862cc08c4ecc350fba380df1c
+InfoVersion:2507148150c1b0751ecf9156a61fac717f115248
