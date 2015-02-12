@@ -6,8 +6,9 @@ Author URI: http://www.sedlex.fr/
 Plugin URI: http://wordpress.org/plugins/shorten-url/
 Tags: shorttag, shortag, bitly, url, short
 Requires at least: 3.0
-Tested up to: 3.9.1
+Tested up to: 4.2
 Stable tag: trunk
+License: GPLv3
 
 Your article (including custom type) may have a short url hosted by your own domain.
 
@@ -15,7 +16,7 @@ Your article (including custom type) may have a short url hosted by your own dom
 
 Your article (including custom type) may have a short url hosted by your own domain.
 
-Replace the internal function of wordpress get_short_link() by a bit.ly like url. 
+Replace the internal function of wordpress wp_get_shortlink() by a bit.ly like url. 
 
 Instead of having a short link like http://www.yourdomain.com/?p=3564, your short link will be http://www.yourdomain.com/NgH5z (for instance). 
 
@@ -37,8 +38,8 @@ This plugin is compatible with multisite installation. Each blog may manage thei
 
 * Arabic (U.A.E.) translation provided by ZILZAL, alaaasly
 * Arabic (Saudi Arabia) translation provided by ZILZAL
-* German (Austria) translation provided by AndreasK.
-* German (Germany) translation provided by reitermarkus, navelbrush, HenningKlocke
+* German (Austria) translation provided by AndreasK., kikunosuke
+* German (Germany) translation provided by reitermarkus, navelbrush, HenningKlocke, RobertBittner
 * English (United States), default language
 * Spanish (Spain) translation provided by SebasContre, JosLuisCruz
 * Farsi (Iran) translation provided by EhsanKing, sehrama.ir, HamidEslami, Yhayakhaledi
@@ -46,6 +47,7 @@ This plugin is compatible with multisite installation. Each blog may manage thei
 * Indonesian (Indonesia) translation provided by Adhityawicaksana
 * Portuguese (Brazil) translation provided by Blinky, TonyFranco, ViniciusSantos, Bruno
 * Russian (Russia) translation provided by Pacifik, AndreyFedotov
+* Swedish (Sweden) translation provided by Kozley
 * Chinese (People's Republic of China) translation provided by OWenT
 
 = Features of the framework =
@@ -70,6 +72,11 @@ Have fun !
 2. The configuration page of the plugin 
 
 == Changelog ==
+
+= 1.6.2 =
+* NEW: icons
+* NEW: delete data on uninstall
+* NEW: list the custom posts if they exist
 
 = 1.6.1 =
 * BUG: The import function were not working ... now solved
@@ -144,4 +151,4 @@ Have fun !
 Visit http://www.sedlex.fr/cote_geek/
 
  
-InfoVersion:2507148150c1b0751ecf9156a61fac717f115248
+InfoVersion:030e6fed78e5c25241d43e54f4dd61327846302b

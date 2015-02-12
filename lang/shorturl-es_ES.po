@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2013-06-14T05:59:13+00:00\n"
+"PO-Revision-Date: 2014-09-24T08:33:42+00:00\n"
 "Last-Translator: SebasContre <seba.im>\n"
 "Last-Translator: JosLuisCruz <senonvero@gmail.com>\n"
 "Language-Team: \n"
@@ -182,4 +182,52 @@ msgstr "Por favor ingrese una página por linea. Para que %s sea excluida, solo 
 
 msgid "For instance, %s and %s will exclude the home page."
 msgstr "Por ejemplo, %s y %s excluirán la página principal."
+
+msgid "Title of your articles"
+msgstr "Título de sus artículos"
+
+msgid "Import a file with shorturls"
+msgstr "Importar un archivo con"
+
+msgid "Comment"
+msgstr "Comentario"
+
+msgid "Comments:"
+msgstr "Comentarios:"
+
+msgid "."
+msgstr "."
+
+msgid "How To"
+msgstr "Cómo se hace"
+
+msgid "What are the short links that are to be displayed?"
+msgstr "¿Cuáles son los enlaces cortos que va a mostrar?"
+
+msgid "Types (separated with comma):"
+msgstr "Tipos (separar con comas):"
+
+msgid "For instance %s"
+msgstr "Por ejemplo %s"
+
+msgid "Do you want to automatically shorten links in article?"
+msgstr "¿Quiere acortar automáticamente los enlaces en el artículo?"
+
+msgid "Where to display the short URL?"
+msgstr "¿Donde mostrar la URL corta?"
+
+msgid "At the top of custom type article:"
+msgstr "Al principio de un tipo personalizado de articulo:"
+
+msgid "At the bottom of custom type article:"
+msgstr "Al final de un tipo personalizado de articulo:"
+
+msgid "Please enter one entry per line. If the article %s is to be excluded, you may enter %s."
+msgstr "Por favor ingrese una entrada por línea. Si el articulo que desea excluir es %s, debes ingresar %s."
+
+msgid "Appearance of such display"
+msgstr "Apariencia en pantalla"
+
+msgid "Advanced options"
+msgstr "Opciones avanzadas"
 

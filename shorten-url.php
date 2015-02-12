@@ -2,9 +2,8 @@
 /*
 Plugin Name: Short URL
 Plugin Tag: shorttag, shortag, bitly, url, short 
-Description: <p>Your article (including custom type) may have a short url hosted by your own domain.</p><p>Replace the internal function of wordpress <code>get_short_link()</code> by a bit.ly like url. </p><p>Instead of having a short link like http://www.yourdomain.com/?p=3564, your short link will be http://www.yourdomain.com/NgH5z (for instance). </p><p>You can configure: </p><ul><li>the length of the short link, </li><li>if the link is prefixed with a static word, </li><li>the characters used for the short link.</li></ul><p>Moreover, you can manage external links with this plugin. The links in your posts will be automatically replace by the short one if available.</p><p>This plugin is under GPL licence. </p>
-Version: 1.6.1
-
+Description: <p>Your article (including custom type) may have a short url hosted by your own domain.</p><p>Replace the internal function of wordpress <code>wp_get_shortlink()</code> by a bit.ly like url. </p><p>Instead of having a short link like http://www.yourdomain.com/?p=3564, your short link will be http://www.yourdomain.com/NgH5z (for instance). </p><p>You can configure: </p><ul><li>the length of the short link, </li><li>if the link is prefixed with a static word, </li><li>the characters used for the short link.</li></ul><p>Moreover, you can manage external links with this plugin. The links in your posts will be automatically replace by the short one if available.</p><p>This plugin is under GPL licence. </p>
+Version: 1.6.2
 Author: SedLex
 Author Email: sedlex@sedlex.fr
 Framework Email: sedlex@sedlex.fr
@@ -95,6 +94,20 @@ class shorturl extends pluginSedLex {
 			switch_to_blog($old_blog);
 		} else {
 			$wpdb->query("DROP TABLE ".$wpdb->prefix . "pluginSL_" . 'shorturl' ) ; 
+		}
+		
+		// DELETE FILES if needed
+		//SLFramework_Utils::rm_rec(WP_CONTENT_DIR."/sedlex/my_plugin/"); 
+		$plugins_all = 	get_plugins() ; 
+		$nb_SL = 0 ; 	
+		foreach($plugins_all as $url => $pa) {
+			$info = pluginSedlex::get_plugins_data(WP_PLUGIN_DIR."/".$url);
+			if ($info['Framework_Email']=="sedlex@sedlex.fr"){
+				$nb_SL++ ; 
+			}
+		}
+		if ($nb_SL==1) {
+			SLFramework_Utils::rm_rec(WP_CONTENT_DIR."/sedlex/"); 
 		}
 	}
 	
@@ -531,15 +544,18 @@ class shorturl extends pluginSedLex {
 				echo "<ul style='list-style-type: disc;padding-left:40px;'>" ; 
 					echo "<li><p>".__("You just have to choose a specially crafted page to display during the redirection;", $this->pluginID)."</p></li>" ; 
 					echo "<li><p>".sprintf(__("In the page, you may insert %s to display the number of seconds remaining;", $this->pluginID),"<code>[short_url_second]</code>")."</p></li>" ; 
-					echo "<li><p>".sprintf(__("You may also insert %s to display the URL of the page to where the redirection will be performed;", $this->pluginID),"<code>[short_url_redirect]</code>")."</p></li>" ; 
+					echo "<li><p>".sprintf(__("You may also insert %s to display the URL of the page to where the redirection will be performed;", $this->pluginID),"<code>[short_url_url]</code>")."</p></li>" ; 
 				echo "</ul>" ; 
 			$howto4 = new SLFramework_Box (__("How to redirect works?", $this->pluginID), ob_get_clean()) ; 
-
+			ob_start() ;
+				echo "<p>".sprintf(__('Your WP install should not use default permalinks (i.e. %s) but instead any custom permalinks (i.e. %s or %s).', $this->pluginID), "<code>http://domain.tld/?p=453</code>", "<code>domain.tld/2015/02/12/sample-post/</code>", "<code>domain.tld/2015/sample-post/</code>")."</p>" ; 
+			$howto5 = new SLFramework_Box (__("Requirements", $this->pluginID), ob_get_clean()) ; 
 			ob_start() ;
 				 echo $howto1->flush() ; 
 				 echo $howto2->flush() ; 
 				 echo $howto3->flush() ; 
 				 echo $howto4->flush() ; 
+				 echo $howto5->flush() ; 
 			$tabs->add_tab(__('How To',  $this->pluginID), ob_get_clean() , plugin_dir_url("/").'/'.str_replace(basename(__FILE__),"",plugin_basename(__FILE__))."core/img/tab_how.png") ; 				
 
 			ob_start() ; 
@@ -562,7 +578,21 @@ class shorturl extends pluginSedLex {
 					
 					$params->add_title(__('What are the short links that are to be displayed?',$this->pluginID)) ; 
 					$params->add_param('typepage', __('Types (separated with comma):',$this->pluginID)) ; 
-					$params->add_comment(sprintf(__('For instance %s',$this->pluginID), "<code>page,post</code>")) ; 
+					$args = array(
+					   'public'   => true,
+					//   '_builtin' => false
+					);
+
+					$output = 'names'; // names or objects, note names is the default
+					$operator = 'and'; // 'and' or 'or'
+
+					$post_types = get_post_types( $args, $output, $operator ); 
+					$exemple = "page,post" ; 
+					foreach ( $post_types  as $post_type ) {
+					   $exemple .= ",".$post_type;
+					}
+					
+					$params->add_comment(sprintf(__('For instance %s',$this->pluginID), "<code>".$exemple."</code>")) ; 
 					$params->add_comment(__('Note that ALL page will be shorten, but only this types will be displayed in the first tab of this plugin.',$this->pluginID)) ; 
 
 					$params->add_title(__('Customize the short link URL',$this->pluginID)) ; 
@@ -903,12 +933,13 @@ class shorturl extends pluginSedLex {
 					$short_url = $param[count($param)-2] ; 
 				}
 			}
-
+			
 			if (preg_match("/^([a-zA-Z0-9_.-])+$/",$short_url,$matches)==1) {
 				$page = get_post($this->get_param('redirect_page')) ; 
 				if ($page) {
 					$select = "SELECT url_externe FROM {$table_name} WHERE short_url='".$short_url."'" ; 
 					$temp_url = $wpdb->get_var( $select ) ;
+					
 					if (($temp_url=="")&&($this->get_param('redirect_only_external'))) {
 						// url interne, il ne faut pas rediriger vers la page de redirection interne...
 					} else {
@@ -918,6 +949,7 @@ class shorturl extends pluginSedLex {
 				}
 				$select = "SELECT id_post FROM {$table_name} WHERE short_url='".$short_url."'" ; 
 				$temp_id = $wpdb->get_var( $select ) ;
+
 				if (($temp_id==null)||($temp_id===false)) {
 					return ; 
 				} else if (is_numeric($temp_id)) {

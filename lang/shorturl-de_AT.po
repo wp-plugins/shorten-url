@@ -4,8 +4,9 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-04-20T14:06:03+00:00\n"
+"PO-Revision-Date: 2014-12-27T10:27:15+00:00\n"
 "Last-Translator: AndreasK. <http://andisblog.eu>\n"
+"Last-Translator: kikunosuke <samurai07@gmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -87,8 +88,41 @@ msgid "Manage translations"
 msgstr "Verwalte die Sprachen"
 
 msgid "Give feedback"
-msgstr "Gib ein Feedback"
+msgstr "Rückmeldung abgeben"
 
 msgid "Other plugins"
 msgstr "Andere Plugins"
+
+msgid "Please go to %s page to correct it."
+msgstr "Bitte gehen Sie zur %s Seite um es zu korrigieren."
+
+msgid "Title of your articles"
+msgstr "Titel Ihrer Artikel"
+
+msgid "Type"
+msgstr "Typ"
+
+msgid "Number of clicks"
+msgstr "Anzahl Klicks"
+
+msgid "Select the file:"
+msgstr "Datei auswählen:"
+
+msgid "Comments:"
+msgstr "Kommentare"
+
+msgid "How it works?"
+msgstr "Wie es funktioniert."
+
+msgid "Remove www:"
+msgstr "www. entfernen :"
+
+msgid "Displayed HTML:"
+msgstr "Angezeigtes HTML:"
+
+msgid "CSS:"
+msgstr "CSS:"
+
+msgid "Advanced options"
+msgstr "Erweitere Einstellungen"
 
